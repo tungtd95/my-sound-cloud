@@ -1,5 +1,8 @@
 package com.framgia.tungvd.soundcloud.data.model;
 
+import com.framgia.tungvd.soundcloud.BuildConfig;
+import com.framgia.tungvd.soundcloud.util.Constant;
+
 public class Track {
     private String mKind;
     private long mId;
@@ -12,7 +15,7 @@ public class Track {
     private String mTitle;
     private String mDescription;
     private String mLabelName;
-    private String mPermalinkUrl;
+    private String mSteamUrl;
     private long mUserId;
     private String mUserName;
     private String mAvatarUrl;
@@ -29,7 +32,7 @@ public class Track {
         mTitle = builder.mTitle;
         mDescription = builder.mDescription;
         mLabelName = builder.mLabelName;
-        mPermalinkUrl = builder.mPermalinkUrl;
+        mSteamUrl = builder.mStreamUrl;
         mUserId = builder.mUserId;
         mUserName = builder.mUserName;
         mAvatarUrl = builder.mAvatarUrl;
@@ -47,7 +50,7 @@ public class Track {
         private String mTitle = "";
         private String mDescription = "";
         private String mLabelName = "";
-        private String mPermalinkUrl = "";
+        private String mStreamUrl = "";
         private long mUserId = -1;
         private String mUserName = "";
         private String mAvatarUrl = "";
@@ -77,6 +80,11 @@ public class Track {
             return this;
         }
 
+        public Builder tagList(String tagList) {
+            mTagList = tagList;
+            return this;
+        }
+
         public Builder downloadable(boolean downloadable) {
             mDownloadable = downloadable;
             return this;
@@ -102,8 +110,11 @@ public class Track {
             return this;
         }
 
-        public Builder permalinkUrl(String permalinkUrl) {
-            mPermalinkUrl = permalinkUrl;
+        public Builder streamUrl(String streamUrl) {
+            mStreamUrl = new StringBuilder(streamUrl)
+                    .append(Constant.SoundCloud.PARAM_CLIENT)
+                    .append(BuildConfig.SOUND_CLOUD_KEY)
+                    .toString();
             return this;
         }
 
@@ -163,8 +174,8 @@ public class Track {
         return mLabelName;
     }
 
-    public String getPermalinkUrl() {
-        return mPermalinkUrl;
+    public String getSteamUrl() {
+        return mSteamUrl;
     }
 
     public long getUserId() {
