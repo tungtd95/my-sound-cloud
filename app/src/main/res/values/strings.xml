@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">SoundCloud</string>
+    
+    <string name="all_music">All Music</string>
+    <string name="all_audio">All Audio</string>
+    <string name="alternativerock">Alternativerock</string>
+
 </resources>
