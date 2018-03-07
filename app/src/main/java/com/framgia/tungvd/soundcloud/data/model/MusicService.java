@@ -12,10 +12,14 @@ import com.framgia.tungvd.soundcloud.data.source.setting.LoopMode;
 import com.framgia.tungvd.soundcloud.data.source.setting.Setting;
 import com.framgia.tungvd.soundcloud.data.source.setting.ShuffleMode;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class MusicService extends Service implements MusicServiceObservable {
+
+    private static MusicService sInstance;
 
     private ArrayList<Track> mTracks;
     private MediaPlayer mMediaPlayer;
@@ -26,6 +30,22 @@ public class MusicService extends Service implements MusicServiceObservable {
     private long mDuration;
 
     private Setting mSetting;
+
+    /**
+     * @return static instance of MusicService class
+     */
+    public static MusicService getInstance() {
+        return sInstance;
+    }
+
+    private MusicService() {
+    }
+
+    public void setTracks(List<Track> tracks) {
+        mTracks = (ArrayList<Track>) tracks;
+        notifyTracksChanged();
+        handleNewTrack(0);
+    }
 
     @Override
     public void onCreate() {
@@ -40,19 +60,44 @@ public class MusicService extends Service implements MusicServiceObservable {
         mCurrentTrackIndex = 0;
 
         mSetting = new Setting(LoopMode.OFF, ShuffleMode.OFF);
-
+        sInstance = this;
     }
 
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        return START_NOT_STICKY;
+    }
+
+    /**
+     * invoked when user click next song or at the end of one song
+     */
     public void handleNext() {
         // TODO: 03/05/18 handle next song event
     }
 
+    /**
+     * invoked when user click previous
+     */
     public void handlePrevious() {
         // TODO: 03/05/18 handle previous song event
     }
 
-    public void handleNewTrack() {
-        // TODO: 03/05/18 handle user click random song
+    /**
+     * invoked then user click any song
+     */
+    public void handleNewTrack(int position) {
+        mCurrentTrackIndex = position;
+        mMediaPlayer.reset();
+        mMediaPlayer.release();
+        mMediaPlayer = null;
+        mMediaPlayer = new MediaPlayer();
+        try {
+            mMediaPlayer.setDataSource(mTracks.get(mCurrentTrackIndex).getSteamUrl());
+            mMediaPlayer.prepareAsync();
+            mMediaPlayer.start();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void handleChangeLoopMode() {

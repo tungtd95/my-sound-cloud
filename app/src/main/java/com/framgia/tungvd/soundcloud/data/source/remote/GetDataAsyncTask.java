@@ -2,14 +2,16 @@ package com.framgia.tungvd.soundcloud.data.source.remote;
 
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 import com.framgia.tungvd.soundcloud.BuildConfig;
-import com.framgia.tungvd.soundcloud.R;
 import com.framgia.tungvd.soundcloud.data.model.Track;
 import com.framgia.tungvd.soundcloud.data.source.Genre;
 import com.framgia.tungvd.soundcloud.data.source.TracksDataSource.LoadTracksCallback;
-import com.framgia.tungvd.soundcloud.util.Config;
+import com.framgia.tungvd.soundcloud.util.Constant;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -20,7 +22,8 @@ import java.util.ArrayList;
 
 public class GetDataAsyncTask extends AsyncTask<String, Void, Void> {
 
-    private static final String TAG = "GetDataAsyncTask";
+    private static final int READ_TIMEOUT = 10000; /*millisecond*/
+    private static final int CONNECT_TIMEOUT = 15000; /*millisecond*/
 
     private LoadTracksCallback mCallback;
     private ArrayList<Track> mTracks;
@@ -36,19 +39,19 @@ public class GetDataAsyncTask extends AsyncTask<String, Void, Void> {
     @Override
     protected Void doInBackground(@Genre String... strings) {
 
-
-
         String url = String.format(
-                Config.SOUND_CLOUD_API,
+                Constant.SoundCloud.SOUND_CLOUD_API,
                 BuildConfig.SOUND_CLOUD_KEY,
-                "%3A",
-                "%3A",
+                Constant.SoundCloud.PARAM_DOT,
+                Constant.SoundCloud.PARAM_DOT,
                 mGenre,
                 mPage);
         try {
             String data = getJSONStringFromURL(url);
             mTracks = getTracksFromJson(data);
         } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
             e.printStackTrace();
         }
         return null;
@@ -72,8 +75,8 @@ public class GetDataAsyncTask extends AsyncTask<String, Void, Void> {
         urlConnection = (HttpURLConnection) url.openConnection();
 
         urlConnection.setRequestMethod("GET");
-        urlConnection.setReadTimeout(10000 /* milliseconds */);
-        urlConnection.setConnectTimeout(15000 /* milliseconds */);
+        urlConnection.setReadTimeout(READ_TIMEOUT);
+        urlConnection.setConnectTimeout(CONNECT_TIMEOUT);
 
         urlConnection.setDoOutput(true);
 
@@ -94,10 +97,49 @@ public class GetDataAsyncTask extends AsyncTask<String, Void, Void> {
         return jsonString;
     }
 
-    private ArrayList<Track> getTracksFromJson(String jsonData) {
+    private ArrayList<Track> getTracksFromJson(String jsonData) throws JSONException {
         ArrayList<Track> tracks = new ArrayList<>();
-        // TODO: 03/05/18 parse json data to array list of tracks
+        JSONArray jsa = new JSONArray(jsonData);
+        for (int i = 0; i < jsa.length(); i++) {
+            JSONObject jso = new JSONObject(jsa.getString(i));
 
+            String kind = jso.getString(Constant.JsonProperties.KIND);
+            long id = jso.getLong(Constant.JsonProperties.ID);
+            String createAt = jso.getString(Constant.JsonProperties.CREATED_AT);
+            long duration = jso.getLong(Constant.JsonProperties.DURATION);
+            String state = jso.getString(Constant.JsonProperties.STATE);
+            String tagList = jso.getString(Constant.JsonProperties.TAG_LIST);
+            boolean downloadable = jso.getBoolean(Constant.JsonProperties.DOWNLOADABLE);
+            String genre = jso.getString(Constant.JsonProperties.GENRE);
+            String title = jso.getString(Constant.JsonProperties.TITLE);
+            String description = jso.getString(Constant.JsonProperties.DESCRIPTION);
+            String labelName = jso.getString(Constant.JsonProperties.LABEL_NAME);
+            String streamUrl = jso.getString(Constant.JsonProperties.STREAM_URL);
+
+            JSONObject userJso = jso.getJSONObject(Constant.JsonProperties.USER);
+
+            long userId = userJso.getLong(Constant.JsonProperties.USER_ID);
+            String userName = userJso.getString(Constant.JsonProperties.USER_NAME);
+            String avatarUrl = userJso.getString(Constant.JsonProperties.AVATAR_URL);
+
+            Track track = new Track.Builder()
+                    .kind(kind)
+                    .id(id)
+                    .createAt(createAt)
+                    .duration(duration)
+                    .state(state)
+                    .tagList(tagList)
+                    .downloadable(downloadable)
+                    .genre(genre)
+                    .title(title)
+                    .description(description)
+                    .labelName(labelName)
+                    .streamUrl(streamUrl)
+                    .user(userId, userName, avatarUrl)
+                    .build();
+
+            tracks.add(track);
+        }
         return tracks;
     }
 }
