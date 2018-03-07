@@ -11,10 +11,11 @@ import com.framgia.tungvd.soundcloud.screen.category.CategoryFragment;
 import com.framgia.tungvd.soundcloud.screen.home.HomeFragment;
 
 public class MainActivity extends BaseActivity
-        implements MainContract.View, ShowCategoryListener{
+        implements MainContract.View, ShowCategoryListener {
+
+    private static final String MAIN_BACK_STACK = "main back stack";
 
     private MainContract.Presenter mMainPresenter;
-
     private HomeFragment mHomeFragment;
 
     @Override
@@ -25,7 +26,7 @@ public class MainActivity extends BaseActivity
         mHomeFragment = new HomeFragment();
         mHomeFragment.setShowCategoryListener(this);
 
-        replaceFragment(mHomeFragment);
+        showHome();
 
         mMainPresenter = new MainPresenter();
         mMainPresenter.setView(this);
@@ -33,11 +34,7 @@ public class MainActivity extends BaseActivity
     }
 
     public void showCategoryScreen(Category category) {
-        CategoryFragment fragment = new CategoryFragment();
-        Bundle bundle = new Bundle();
-        bundle.putString(CategoryFragment.EXTRA_GENRE, category.getGenre());
-        fragment.setArguments(bundle);
-        replaceFragment(fragment);
+        replaceFragment(CategoryFragment.newInstance(category), true);
     }
 
     @Override
@@ -47,12 +44,15 @@ public class MainActivity extends BaseActivity
 
     @Override
     public void showHome() {
-        replaceFragment(mHomeFragment);
+        replaceFragment(mHomeFragment, false);
     }
 
-    public void replaceFragment(Fragment fragment) {
+    public void replaceFragment(Fragment fragment, boolean saveBackStack) {
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.frame_layout_replace, fragment);
+        if (saveBackStack) {
+            ft.addToBackStack(MAIN_BACK_STACK);
+        }
         ft.commit();
     }
 

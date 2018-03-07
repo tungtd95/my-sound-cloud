@@ -60,7 +60,7 @@ public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.TrackViewHol
             if (track == null) {
                 return;
             }
-            mTextViewTrackName.setText(track.getLabelName());
+            mTextViewTrackName.setText(track.getTitle());
         }
     }
 }
