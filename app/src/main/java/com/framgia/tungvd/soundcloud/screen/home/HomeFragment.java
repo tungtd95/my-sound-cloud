@@ -48,7 +48,7 @@ public class HomeFragment extends BaseFragment implements HomeContract.View {
         mRecyclerViewCategories.setAdapter(mCategoryAdapter);
 
         mPresenter = new HomePresenter(CategoriesRepository.getInstance());
-        mPresenter.setViewMain(this);
+        mPresenter.setView(this);
         mPresenter.onStart();
     }
 
