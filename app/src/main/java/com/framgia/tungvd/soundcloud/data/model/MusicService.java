@@ -38,9 +38,6 @@ public class MusicService extends Service implements MusicServiceObservable {
         return sInstance;
     }
 
-    private MusicService() {
-    }
-
     public void setTracks(List<Track> tracks) {
         mTracks = (ArrayList<Track>) tracks;
         notifyTracksChanged();

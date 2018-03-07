@@ -18,8 +18,8 @@ public class HomePresenter implements HomeContract.Presenter {
     }
 
     @Override
-    public void setViewMain(HomeContract.View viewMain) {
-        mView = viewMain;
+    public void setView(HomeContract.View view) {
+        mView = view;
     }
 
     @Override
