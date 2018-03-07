@@ -1,12 +1,17 @@
 package com.framgia.tungvd.soundcloud.screen.main;
 
+import android.os.Bundle;
+
+import com.framgia.tungvd.soundcloud.data.model.Category;
+import com.framgia.tungvd.soundcloud.screen.category.CategoryFragment;
+
 public class MainPresenter implements MainContract.Presenter {
 
-    private MainContract.View mViewMain;
+    private MainContract.View mView;
 
     @Override
     public void setView(MainContract.View view) {
-        mViewMain = view;
+        mView = view;
     }
 
     @Override
@@ -28,4 +33,5 @@ public class MainPresenter implements MainContract.Presenter {
     public void backPressed() {
 
     }
+
 }

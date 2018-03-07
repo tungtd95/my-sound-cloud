@@ -11,25 +11,35 @@ import android.view.ViewGroup;
 import com.framgia.tungvd.soundcloud.R;
 import com.framgia.tungvd.soundcloud.custom.CategoryAdapter;
 import com.framgia.tungvd.soundcloud.custom.ItemDecoration;
+import com.framgia.tungvd.soundcloud.custom.RecyclerItemClickListener;
 import com.framgia.tungvd.soundcloud.data.model.Category;
 import com.framgia.tungvd.soundcloud.data.source.CategoriesRepository;
 import com.framgia.tungvd.soundcloud.screen.BaseFragment;
+import com.framgia.tungvd.soundcloud.screen.main.ShowCategoryListener;
 
 import java.util.List;
 
-public class HomeFragment extends BaseFragment implements HomeContract.View {
+public class HomeFragment extends BaseFragment
+        implements HomeContract.View, RecyclerItemClickListener.OnItemClickListener {
 
     private static final int GRID_COLUMN_NUMB = 2;
     private static final int GRID_SPACE = 25;
 
     private RecyclerView mRecyclerViewCategories;
     private CategoryAdapter mCategoryAdapter;
+    private ShowCategoryListener mShowCategoryListener;
 
     private HomeContract.Presenter mPresenter;
 
+    public void setShowCategoryListener(ShowCategoryListener showCategoryListener) {
+        mShowCategoryListener = showCategoryListener;
+    }
+
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater,
+                             @Nullable ViewGroup container,
+                             Bundle savedInstanceState) {
         return inflater.inflate(R.layout.view_fragment_home, container, false);
     }
 
@@ -46,6 +56,10 @@ public class HomeFragment extends BaseFragment implements HomeContract.View {
         mRecyclerViewCategories.setLayoutManager(layoutManager);
         mRecyclerViewCategories.addItemDecoration(decoration);
         mRecyclerViewCategories.setAdapter(mCategoryAdapter);
+        mRecyclerViewCategories.addOnItemTouchListener(new RecyclerItemClickListener(
+                getActivity(),
+                mRecyclerViewCategories,
+                this));
 
         mPresenter = new HomePresenter(CategoriesRepository.getInstance());
         mPresenter.setView(this);
@@ -55,5 +69,21 @@ public class HomeFragment extends BaseFragment implements HomeContract.View {
     @Override
     public void showCategories(List<Category> categories) {
         mCategoryAdapter.setCategories(categories);
+    }
+
+    public void showCategory(Category category) {
+        if (mShowCategoryListener != null) {
+            mShowCategoryListener.onCategoryClicked(category);
+        }
+    }
+
+    @Override
+    public void onItemClick(View view, int position) {
+        showCategory(mCategoryAdapter.getCategories().get(position));
+    }
+
+    @Override
+    public void onItemLongClick(View view, int position) {
+
     }
 }

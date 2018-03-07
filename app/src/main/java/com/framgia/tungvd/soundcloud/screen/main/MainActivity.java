@@ -7,9 +7,11 @@ import android.support.v4.app.FragmentTransaction;
 import com.framgia.tungvd.soundcloud.R;
 import com.framgia.tungvd.soundcloud.data.model.Category;
 import com.framgia.tungvd.soundcloud.screen.BaseActivity;
+import com.framgia.tungvd.soundcloud.screen.category.CategoryFragment;
 import com.framgia.tungvd.soundcloud.screen.home.HomeFragment;
 
-public class MainActivity extends BaseActivity implements MainContract.View{
+public class MainActivity extends BaseActivity
+        implements MainContract.View, ShowCategoryListener{
 
     private MainContract.Presenter mMainPresenter;
 
@@ -21,6 +23,7 @@ public class MainActivity extends BaseActivity implements MainContract.View{
         setContentView(R.layout.view_activity_main);
 
         mHomeFragment = new HomeFragment();
+        mHomeFragment.setShowCategoryListener(this);
 
         replaceFragment(mHomeFragment);
 
@@ -29,9 +32,12 @@ public class MainActivity extends BaseActivity implements MainContract.View{
         mMainPresenter.onStart();
     }
 
-    @Override
     public void showCategoryScreen(Category category) {
-
+        CategoryFragment fragment = new CategoryFragment();
+        Bundle bundle = new Bundle();
+        bundle.putString(CategoryFragment.EXTRA_GENRE, category.getGenre());
+        fragment.setArguments(bundle);
+        replaceFragment(fragment);
     }
 
     @Override
@@ -48,5 +54,10 @@ public class MainActivity extends BaseActivity implements MainContract.View{
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.frame_layout_replace, fragment);
         ft.commit();
+    }
+
+    @Override
+    public void onCategoryClicked(Category category) {
+        showCategoryScreen(category);
     }
 }
