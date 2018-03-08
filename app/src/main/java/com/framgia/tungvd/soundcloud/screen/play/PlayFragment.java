@@ -7,11 +7,13 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.framgia.tungvd.soundcloud.data.model.Track;
+import com.framgia.tungvd.soundcloud.data.model.playobserver.MusicServiceObserver;
 import com.framgia.tungvd.soundcloud.screen.BaseFragment;
 
-public class PlayFragment extends BaseFragment implements PlayContract.View{
+import java.util.ArrayList;
 
-    private PlayContract.Presenter mPresenter;
+public class PlayFragment extends BaseFragment
+        implements PlayContract.View, MusicServiceObserver{
 
     @Nullable
     @Override
@@ -46,6 +48,31 @@ public class PlayFragment extends BaseFragment implements PlayContract.View{
 
     @Override
     public void showTrack(Track track) {
+
+    }
+
+    @Override
+    public void updateLoopMode(int loopMode) {
+
+    }
+
+    @Override
+    public void updateShuffleMode(int shuffleMode) {
+
+    }
+
+    @Override
+    public void updateProgress(long progress) {
+
+    }
+
+    @Override
+    public void updateTrack(Track track) {
+
+    }
+
+    @Override
+    public void updateTracks(ArrayList<Track> tracks) {
 
     }
 }

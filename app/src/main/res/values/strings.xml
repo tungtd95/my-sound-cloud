@@ -2,7 +2,7 @@
     <string name="app_name">SoundCloud</string>
 
     <string name="loading">Loading</string>
-    
+
     <string name="default_progress">0:00</string>
 
 </resources>

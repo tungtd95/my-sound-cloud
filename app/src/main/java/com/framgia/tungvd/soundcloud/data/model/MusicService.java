@@ -3,6 +3,7 @@ package com.framgia.tungvd.soundcloud.data.model;
 import android.app.Service;
 import android.content.Intent;
 import android.media.MediaPlayer;
+import android.os.Binder;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 
@@ -17,7 +18,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class MusicService extends Service implements MusicServiceObservable {
+public class MusicService extends Service
+        implements MusicServiceObservable, MediaPlayer.OnPreparedListener {
 
     private static MusicService sInstance;
 
@@ -41,7 +43,6 @@ public class MusicService extends Service implements MusicServiceObservable {
     public void setTracks(List<Track> tracks) {
         mTracks = (ArrayList<Track>) tracks;
         notifyTracksChanged();
-        handleNewTrack(0);
     }
 
     @Override
@@ -91,11 +92,12 @@ public class MusicService extends Service implements MusicServiceObservable {
         try {
             mMediaPlayer.setDataSource(mTracks.get(mCurrentTrackIndex).getSteamUrl());
             mMediaPlayer.prepareAsync();
-            mMediaPlayer.start();
+            mMediaPlayer.setOnPreparedListener(MusicService.this);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
 
     public void handleChangeLoopMode() {
         mSetting.changeLoopMode();
@@ -110,9 +112,14 @@ public class MusicService extends Service implements MusicServiceObservable {
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        return null;
+        return new MyBinder();
     }
 
+    public class MyBinder extends Binder {
+        public MusicService getMusicService() {
+            return MusicService.this;
+        }
+    }
     @Override
     public void register(MusicServiceObserver observer) {
         mMusicServiceObservers.add(observer);
@@ -153,4 +160,8 @@ public class MusicService extends Service implements MusicServiceObservable {
         }
     }
 
+    @Override
+    public void onPrepared(MediaPlayer mediaPlayer) {
+        mMediaPlayer.start();
+    }
 }
