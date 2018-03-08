@@ -1,5 +1,6 @@
 package com.framgia.tungvd.soundcloud.screen.category;
 
+import com.framgia.tungvd.soundcloud.data.model.Category;
 import com.framgia.tungvd.soundcloud.data.model.Track;
 import com.framgia.tungvd.soundcloud.data.source.Genre;
 import com.framgia.tungvd.soundcloud.screen.BasePresenter;
@@ -14,6 +15,6 @@ public interface CategoryContract {
 
     interface Presenter extends BasePresenter<View> {
         void getTracks();
-        void setGenre(@Genre String genre);
+        void setCategory(@Genre Category category);
     }
 }

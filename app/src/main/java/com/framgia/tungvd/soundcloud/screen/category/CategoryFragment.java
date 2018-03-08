@@ -1,5 +1,6 @@
 package com.framgia.tungvd.soundcloud.screen.category;
 
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
@@ -10,6 +11,7 @@ import android.view.ViewGroup;
 
 import com.framgia.tungvd.soundcloud.R;
 import com.framgia.tungvd.soundcloud.custom.TrackAdapter;
+import com.framgia.tungvd.soundcloud.data.model.Category;
 import com.framgia.tungvd.soundcloud.data.model.Track;
 import com.framgia.tungvd.soundcloud.data.source.TracksRepository;
 import com.framgia.tungvd.soundcloud.data.source.local.TracksLocalDataSource;
@@ -21,12 +23,21 @@ import java.util.List;
 
 public class CategoryFragment extends BaseFragment implements CategoryContract.View {
 
-    public static final String EXTRA_GENRE =
-            "com.framgia.tungvd.soundcloud.screen.category.extras.EXTRA_GENRE";
+    public static final String ARGUMENT_CATEGORY = "ARGUMENT_CATEGORY";
 
+    private ProgressDialog mProgressDialog;
     private CategoryPresenter mPresenter;
     private RecyclerView mRecyclerViewItems;
     private TrackAdapter mTrackAdapter;
+    private Category mCategory;
+
+    public static CategoryFragment newInstance(Category category) {
+        CategoryFragment fragment = new CategoryFragment();
+        Bundle bundle = new Bundle();
+        bundle.putParcelable(CategoryFragment.ARGUMENT_CATEGORY, category);
+        fragment.setArguments(bundle);
+        return fragment;
+    }
 
     @Nullable
     @Override
@@ -40,6 +51,13 @@ public class CategoryFragment extends BaseFragment implements CategoryContract.V
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        mCategory = getArguments().getParcelable(ARGUMENT_CATEGORY);
+        mProgressDialog = new ProgressDialog(getActivity());
+        mProgressDialog.setMessage(
+                new StringBuilder(getString(R.string.loading))
+                        .append(" ")
+                        .append(mCategory.getName())
+                        .toString());
         mRecyclerViewItems = view.findViewById(R.id.recycler_view_items);
 
         mTrackAdapter = new TrackAdapter();
@@ -52,21 +70,22 @@ public class CategoryFragment extends BaseFragment implements CategoryContract.V
                         TracksLocalDataSource.getInstance(new AppExecutors(),
                                 null)));
         mPresenter.setView(this);
-        mPresenter.setGenre(getArguments().getString(EXTRA_GENRE));
+        mPresenter.setCategory((Category) getArguments().getParcelable(ARGUMENT_CATEGORY));
         mPresenter.onStart();
     }
 
     @Override
     public void changeLoadingIndicatorState(Boolean isLoading) {
         if (isLoading) {
-
+            mProgressDialog.show();
             return;
         }
-
+        mProgressDialog.dismiss();
     }
 
     @Override
     public void showTracks(List<Track> tracks) {
         mTrackAdapter.setTracks(tracks);
     }
+
 }

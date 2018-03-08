@@ -1,5 +1,6 @@
 package com.framgia.tungvd.soundcloud.screen.category;
 
+import com.framgia.tungvd.soundcloud.data.model.Category;
 import com.framgia.tungvd.soundcloud.data.model.Track;
 import com.framgia.tungvd.soundcloud.data.source.TracksDataSource;
 
@@ -11,7 +12,7 @@ public class CategoryPresenter implements CategoryContract.Presenter{
 
     private CategoryContract.View mView;
     private TracksDataSource mTracksDataSource;
-    private String mGenre;
+    private Category mCategory;
 
     public CategoryPresenter(TracksDataSource dataSource) {
         mTracksDataSource = dataSource;
@@ -35,7 +36,8 @@ public class CategoryPresenter implements CategoryContract.Presenter{
     @Override
     public void getTracks() {
         mView.changeLoadingIndicatorState(true);
-        mTracksDataSource.getTracksByGenre(mGenre, PAGE, new TracksDataSource.LoadTracksCallback() {
+        mTracksDataSource.getTracksByGenre(mCategory.getGenre(), PAGE, new TracksDataSource.LoadTracksCallback() {
+
             @Override
             public void onTracksLoaded(List<Track> tracks) {
                 mView.changeLoadingIndicatorState(false);
@@ -50,7 +52,7 @@ public class CategoryPresenter implements CategoryContract.Presenter{
     }
 
     @Override
-    public void setGenre(String genre) {
-        mGenre = genre;
+    public void setCategory(Category category) {
+        mCategory = category;
     }
 }
