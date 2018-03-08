@@ -4,13 +4,11 @@ import com.framgia.tungvd.soundcloud.data.model.Category;
 import com.framgia.tungvd.soundcloud.data.source.CategoriesDataSource;
 import com.framgia.tungvd.soundcloud.data.source.CategoriesRepository;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class HomePresenter implements HomeContract.Presenter {
 
     private HomeContract.View mView;
-    private ArrayList<Category> mCategories;
     CategoriesRepository mCategoriesRepository;
 
     public HomePresenter(CategoriesRepository categoriesRepository) {
@@ -45,11 +43,6 @@ public class HomePresenter implements HomeContract.Presenter {
 
             }
         });
-    }
-
-    @Override
-    public void openCategory() {
-
     }
 
     @Override

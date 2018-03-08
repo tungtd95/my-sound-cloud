@@ -13,7 +13,6 @@ public interface HomeContract {
 
     interface Presenter extends BasePresenter<View> {
         void getCategories();
-        void openCategory();
         void filterCategories(String keyWord);
     }
 }
