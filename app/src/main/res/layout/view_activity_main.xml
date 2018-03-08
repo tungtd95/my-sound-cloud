@@ -7,7 +7,7 @@
         android:id="@+id/frame_layout_replace"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingBottom="@dimen/music_controller_height"/>
+        android:paddingBottom="@dimen/sub_controller_height"/>
 
     <include layout="@layout/view_play_screen" />
 
