@@ -8,5 +8,5 @@
         android:id="@+id/text_view_track_name"
         style="@style/TextAppearance.AppCompat.SearchResult.Title"
         android:layout_width="wrap_content"
-        android:layout_height="@dimen/track_item_height" />
+        android:layout_height="@dimen/item_track_height" />
 </RelativeLayout>

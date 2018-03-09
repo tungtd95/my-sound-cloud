@@ -63,6 +63,8 @@ public class CategoryActivity extends BaseActivity
         mPresenter.onStart();
 
         mMusicService = MusicService.getInstance();
+
+        showPlayScreen();
     }
 
     @Override
@@ -90,5 +92,11 @@ public class CategoryActivity extends BaseActivity
     @Override
     public void showTracks(List<Track> tracks) {
         mTrackAdapter.setTracks(tracks);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
     }
 }
