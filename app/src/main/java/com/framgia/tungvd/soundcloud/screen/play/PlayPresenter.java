@@ -6,7 +6,7 @@ public class PlayPresenter implements PlayContract.Presenter{
 
     @Override
     public void setView(PlayContract.View view) {
-
+        mView = view;
     }
 
     @Override
@@ -16,31 +16,6 @@ public class PlayPresenter implements PlayContract.Presenter{
 
     @Override
     public void onStop() {
-
-    }
-
-    @Override
-    public void clickPlay() {
-
-    }
-
-    @Override
-    public void clickNext() {
-
-    }
-
-    @Override
-    public void clickShuffle() {
-
-    }
-
-    @Override
-    public void clickRepeat() {
-
-    }
-
-    @Override
-    public void seek() {
 
     }
 }

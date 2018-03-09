@@ -28,9 +28,9 @@ public class MusicService extends Service
     private ArrayList<MusicServiceObserver> mMusicServiceObservers;
 
     private int mCurrentTrackIndex;
-    private long mProgress;
+    private int mProgress;
     private long mDuration;
-
+    private @PlayState int mPlayState;
     private Setting mSetting;
 
     /**
@@ -56,7 +56,7 @@ public class MusicService extends Service
         mProgress = 0;
         mDuration = 0;
         mCurrentTrackIndex = 0;
-
+        mPlayState = PlayState.PAUSED;
         mSetting = new Setting(LoopMode.OFF, ShuffleMode.OFF);
         sInstance = this;
     }
@@ -66,18 +66,58 @@ public class MusicService extends Service
         return START_NOT_STICKY;
     }
 
+    public void changeMediaState() {
+        if (mMediaPlayer == null) {
+            return;
+        }
+        if (mMediaPlayer.isPlaying()) {
+            mMediaPlayer.pause();
+            mPlayState = PlayState.PAUSED;
+        } else {
+            mMediaPlayer.start();
+            mPlayState = PlayState.PLAYING;
+        }
+        notifyStateChanged();
+    }
+
+    public void handleShuffle() {
+        mSetting.changeShuffleMode();
+        notifyShuffleModeChanged();
+    }
+
+    public void handleLoop() {
+        mSetting.changeLoopMode();
+        notifyLoopModeChanged();
+    }
+
     /**
      * invoked when user click next song or at the end of one song
      */
     public void handleNext() {
-        // TODO: 03/05/18 handle next song event
+        if (mTracks == null || mMediaPlayer == null) {
+            return;
+        }
+        if (mCurrentTrackIndex == mTracks.size() - 1) {
+            mCurrentTrackIndex = 0;
+        } else {
+            mCurrentTrackIndex++;
+        }
+        handleNewTrack(mCurrentTrackIndex);
     }
 
     /**
      * invoked when user click previous
      */
     public void handlePrevious() {
-        // TODO: 03/05/18 handle previous song event
+        if (mTracks == null || mMediaPlayer == null) {
+            return;
+        }
+        if (mCurrentTrackIndex == 0) {
+            mCurrentTrackIndex = mTracks.size() - 1;
+        } else {
+            mCurrentTrackIndex--;
+        }
+        handleNewTrack(mCurrentTrackIndex);
     }
 
     /**
@@ -91,22 +131,19 @@ public class MusicService extends Service
         mMediaPlayer = new MediaPlayer();
         try {
             mMediaPlayer.setDataSource(mTracks.get(mCurrentTrackIndex).getSteamUrl());
+            mPlayState = PlayState.PREPARING;
             mMediaPlayer.prepareAsync();
             mMediaPlayer.setOnPreparedListener(MusicService.this);
+            mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mediaPlayer) {
+                    handleNext();
+                }
+            });
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-
-    public void handleChangeLoopMode() {
-        mSetting.changeLoopMode();
-        notifyLoopModeChanged();
-    }
-
-    public void handleChangeShuffleMode() {
-        mSetting.changeShuffleMode();
-        notifyShuffleModeChanged();
+        notifyTrackChanged();
     }
 
     @Nullable
@@ -120,6 +157,7 @@ public class MusicService extends Service
             return MusicService.this;
         }
     }
+
     @Override
     public void register(MusicServiceObserver observer) {
         mMusicServiceObservers.add(observer);
@@ -142,7 +180,7 @@ public class MusicService extends Service
     @Override
     public void notifyProgressChanged() {
         for (MusicServiceObserver observer : mMusicServiceObservers) {
-            observer.updateProgress(mProgress);
+            observer.updateProgress(mProgress, mDuration);
         }
     }
 
@@ -150,6 +188,13 @@ public class MusicService extends Service
     public void notifyTrackChanged() {
         for (MusicServiceObserver observer : mMusicServiceObservers) {
             observer.updateTrack(mTracks.get(mCurrentTrackIndex));
+        }
+    }
+
+    @Override
+    public void notifyStateChanged() {
+        for (MusicServiceObserver observer : mMusicServiceObservers) {
+            observer.updateState(mPlayState);
         }
     }
 
@@ -163,5 +208,6 @@ public class MusicService extends Service
     @Override
     public void onPrepared(MediaPlayer mediaPlayer) {
         mMediaPlayer.start();
+        mPlayState = PlayState.PLAYING;
     }
 }

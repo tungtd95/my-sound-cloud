@@ -6,5 +6,6 @@ public interface MusicServiceObservable {
     void notifyShuffleModeChanged();
     void notifyProgressChanged();
     void notifyTrackChanged();
+    void notifyStateChanged();
     void notifyTracksChanged();
 }

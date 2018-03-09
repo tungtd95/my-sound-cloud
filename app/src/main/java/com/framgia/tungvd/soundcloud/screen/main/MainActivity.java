@@ -5,11 +5,9 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.widget.LinearLayout;
 
 import com.framgia.tungvd.soundcloud.R;
 import com.framgia.tungvd.soundcloud.custom.CategoryAdapter;
@@ -19,7 +17,6 @@ import com.framgia.tungvd.soundcloud.data.model.Category;
 import com.framgia.tungvd.soundcloud.data.model.MusicService;
 import com.framgia.tungvd.soundcloud.screen.BaseActivity;
 import com.framgia.tungvd.soundcloud.screen.category.CategoryActivity;
-import com.framgia.tungvd.soundcloud.screen.play.PlayFragment;
 
 import java.util.List;
 
@@ -31,13 +28,12 @@ public class MainActivity extends BaseActivity
 
     private RecyclerView mRecyclerViewCategories;
     private CategoryAdapter mCategoryAdapter;
-
     private MainContract.Presenter mMainPresenter;
 
     ServiceConnection mServiceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-
+            onMusicServiceCreated();
         }
 
         @Override
@@ -52,7 +48,6 @@ public class MainActivity extends BaseActivity
         setContentView(R.layout.activity_main);
 
         initRecyclerView();
-        showPlayScreen();
 
         mMainPresenter = new MainPresenter();
         mMainPresenter.setView(this);
@@ -81,7 +76,7 @@ public class MainActivity extends BaseActivity
     }
 
     private void onMusicServiceCreated() {
-        // TODO: 03/09/18 service is created, MusicService instance is not null, start using here
+        showPlayScreen();
     }
 
     @Override
