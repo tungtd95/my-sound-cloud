@@ -4,11 +4,12 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.IBinder;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.LinearLayout;
 
 import com.framgia.tungvd.soundcloud.R;
 import com.framgia.tungvd.soundcloud.custom.CategoryAdapter;
@@ -17,16 +18,16 @@ import com.framgia.tungvd.soundcloud.custom.RecyclerItemClickListener;
 import com.framgia.tungvd.soundcloud.data.model.Category;
 import com.framgia.tungvd.soundcloud.data.model.MusicService;
 import com.framgia.tungvd.soundcloud.screen.BaseActivity;
+import com.framgia.tungvd.soundcloud.screen.category.CategoryActivity;
+import com.framgia.tungvd.soundcloud.screen.play.PlayFragment;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends BaseActivity
-        implements MainContract.View, RecyclerItemClickListener.OnItemClickListener{
+        implements MainContract.View, RecyclerItemClickListener.OnItemClickListener {
 
-    private static final int WAIT_SERVICE_TIME = 10; /* millisecond */
-    private static final int GRID_COLUMN_NUMB = 2;
-    private static final int GRID_SPACE = 25;
+    private static final int GRID_COLUMN_NUMB = 3;
+    private static final int GRID_SPACE = 20;
 
     private RecyclerView mRecyclerViewCategories;
     private CategoryAdapter mCategoryAdapter;
@@ -36,7 +37,7 @@ public class MainActivity extends BaseActivity
     ServiceConnection mServiceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-            
+
         }
 
         @Override
@@ -51,6 +52,7 @@ public class MainActivity extends BaseActivity
         setContentView(R.layout.activity_main);
 
         initRecyclerView();
+        showPlayScreen();
 
         mMainPresenter = new MainPresenter();
         mMainPresenter.setView(this);
@@ -62,10 +64,11 @@ public class MainActivity extends BaseActivity
     private void initMusicService() {
         Intent intent = new Intent(this, MusicService.class);
         bindService(intent, mServiceConnection, BIND_AUTO_CREATE);
+        startService(intent);
     }
 
     private void initRecyclerView() {
-        mRecyclerViewCategories = findViewById(R.id.recycler_view_categories);
+        mRecyclerViewCategories = findViewById(R.id.recycler_view);
         RecyclerView.LayoutManager layoutManager =
                 new GridLayoutManager(this, GRID_COLUMN_NUMB);
         ItemDecoration itemDecoration = new ItemDecoration(GRID_SPACE, GRID_COLUMN_NUMB);
@@ -78,12 +81,7 @@ public class MainActivity extends BaseActivity
     }
 
     private void onMusicServiceCreated() {
-
-    }
-
-    @Override
-    public void showPlayScreen() {
-
+        // TODO: 03/09/18 service is created, MusicService instance is not null, start using here
     }
 
     @Override
@@ -93,7 +91,10 @@ public class MainActivity extends BaseActivity
 
     @Override
     public void onItemClick(View view, int position) {
-
+        Intent intent = new Intent(this, CategoryActivity.class);
+        intent.putExtra(CategoryActivity.EXTRA_CATEGORY,
+                mCategoryAdapter.getCategories().get(position));
+        startActivity(intent);
     }
 
     @Override
