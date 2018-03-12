@@ -2,9 +2,11 @@ package com.framgia.tungvd.soundcloud.screen.category;
 
 import android.app.ProgressDialog;
 import android.os.Bundle;
+import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.RelativeLayout;
 
 import com.framgia.tungvd.soundcloud.R;
 import com.framgia.tungvd.soundcloud.custom.RecyclerItemClickListener;
@@ -16,12 +18,13 @@ import com.framgia.tungvd.soundcloud.data.source.TracksRepository;
 import com.framgia.tungvd.soundcloud.data.source.local.TracksLocalDataSource;
 import com.framgia.tungvd.soundcloud.data.source.remote.TracksRemoteDataSource;
 import com.framgia.tungvd.soundcloud.screen.BaseActivity;
+import com.framgia.tungvd.soundcloud.screen.play.PlayFragment;
 import com.framgia.tungvd.soundcloud.util.AppExecutors;
 
 import java.util.List;
 
 public class CategoryActivity extends BaseActivity
-        implements CategoryContract.View, RecyclerItemClickListener.OnItemClickListener {
+        implements CategoryContract.View, RecyclerItemClickListener.OnItemClickListener{
 
     public static final String EXTRA_CATEGORY =
             "com.framgia.tungvd.soundcloud.screen.category.extras.EXTRA_CATEGORY";
@@ -31,13 +34,17 @@ public class CategoryActivity extends BaseActivity
     private RecyclerView mRecyclerViewItems;
     private TrackAdapter mTrackAdapter;
     private Category mCategory;
-    private MusicService mMusicService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_category);
+        initView();
+        initMusicService();
+    }
 
+    private void initView() {
+        mMusicService = MusicService.getInstance();
         mCategory = getIntent().getExtras().getParcelable(EXTRA_CATEGORY);
         mProgressDialog = new ProgressDialog(this);
         mProgressDialog.setMessage(
@@ -61,10 +68,9 @@ public class CategoryActivity extends BaseActivity
         mPresenter.setView(this);
         mPresenter.setCategory((Category) getIntent().getExtras().getParcelable(EXTRA_CATEGORY));
         mPresenter.onStart();
-
-        mMusicService = MusicService.getInstance();
-
-        showPlayScreen();
+        mRelativeSubController = findViewById(R.id.relative_sub_controller);
+        mRelativeSubController.setOnClickListener(this);
+        mPlayFragment = new PlayFragment();
     }
 
     @Override

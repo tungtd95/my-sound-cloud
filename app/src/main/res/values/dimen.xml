@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="sub_controller_height">50dp</dimen>
+    <dimen name="sub_controller_height">60dp</dimen>
     <dimen name="view_shadow">5dp</dimen>
     <dimen name="item_category_height">140dp</dimen>
     <dimen name="item_track_height">50dp</dimen>

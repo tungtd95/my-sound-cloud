@@ -1,6 +1,6 @@
 package com.framgia.tungvd.soundcloud.screen;
 
-import android.support.v4.app.Fragment;
+import android.support.design.widget.BottomSheetDialogFragment;
 
-public class BaseFragment extends Fragment {
+public class BaseFragment extends BottomSheetDialogFragment {
 }

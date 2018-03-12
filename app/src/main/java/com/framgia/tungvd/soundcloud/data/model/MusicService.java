@@ -59,6 +59,7 @@ public class MusicService extends Service
         mPlayState = PlayState.PAUSED;
         mSetting = new Setting(LoopMode.OFF, ShuffleMode.OFF);
         sInstance = this;
+        notifyStateChanged();
     }
 
     @Override
@@ -94,7 +95,7 @@ public class MusicService extends Service
      * invoked when user click next song or at the end of one song
      */
     public void handleNext() {
-        if (mTracks == null || mMediaPlayer == null) {
+        if (mTracks == null || mMediaPlayer == null || mTracks.size() == 0) {
             return;
         }
         if (mCurrentTrackIndex == mTracks.size() - 1) {
@@ -109,7 +110,7 @@ public class MusicService extends Service
      * invoked when user click previous
      */
     public void handlePrevious() {
-        if (mTracks == null || mMediaPlayer == null) {
+        if (mTracks == null || mMediaPlayer == null || mTracks.size() == 0) {
             return;
         }
         if (mCurrentTrackIndex == 0) {
@@ -124,6 +125,9 @@ public class MusicService extends Service
      * invoked then user click any song
      */
     public void handleNewTrack(int position) {
+        if (mTracks == null || mMediaPlayer == null || mTracks.size() == 0) {
+            return;
+        }
         mCurrentTrackIndex = position;
         mMediaPlayer.reset();
         mMediaPlayer.release();
@@ -132,6 +136,7 @@ public class MusicService extends Service
         try {
             mMediaPlayer.setDataSource(mTracks.get(mCurrentTrackIndex).getSteamUrl());
             mPlayState = PlayState.PREPARING;
+            notifyStateChanged();
             mMediaPlayer.prepareAsync();
             mMediaPlayer.setOnPreparedListener(MusicService.this);
             mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
@@ -160,7 +165,26 @@ public class MusicService extends Service
 
     @Override
     public void register(MusicServiceObserver observer) {
+        observer.updateFirstTime(mSetting.getLoopMode(),
+                mSetting.getShuffleMode(),
+                mProgress,
+                mDuration,
+                mTracks.size() == 0 ? null : mTracks.get(mCurrentTrackIndex),
+                mTracks,
+                mPlayState);
         mMusicServiceObservers.add(observer);
+    }
+
+    @Override
+    public void onPrepared(MediaPlayer mediaPlayer) {
+        mMediaPlayer.start();
+        mPlayState = PlayState.PLAYING;
+        notifyStateChanged();
+    }
+
+    @Override
+    public void unregister(MusicServiceObserver observer) {
+        mMusicServiceObservers.remove(observer);
     }
 
     @Override
@@ -205,9 +229,4 @@ public class MusicService extends Service
         }
     }
 
-    @Override
-    public void onPrepared(MediaPlayer mediaPlayer) {
-        mMediaPlayer.start();
-        mPlayState = PlayState.PLAYING;
-    }
 }
