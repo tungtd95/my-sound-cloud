@@ -6,6 +6,7 @@ import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.v4.app.FragmentManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,6 +30,7 @@ public class PlayFragment extends BottomSheetDialogFragment
 
     private static final String TAG = "PlayFragment";
     private static final int PROGRESS_MAX = 100;
+    private static final int ONE_SECOND = 1000; /* millisecond */
 
     private Button mButtonPlay;
     private Button mButtonNext;
@@ -41,23 +43,15 @@ public class PlayFragment extends BottomSheetDialogFragment
     private ImageView mImageViewTrack;
 
     private PlayContract.Presenter mPresenter;
-    private Handler mHandler;
     private MusicService mMusicService;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mHandler = new Handler();
     }
 
-    @Override
-    public void onDismiss(DialogInterface dialog) {
-        super.onDismiss(dialog);
-    }
-
-    public void onMusicServiceStarted(MusicService musicService) {
+    public void setMusicService(MusicService musicService) {
         mMusicService = musicService;
-        mMusicService.register(this);
     }
 
     @Override
@@ -82,6 +76,24 @@ public class PlayFragment extends BottomSheetDialogFragment
         mPresenter.onStart();
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (mMusicService == null) {
+            return;
+        }
+        mMusicService.register(this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (mMusicService == null) {
+            return;
+        }
+        mMusicService.unregister(this);
+    }
+
     private void initPlayingView(View view) {
         mButtonPlay = view.findViewById(R.id.button_play);
         mButtonNext = view.findViewById(R.id.button_next);
@@ -102,67 +114,43 @@ public class PlayFragment extends BottomSheetDialogFragment
 
     @Override
     public void updateLoopMode(final int loopMode) {
-        if (mButtonLoop == null) {
-            return;
+        switch (loopMode) {
+            case LoopMode.ONE:
+                mButtonLoop.setBackgroundResource(R.drawable.ic_repeat_one);
+                break;
+            case LoopMode.ALL:
+                mButtonLoop.setBackgroundResource(R.drawable.ic_repeat_all);
+                break;
+            case LoopMode.OFF:
+                mButtonLoop.setBackgroundResource(R.drawable.ic_repeat_off);
+                break;
+            default:
+                break;
         }
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                switch (loopMode) {
-                    case LoopMode.ONE:
-                        mButtonLoop.setBackgroundResource(R.drawable.ic_repeat_one);
-                        break;
-                    case LoopMode.ALL:
-                        mButtonLoop.setBackgroundResource(R.drawable.ic_repeat_all);
-                        break;
-                    case LoopMode.OFF:
-                        mButtonLoop.setBackgroundResource(R.drawable.ic_repeat_off);
-                        break;
-                    default:
-                        break;
-                }
-            }
-        };
-        mHandler.post(runnable);
     }
 
     @Override
     public void updateShuffleMode(final int shuffleMode) {
-        if (mButtonShuffle == null) {
-            return;
+        switch (shuffleMode) {
+            case ShuffleMode.ON:
+                mButtonShuffle.setBackgroundResource(R.drawable.ic_shuffle_on);
+                break;
+            case ShuffleMode.OFF:
+                mButtonShuffle.setBackgroundResource(R.drawable.ic_shuffle_off);
+                break;
+            default:
+                break;
         }
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                switch (shuffleMode) {
-                    case ShuffleMode.ON:
-                        mButtonShuffle.setBackgroundResource(R.drawable.ic_shuffle_on);
-                        break;
-                    case ShuffleMode.OFF:
-                        mButtonShuffle.setBackgroundResource(R.drawable.ic_shuffle_off);
-                        break;
-                    default:
-                        break;
-                }
-            }
-        };
-        mHandler.post(runnable);
     }
 
     @Override
     public void updateProgress(final long progress, final long duration) {
-        if (mSeekBarMain == null || mTextViewDuration == null || mTextViewDuration == null) {
-            return;
-        }
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                mSeekBarMain.setProgress((int) (progress * PROGRESS_MAX / duration));
-                mTextViewProgress.setText(UsefulFunc.convertProgressToTime(progress));
-                mTextViewDuration.setText(UsefulFunc.convertProgressToTime(duration));
-            }
-        };
-        mHandler.post(runnable);
+        long temp = duration + 1;
+        mSeekBarMain.setProgress((int) (progress * PROGRESS_MAX / temp));
+        mTextViewProgress.setText(UsefulFunc
+                .convertProgressToTime(progress / ONE_SECOND));
+        mTextViewDuration.setText(UsefulFunc
+                .convertProgressToTime(duration / ONE_SECOND));
     }
 
     @Override
@@ -177,29 +165,20 @@ public class PlayFragment extends BottomSheetDialogFragment
 
     @Override
     public void updateState(final int playState) {
-        if (mButtonPlay == null) {
-            return;
+        switch (playState) {
+            case PlayState.PLAYING:
+                mButtonPlay.setBackgroundResource(R.drawable.ic_pause_circle_filled);
+                break;
+            case PlayState.PAUSED:
+                mButtonPlay.setBackgroundResource(R.drawable.ic_play_circle_filled);
+                break;
+            case PlayState.PREPARING:
+                mButtonPlay.setBackgroundResource(R.drawable.ic_play_circle_filled);
+                break;
+            default:
+                mButtonPlay.setBackgroundResource(R.drawable.ic_play_circle_filled);
+                break;
         }
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                switch (playState) {
-                    case PlayState.PLAYING:
-                        mButtonPlay.setBackgroundResource(R.drawable.ic_pause_circle_filled);
-                        break;
-                    case PlayState.PAUSED:
-                        mButtonPlay.setBackgroundResource(R.drawable.ic_play_circle_filled);
-                        break;
-                    case PlayState.PREPARING:
-                        mButtonPlay.setBackgroundResource(R.drawable.ic_play_circle_filled);
-                        break;
-                    default:
-                        mButtonPlay.setBackgroundResource(R.drawable.ic_play_circle_filled);
-                        break;
-                }
-            }
-        };
-        mHandler.post(runnable);
     }
 
     @Override
@@ -243,4 +222,5 @@ public class PlayFragment extends BottomSheetDialogFragment
                 break;
         }
     }
+
 }

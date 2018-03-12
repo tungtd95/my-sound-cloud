@@ -70,7 +70,6 @@ public class CategoryActivity extends BaseActivity
         mPresenter.onStart();
         mRelativeSubController = findViewById(R.id.relative_sub_controller);
         mRelativeSubController.setOnClickListener(this);
-        mPlayFragment = new PlayFragment();
     }
 
     @Override
