@@ -5,9 +5,11 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.RelativeLayout;
 
 import com.framgia.tungvd.soundcloud.R;
 import com.framgia.tungvd.soundcloud.custom.CategoryAdapter;
@@ -15,8 +17,10 @@ import com.framgia.tungvd.soundcloud.custom.ItemDecoration;
 import com.framgia.tungvd.soundcloud.custom.RecyclerItemClickListener;
 import com.framgia.tungvd.soundcloud.data.model.Category;
 import com.framgia.tungvd.soundcloud.data.model.MusicService;
+import com.framgia.tungvd.soundcloud.data.model.playobserver.MusicServiceObserver;
 import com.framgia.tungvd.soundcloud.screen.BaseActivity;
 import com.framgia.tungvd.soundcloud.screen.category.CategoryActivity;
+import com.framgia.tungvd.soundcloud.screen.play.PlayFragment;
 
 import java.util.List;
 
@@ -30,39 +34,17 @@ public class MainActivity extends BaseActivity
     private CategoryAdapter mCategoryAdapter;
     private MainContract.Presenter mMainPresenter;
 
-    ServiceConnection mServiceConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-            onMusicServiceCreated();
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName componentName) {
-
-        }
-    };
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        initRecyclerView();
-
-        mMainPresenter = new MainPresenter();
-        mMainPresenter.setView(this);
-        mMainPresenter.onStart();
-
+        initView();
         initMusicService();
     }
 
-    private void initMusicService() {
-        Intent intent = new Intent(this, MusicService.class);
-        bindService(intent, mServiceConnection, BIND_AUTO_CREATE);
-        startService(intent);
-    }
-
-    private void initRecyclerView() {
+    private void initView() {
+        mRelativeSubController = findViewById(R.id.relative_sub_controller);
+        mRelativeSubController.setOnClickListener(this);
         mRecyclerViewCategories = findViewById(R.id.recycler_view);
         RecyclerView.LayoutManager layoutManager =
                 new GridLayoutManager(this, GRID_COLUMN_NUMB);
@@ -73,10 +55,11 @@ public class MainActivity extends BaseActivity
         mRecyclerViewCategories.addItemDecoration(itemDecoration);
         mRecyclerViewCategories.addOnItemTouchListener(
                 new RecyclerItemClickListener(this, mRecyclerViewCategories, this));
-    }
 
-    private void onMusicServiceCreated() {
-        showPlayScreen();
+        mPlayFragment = new PlayFragment();
+        mMainPresenter = new MainPresenter();
+        mMainPresenter.setView(this);
+        mMainPresenter.onStart();
     }
 
     @Override
@@ -96,4 +79,5 @@ public class MainActivity extends BaseActivity
     public void onItemLongClick(View view, int position) {
 
     }
+
 }
