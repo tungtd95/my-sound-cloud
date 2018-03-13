@@ -7,7 +7,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import com.framgia.tungvd.soundcloud.R;
 import com.framgia.tungvd.soundcloud.custom.CategoryAdapter;
-import com.framgia.tungvd.soundcloud.custom.ItemDecoration;
+import com.framgia.tungvd.soundcloud.custom.EqualSpacingItemDecoration;
 import com.framgia.tungvd.soundcloud.custom.RecyclerItemClickListener;
 import com.framgia.tungvd.soundcloud.data.model.Category;
 import com.framgia.tungvd.soundcloud.screen.BaseActivity;
@@ -17,7 +17,7 @@ import java.util.List;
 public class MainActivity extends BaseActivity
         implements MainContract.View, RecyclerItemClickListener.OnItemClickListener{
 
-    private static final int GRID_COLUMN_NUMB = 3;
+    private static final int GRID_COLUMN_NUMB = 2;
     private static final int GRID_SPACE = 20;
 
     private RecyclerView mRecyclerViewCategories;
@@ -39,7 +39,7 @@ public class MainActivity extends BaseActivity
         mRecyclerViewCategories = findViewById(R.id.recycler_view);
         RecyclerView.LayoutManager layoutManager =
                 new GridLayoutManager(this, GRID_COLUMN_NUMB);
-        ItemDecoration itemDecoration = new ItemDecoration(GRID_SPACE, GRID_COLUMN_NUMB);
+        EqualSpacingItemDecoration itemDecoration = new EqualSpacingItemDecoration(GRID_SPACE);
         mCategoryAdapter = new CategoryAdapter();
         mRecyclerViewCategories.setAdapter(mCategoryAdapter);
         mRecyclerViewCategories.setLayoutManager(layoutManager);

@@ -8,6 +8,7 @@
     <dimen name="shadow_small">3dp</dimen>
     <dimen name="shadow_medium">8dp</dimen>
     <dimen name="item_category_height">140dp</dimen>
+    <dimen name="item_category_image_height">90dp</dimen>
     <dimen name="item_track_height">65dp</dimen>
     <dimen name="controller_padding_bottom">5dp</dimen>
     <dimen name="layout_margin_large">15dp</dimen>
