@@ -4,6 +4,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.framgia.tungvd.soundcloud.R;
@@ -49,18 +50,25 @@ public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.TrackViewHol
 
     public class TrackViewHolder extends RecyclerView.ViewHolder {
 
-        private TextView mTextViewTrackName;
+        private TextView mTextViewTrack;
+        private ImageView mImageViewTrack;
+        private TextView mTextViewArtist;
+        private ImageView mImageViewAction;
 
         public TrackViewHolder(View itemView) {
             super(itemView);
-            mTextViewTrackName = itemView.findViewById(R.id.text_view_track_name);
+            mTextViewTrack = itemView.findViewById(R.id.text_item_track);
+            mTextViewArtist = itemView.findViewById(R.id.text_item_artist);
+            mImageViewTrack = itemView.findViewById(R.id.image_item_track);
+            mImageViewAction = itemView.findViewById(R.id.image_item_action);
         }
 
         public void bindView(Track track) {
             if (track == null) {
                 return;
             }
-            mTextViewTrackName.setText(track.getTitle());
+            mTextViewTrack.setText(track.getTitle());
+            mTextViewArtist.setText(track.getUserName());
         }
     }
 }

@@ -99,7 +99,7 @@ public class Track {
         }
 
         public Builder title(String title) {
-            mTitle = title;
+            mTitle = title.trim();
             return this;
         }
 
@@ -123,7 +123,7 @@ public class Track {
 
         public Builder user(long userId, String userName, String avatarUrl) {
             mUserId = userId;
-            mUserName = userName;
+            mUserName = userName.trim();
             mAvatarUrl = avatarUrl;
             return this;
         }
