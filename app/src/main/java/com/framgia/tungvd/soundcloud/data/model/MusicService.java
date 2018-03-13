@@ -4,8 +4,10 @@ import android.app.Service;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Binder;
+import android.os.Handler;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.framgia.tungvd.soundcloud.data.model.playobserver.MusicServiceObservable;
 import com.framgia.tungvd.soundcloud.data.model.playobserver.MusicServiceObserver;
@@ -21,6 +23,8 @@ import java.util.List;
 public class MusicService extends Service
         implements MusicServiceObservable, MediaPlayer.OnPreparedListener {
 
+    private static final String TAG = "MusicService";
+    private static final int CHECK_MEDIA_DELAY = 100; /* time delay when check media's progress*/
     private static MusicService sInstance;
 
     private ArrayList<Track> mTracks;
@@ -28,9 +32,10 @@ public class MusicService extends Service
     private ArrayList<MusicServiceObserver> mMusicServiceObservers;
 
     private int mCurrentTrackIndex;
-    private int mProgress;
+    private long mProgress;
     private long mDuration;
-    private @PlayState int mPlayState;
+    private @PlayState
+    int mPlayState;
     private Setting mSetting;
 
     /**
@@ -60,6 +65,23 @@ public class MusicService extends Service
         mSetting = new Setting(LoopMode.OFF, ShuffleMode.OFF);
         sInstance = this;
         notifyStateChanged();
+
+        final Handler handler = new Handler();
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                if (mMediaPlayer != null) {
+                    long currentTemp = mMediaPlayer.getCurrentPosition();
+                    if (currentTemp != mProgress) {
+                        mProgress = currentTemp;
+                        mDuration = mMediaPlayer.getDuration();
+                        notifyProgressChanged();
+                    }
+                }
+                handler.postDelayed(this, CHECK_MEDIA_DELAY);
+            }
+        };
+        handler.post(runnable);
     }
 
     @Override
@@ -190,42 +212,54 @@ public class MusicService extends Service
     @Override
     public void notifyLoopModeChanged() {
         for (MusicServiceObserver observer : mMusicServiceObservers) {
-            observer.updateLoopMode(mSetting.getLoopMode());
+            if (observer != null) {
+                observer.updateLoopMode(mSetting.getLoopMode());
+            }
         }
     }
 
     @Override
     public void notifyShuffleModeChanged() {
         for (MusicServiceObserver observer : mMusicServiceObservers) {
-            observer.updateShuffleMode(mSetting.getShuffleMode());
+            if (observer != null) {
+                observer.updateShuffleMode(mSetting.getShuffleMode());
+            }
         }
     }
 
     @Override
     public void notifyProgressChanged() {
         for (MusicServiceObserver observer : mMusicServiceObservers) {
-            observer.updateProgress(mProgress, mDuration);
+            if (observer != null) {
+                observer.updateProgress(mProgress, mDuration);
+            }
         }
     }
 
     @Override
     public void notifyTrackChanged() {
         for (MusicServiceObserver observer : mMusicServiceObservers) {
-            observer.updateTrack(mTracks.get(mCurrentTrackIndex));
+            if (observer != null) {
+                observer.updateTrack(mTracks.get(mCurrentTrackIndex));
+            }
         }
     }
 
     @Override
     public void notifyStateChanged() {
         for (MusicServiceObserver observer : mMusicServiceObservers) {
-            observer.updateState(mPlayState);
+            if (observer != null) {
+                observer.updateState(mPlayState);
+            }
         }
     }
 
     @Override
     public void notifyTracksChanged() {
         for (MusicServiceObserver observer : mMusicServiceObservers) {
-            observer.updateTracks(mTracks);
+            if (observer != null) {
+                observer.updateTracks(mTracks);
+            }
         }
     }
 

@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.RelativeLayout;
 
@@ -25,8 +24,7 @@ public class BaseActivity extends AppCompatActivity
     private ServiceConnection mServiceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-            MusicService musicService = ((MusicService.MyBinder) iBinder).getMusicService();
-            mPlayFragment.onMusicServiceStarted(musicService);
+            mMusicService = ((MusicService.MyBinder) iBinder).getMusicService();
         }
 
         @Override
@@ -42,9 +40,9 @@ public class BaseActivity extends AppCompatActivity
     }
 
     protected void showPlayScreen() {
-        if (mPlayFragment != null) {
-            mPlayFragment.show(getSupportFragmentManager(), mPlayFragment.getTag());
-        }
+        mPlayFragment = new PlayFragment();
+        mPlayFragment.setMusicService(mMusicService);
+        mPlayFragment.show(getSupportFragmentManager(), mPlayFragment.getTag());
     }
 
     @Override

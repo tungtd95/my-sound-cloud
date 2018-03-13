@@ -56,7 +56,6 @@ public class MainActivity extends BaseActivity
         mRecyclerViewCategories.addOnItemTouchListener(
                 new RecyclerItemClickListener(this, mRecyclerViewCategories, this));
 
-        mPlayFragment = new PlayFragment();
         mMainPresenter = new MainPresenter();
         mMainPresenter.setView(this);
         mMainPresenter.onStart();
