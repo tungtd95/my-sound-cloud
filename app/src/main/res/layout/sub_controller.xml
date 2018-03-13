@@ -2,12 +2,67 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/relative_sub_controller"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/sub_controller_height"
-    android:layout_gravity="bottom">
+    android:layout_height="wrap_content"
+    android:layout_gravity="bottom"
+    android:background="@drawable/rect"
+    android:elevation="@dimen/view_shadow"
+    android:gravity="center">
 
-    <ImageView
-        android:layout_width="@dimen/sub_controller_height"
+    <ProgressBar
+        android:id="@+id/progress_main"
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/progress_bar_main_height"
+        android:indeterminate="true"
+        />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
         android:layout_height="@dimen/sub_controller_height"
-        android:padding="@dimen/controller_padding_bottom"
-        android:src="@color/colorPrimary" />
+        android:layout_below="@id/progress_main"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/image_track"
+            android:layout_width="@dimen/sub_controller_height"
+            android:layout_height="@dimen/sub_controller_height"
+            android:padding="@dimen/controller_padding_bottom"
+            android:src="@color/colorPrimary" />
+
+        <Button
+            android:id="@+id/button_play_main"
+            android:layout_width="@dimen/sub_controller_button_height"
+            android:layout_height="@dimen/sub_controller_button_height"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:background="@drawable/ic_play_arrow" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="@dimen/controller_padding_bottom"
+            android:layout_toLeftOf="@id/button_play_main"
+            android:layout_toRightOf="@id/image_track"
+            android:gravity="center">
+
+            <TextView
+                android:id="@+id/text_track_name_sub"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:textColor="@color/colorAccent"
+                android:textSize="@dimen/sub_text_title_size"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/text_track_artist_sub"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/text_track_name_sub"
+                android:maxLines="1" />
+
+        </RelativeLayout>
+
+    </RelativeLayout>
+
 </RelativeLayout>

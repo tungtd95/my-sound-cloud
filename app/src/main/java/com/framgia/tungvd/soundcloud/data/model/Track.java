@@ -1,5 +1,7 @@
 package com.framgia.tungvd.soundcloud.data.model;
 
+import android.graphics.Bitmap;
+
 import com.framgia.tungvd.soundcloud.BuildConfig;
 import com.framgia.tungvd.soundcloud.util.Constant;
 
@@ -19,6 +21,7 @@ public class Track {
     private long mUserId;
     private String mUserName;
     private String mAvatarUrl;
+    private Bitmap mImageBitMap;
 
     private Track(Builder builder) {
         mKind = builder.mKind;
@@ -188,5 +191,13 @@ public class Track {
 
     public String getAvatarUrl() {
         return mAvatarUrl;
+    }
+
+    public Bitmap getImageBitMap() {
+        return mImageBitMap;
+    }
+
+    public void setImageBitMap(Bitmap imageBitMap) {
+        mImageBitMap = imageBitMap;
     }
 }

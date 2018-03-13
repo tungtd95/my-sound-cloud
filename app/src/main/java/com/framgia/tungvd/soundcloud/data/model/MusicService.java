@@ -23,7 +23,6 @@ import java.util.List;
 public class MusicService extends Service
         implements MusicServiceObservable, MediaPlayer.OnPreparedListener {
 
-    private static final String TAG = "MusicService";
     private static final int CHECK_MEDIA_DELAY = 100; /* time delay when check media's progress*/
     private static MusicService sInstance;
 
