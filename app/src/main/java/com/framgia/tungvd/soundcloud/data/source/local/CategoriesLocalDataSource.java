@@ -9,7 +9,6 @@ import com.framgia.tungvd.soundcloud.data.source.Genre;
 import java.util.ArrayList;
 import java.util.List;
 
-
 public class CategoriesLocalDataSource implements CategoriesDataSource {
 
     private static CategoriesLocalDataSource sInstance;
@@ -27,18 +26,30 @@ public class CategoriesLocalDataSource implements CategoriesDataSource {
     @Override
     public void getCategories(@NonNull LoadCategoriesCallback callback) {
         List<Category> mCategories = new ArrayList<>();
-        Category allMusic = new Category(Genre.ALL_MUSIC, Category.ALL_MUSIC);
-        Category allAudio = new Category(Genre.ALL_AUDIO, Category.ALL_AUDIO);
-        Category alternativerock = new Category(Genre.ALTERNATIVEROCK, Category.ALTERNATIVEROCK);
-        Category ambient = new Category(Genre.AMBIENT, Category.AMBIENT);
-        Category classical = new Category(Genre.CLASSICAL, Category.CLASSICAL);
-        Category country = new Category(Genre.COUNTRY, Category.COUNTRY);
-        mCategories.add(allMusic);
-        mCategories.add(allAudio);
-        mCategories.add(alternativerock);
-        mCategories.add(ambient);
-        mCategories.add(classical);
-        mCategories.add(country);
+        mCategories.add(new Category(Genre.ALL_MUSIC));
+        mCategories.add(new Category(Genre.AMBIENT));
+        mCategories.add(new Category(Genre.CLASSICAL));
+        mCategories.add(new Category(Genre.COUNTRY));
+        mCategories.add(new Category(Genre.DANCE_EDM));
+        mCategories.add(new Category(Genre.DANCEHALL));
+        mCategories.add(new Category(Genre.DEEP_HOUSE));
+        mCategories.add(new Category(Genre.DISCO));
+        mCategories.add(new Category(Genre.DRUM_BASS));
+        mCategories.add(new Category(Genre.DUBSTEP));
+        mCategories.add(new Category(Genre.ELECTRONIC));
+        mCategories.add(new Category(Genre.INDIE));
+        mCategories.add(new Category(Genre.HOUSE));
+        mCategories.add(new Category(Genre.METAL));
+        mCategories.add(new Category(Genre.PIANO));
+        mCategories.add(new Category(Genre.POP));
+        mCategories.add(new Category(Genre.ROCK));
+        mCategories.add(new Category(Genre.TRAP));
+        mCategories.add(new Category(Genre.AUDIOBOOKS));
+        mCategories.add(new Category(Genre.COMEDY));
+        mCategories.add(new Category(Genre.LEARNING));
+        mCategories.add(new Category(Genre.SCIENCE));
+        mCategories.add(new Category(Genre.SPORTS));
+        mCategories.add(new Category(Genre.TECHNOLOGY));
         callback.onCategoriesLoaded(mCategories);
     }
 }

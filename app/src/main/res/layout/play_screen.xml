@@ -1,23 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:elevation="@dimen/shadow_small"
     android:orientation="vertical">
 
-    <ImageView
-        android:id="@+id/image_view_track"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:background="@color/colorAccent"/>
-
     <LinearLayout
+        android:id="@+id/linear_main_controller"
         android:layout_width="match_parent"
         android:layout_height="@dimen/main_controller_height"
         android:layout_alignParentBottom="true"
-        android:layout_gravity="bottom"
         android:background="@color/colorWhite"
         android:elevation="@dimen/shadow_small"
         android:orientation="vertical">
@@ -63,45 +54,52 @@
                 android:id="@+id/button_shuffle"
                 android:layout_width="@dimen/button_setting_size"
                 android:layout_height="@dimen/button_setting_size"
+                android:layout_marginBottom="@dimen/controller_padding_bottom"
                 android:layout_marginEnd="@dimen/button_margin"
                 android:layout_marginRight="@dimen/button_margin"
-                android:background="@drawable/ic_shuffle_on"
-                android:layout_marginBottom="@dimen/controller_padding_bottom"/>
+                android:background="@drawable/ic_shuffle_on" />
 
             <Button
                 android:id="@+id/button_previous"
                 android:layout_width="@dimen/button_control_size"
                 android:layout_height="@dimen/button_control_size"
+                android:layout_marginBottom="@dimen/controller_padding_bottom"
                 android:layout_marginEnd="@dimen/button_margin"
                 android:layout_marginRight="@dimen/button_margin"
-                android:background="@drawable/ic_skip_previous"
-                android:layout_marginBottom="@dimen/controller_padding_bottom" />
+                android:background="@drawable/ic_skip_previous" />
 
             <Button
                 android:id="@+id/button_play"
                 android:layout_width="@dimen/button_play_size"
                 android:layout_height="@dimen/button_play_size"
-                android:background="@drawable/ic_play_circle_filled"
-                android:layout_marginBottom="@dimen/controller_padding_bottom"/>
+                android:layout_marginBottom="@dimen/controller_padding_bottom"
+                android:background="@drawable/ic_play_circle_filled" />
 
             <Button
                 android:id="@+id/button_next"
                 android:layout_width="@dimen/button_control_size"
                 android:layout_height="@dimen/button_control_size"
+                android:layout_marginBottom="@dimen/controller_padding_bottom"
                 android:layout_marginLeft="@dimen/button_margin"
                 android:layout_marginStart="@dimen/button_margin"
-                android:background="@drawable/ic_skip_next"
-                android:layout_marginBottom="@dimen/controller_padding_bottom"/>
+                android:background="@drawable/ic_skip_next" />
 
             <Button
                 android:id="@+id/button_loop"
                 android:layout_width="@dimen/button_setting_size"
                 android:layout_height="@dimen/button_setting_size"
+                android:layout_marginBottom="@dimen/controller_padding_bottom"
                 android:layout_marginLeft="@dimen/button_margin"
                 android:layout_marginStart="@dimen/button_margin"
-                android:background="@drawable/ic_repeat_one"
-                android:layout_marginBottom="@dimen/controller_padding_bottom" />
+                android:background="@drawable/ic_repeat_one" />
 
         </LinearLayout>
     </LinearLayout>
-</LinearLayout>
+
+    <ImageView
+        android:id="@+id/image_view_track"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/linear_main_controller"
+        android:scaleType="centerCrop"/>
+</RelativeLayout>
