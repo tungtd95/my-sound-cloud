@@ -1,12 +1,10 @@
 package com.framgia.tungvd.soundcloud.screen.play;
 
-import android.content.DialogInterface;
+import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.v4.app.FragmentManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,7 +26,6 @@ import java.util.ArrayList;
 public class PlayFragment extends BottomSheetDialogFragment
         implements PlayContract.View, View.OnClickListener {
 
-    private static final String TAG = "PlayFragment";
     private static final int PROGRESS_MAX = 100;
     private static final int ONE_SECOND = 1000; /* millisecond */
 
@@ -165,6 +162,7 @@ public class PlayFragment extends BottomSheetDialogFragment
 
     @Override
     public void updateState(final int playState) {
+        mButtonPlay.setClickable(true);
         switch (playState) {
             case PlayState.PLAYING:
                 mButtonPlay.setBackgroundResource(R.drawable.ic_pause_circle_filled);
@@ -173,7 +171,11 @@ public class PlayFragment extends BottomSheetDialogFragment
                 mButtonPlay.setBackgroundResource(R.drawable.ic_play_circle_filled);
                 break;
             case PlayState.PREPARING:
-                mButtonPlay.setBackgroundResource(R.drawable.ic_play_circle_filled);
+                mButtonPlay.setClickable(false);
+                mButtonPlay.setBackgroundResource(R.drawable.three_dot_animation);
+                AnimationDrawable threeDotAnimation =
+                        (AnimationDrawable) mButtonPlay.getBackground();
+                threeDotAnimation.start();
                 break;
             default:
                 mButtonPlay.setBackgroundResource(R.drawable.ic_play_circle_filled);

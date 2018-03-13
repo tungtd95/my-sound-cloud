@@ -20,15 +20,13 @@
         android:layout_gravity="bottom"
         android:background="@color/colorWhite"
         android:elevation="@dimen/view_shadow"
-        android:orientation="vertical"
-        android:paddingBottom="@dimen/controller_padding_bottom">
+        android:orientation="vertical">
 
         <SeekBar
             android:id="@+id/seek_bar_main"
             style="@style/Base.Widget.AppCompat.ProgressBar.Horizontal"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/seekbar_main_height"
-            android:progress="75" />
+            android:layout_height="@dimen/seekbar_main_height" />
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -67,7 +65,8 @@
                 android:layout_height="@dimen/button_setting_size"
                 android:layout_marginEnd="@dimen/button_margin"
                 android:layout_marginRight="@dimen/button_margin"
-                android:background="@drawable/ic_shuffle_on" />
+                android:background="@drawable/ic_shuffle_on"
+                android:layout_marginBottom="@dimen/controller_padding_bottom"/>
 
             <Button
                 android:id="@+id/button_previous"
@@ -75,13 +74,15 @@
                 android:layout_height="@dimen/button_control_size"
                 android:layout_marginEnd="@dimen/button_margin"
                 android:layout_marginRight="@dimen/button_margin"
-                android:background="@drawable/ic_skip_previous" />
+                android:background="@drawable/ic_skip_previous"
+                android:layout_marginBottom="@dimen/controller_padding_bottom" />
 
             <Button
                 android:id="@+id/button_play"
                 android:layout_width="@dimen/button_play_size"
                 android:layout_height="@dimen/button_play_size"
-                android:background="@drawable/ic_play_circle_filled" />
+                android:background="@drawable/ic_play_circle_filled"
+                android:layout_marginBottom="@dimen/controller_padding_bottom"/>
 
             <Button
                 android:id="@+id/button_next"
@@ -89,7 +90,8 @@
                 android:layout_height="@dimen/button_control_size"
                 android:layout_marginLeft="@dimen/button_margin"
                 android:layout_marginStart="@dimen/button_margin"
-                android:background="@drawable/ic_skip_next" />
+                android:background="@drawable/ic_skip_next"
+                android:layout_marginBottom="@dimen/controller_padding_bottom"/>
 
             <Button
                 android:id="@+id/button_loop"
@@ -97,7 +99,8 @@
                 android:layout_height="@dimen/button_setting_size"
                 android:layout_marginLeft="@dimen/button_margin"
                 android:layout_marginStart="@dimen/button_margin"
-                android:background="@drawable/ic_repeat_one" />
+                android:background="@drawable/ic_repeat_one"
+                android:layout_marginBottom="@dimen/controller_padding_bottom" />
 
         </LinearLayout>
     </LinearLayout>

@@ -5,9 +5,11 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.RelativeLayout;
 
@@ -17,15 +19,18 @@ import com.framgia.tungvd.soundcloud.custom.ItemDecoration;
 import com.framgia.tungvd.soundcloud.custom.RecyclerItemClickListener;
 import com.framgia.tungvd.soundcloud.data.model.Category;
 import com.framgia.tungvd.soundcloud.data.model.MusicService;
+import com.framgia.tungvd.soundcloud.data.model.PlayState;
+import com.framgia.tungvd.soundcloud.data.model.Track;
 import com.framgia.tungvd.soundcloud.data.model.playobserver.MusicServiceObserver;
 import com.framgia.tungvd.soundcloud.screen.BaseActivity;
 import com.framgia.tungvd.soundcloud.screen.category.CategoryActivity;
 import com.framgia.tungvd.soundcloud.screen.play.PlayFragment;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends BaseActivity
-        implements MainContract.View, RecyclerItemClickListener.OnItemClickListener {
+        implements MainContract.View, RecyclerItemClickListener.OnItemClickListener{
 
     private static final int GRID_COLUMN_NUMB = 3;
     private static final int GRID_SPACE = 20;
@@ -43,6 +48,7 @@ public class MainActivity extends BaseActivity
     }
 
     private void initView() {
+        initBaseView();
         mRelativeSubController = findViewById(R.id.relative_sub_controller);
         mRelativeSubController.setOnClickListener(this);
         mRecyclerViewCategories = findViewById(R.id.recycler_view);

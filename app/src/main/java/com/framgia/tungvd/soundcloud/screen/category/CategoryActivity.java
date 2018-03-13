@@ -44,6 +44,7 @@ public class CategoryActivity extends BaseActivity
     }
 
     private void initView() {
+        initBaseView();
         mMusicService = MusicService.getInstance();
         mCategory = getIntent().getExtras().getParcelable(EXTRA_CATEGORY);
         mProgressDialog = new ProgressDialog(this);
