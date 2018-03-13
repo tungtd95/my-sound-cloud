@@ -39,6 +39,8 @@ public class CategoryActivity extends BaseActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_category);
+        mCategory = getIntent().getExtras().getParcelable(EXTRA_CATEGORY);
+        setTitle(mCategory.getName());
         initView();
         initMusicService();
     }
@@ -46,7 +48,6 @@ public class CategoryActivity extends BaseActivity
     private void initView() {
         initBaseView();
         mMusicService = MusicService.getInstance();
-        mCategory = getIntent().getExtras().getParcelable(EXTRA_CATEGORY);
         mProgressDialog = new ProgressDialog(this);
         mProgressDialog.setMessage(
                 new StringBuilder(getString(R.string.loading))

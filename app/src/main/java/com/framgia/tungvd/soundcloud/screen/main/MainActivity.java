@@ -1,32 +1,17 @@
 package com.framgia.tungvd.soundcloud.screen.main;
 
-import android.content.ComponentName;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.os.IBinder;
-import android.support.annotation.Nullable;
-import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
-import android.widget.RelativeLayout;
-
 import com.framgia.tungvd.soundcloud.R;
 import com.framgia.tungvd.soundcloud.custom.CategoryAdapter;
 import com.framgia.tungvd.soundcloud.custom.ItemDecoration;
 import com.framgia.tungvd.soundcloud.custom.RecyclerItemClickListener;
 import com.framgia.tungvd.soundcloud.data.model.Category;
-import com.framgia.tungvd.soundcloud.data.model.MusicService;
-import com.framgia.tungvd.soundcloud.data.model.PlayState;
-import com.framgia.tungvd.soundcloud.data.model.Track;
-import com.framgia.tungvd.soundcloud.data.model.playobserver.MusicServiceObserver;
 import com.framgia.tungvd.soundcloud.screen.BaseActivity;
 import com.framgia.tungvd.soundcloud.screen.category.CategoryActivity;
-import com.framgia.tungvd.soundcloud.screen.play.PlayFragment;
-
-import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends BaseActivity

@@ -2,11 +2,56 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@color/colorWhite"
     android:gravity="center">
 
-    <TextView
-        android:id="@+id/text_view_track_name"
-        style="@style/TextAppearance.AppCompat.SearchResult.Title"
-        android:layout_width="wrap_content"
-        android:layout_height="@dimen/item_track_height" />
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/item_track_height">
+
+        <ImageView
+            android:id="@+id/image_item_track"
+            android:layout_width="@dimen/item_track_height"
+            android:layout_height="@dimen/item_track_height"
+            android:src="@drawable/ic_music"
+            android:padding="@dimen/item_track_image_padding"/>
+
+        <ImageView
+            android:id="@+id/image_item_action"
+            android:layout_width="@dimen/sub_controller_button_height"
+            android:layout_height="@dimen/sub_controller_button_height"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:background="@color/colorWhite" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_toLeftOf="@id/image_item_action"
+            android:layout_toRightOf="@id/image_item_track"
+            android:gravity="center">
+
+            <TextView
+                android:id="@+id/text_item_track"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:maxLines="1"
+                android:textColor="@color/colorAccent"
+                android:textSize="@dimen/sub_text_title_size"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/text_item_artist"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/text_item_track"
+                android:maxLines="1" />
+
+        </RelativeLayout>
+
+    </RelativeLayout>
+
 </RelativeLayout>
