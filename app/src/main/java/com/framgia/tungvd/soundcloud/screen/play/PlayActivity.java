@@ -8,8 +8,6 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -56,9 +54,6 @@ public class PlayActivity extends AppCompatActivity
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
             mMusicService = ((MusicService.MyBinder) iBinder).getMusicService();
             mMusicService.register(PlayActivity.this);
-            mMusicService.register(mRecentDetailFragment);
-            mMusicService.register(mRecentPlaylistFragment);
-            mMusicService.register(mRecentTrackFragment);
         }
 
         @Override
@@ -91,9 +86,9 @@ public class PlayActivity extends AppCompatActivity
         fragments.add(mRecentTrackFragment);
         fragments.add(mRecentDetailFragment);
         ArrayList<String> names = new ArrayList<>();
-        names.add(getResources().getString(R.string.playlist));
-        names.add(getResources().getString(R.string.playing));
-        names.add(getResources().getString(R.string.detail));
+        names.add(getResources().getString(R.string.title_playlist));
+        names.add(getResources().getString(R.string.title_playing));
+        names.add(getResources().getString(R.string.title_detail));
         mViewPager.setAdapter(new MyPagerAdapter(getSupportFragmentManager(), fragments, names));
     }
 
@@ -113,6 +108,7 @@ public class PlayActivity extends AppCompatActivity
         mPresenter.setView(this);
         mPresenter.onStart();
     }
+
 
     @Override
     public void onClick(View view) {
@@ -196,7 +192,6 @@ public class PlayActivity extends AppCompatActivity
 
     @Override
     public void updateState(int playState) {
-        mButtonPlay.setClickable(true);
         switch (playState) {
             case PlayState.PLAYING:
                 mButtonPlay.setBackgroundResource(R.drawable.ic_pause_circle_filled);
@@ -205,7 +200,6 @@ public class PlayActivity extends AppCompatActivity
                 mButtonPlay.setBackgroundResource(R.drawable.ic_play_circle_filled);
                 break;
             case PlayState.PREPARING:
-                mButtonPlay.setClickable(false);
                 mButtonPlay.setBackgroundResource(R.drawable.three_dot_animation);
                 AnimationDrawable threeDotAnimation =
                         (AnimationDrawable) mButtonPlay.getBackground();
@@ -240,9 +234,6 @@ public class PlayActivity extends AppCompatActivity
             return;
         }
         mMusicService.unregister(this);
-        mMusicService.unregister(mRecentDetailFragment);
-        mMusicService.unregister(mRecentPlaylistFragment);
-        mMusicService.unregister(mRecentTrackFragment);
         finish();
         overridePendingTransition(android.support.v7.appcompat.R.anim.abc_fade_in,
                 android.support.design.R.anim.design_bottom_sheet_slide_out);

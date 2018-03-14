@@ -1,5 +1,6 @@
 package com.framgia.tungvd.soundcloud.screen;
 
+import android.app.Fragment;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
@@ -29,7 +30,8 @@ public abstract class BaseActivity extends AppCompatActivity
     protected ProgressBar mProgressBarMain;
     protected TextView mTextViewTrackName;
     protected TextView mTextViewTrackArtist;
-    protected Button mButtonPlay;
+    private Button mButtonPlay;
+    private Button mButtonNext;
 
     private ServiceConnection mServiceConnection = new ServiceConnection() {
         @Override
@@ -45,11 +47,15 @@ public abstract class BaseActivity extends AppCompatActivity
     };
 
     protected void initBaseView() {
-        mButtonPlay = findViewById(R.id.button_play_main);
+        mButtonPlay = findViewById(R.id.button_play_sub);
+        mButtonNext = findViewById(R.id.button_next_sub);
         mTextViewTrackName = findViewById(R.id.text_track_name_sub);
         mProgressBarMain = findViewById(R.id.progress_main);
         mTextViewTrackArtist = findViewById(R.id.text_track_artist_sub);
+        mRelativeSubController = findViewById(R.id.relative_sub_controller);
+        mRelativeSubController.setOnClickListener(this);
         mButtonPlay.setOnClickListener(this);
+        mButtonNext.setOnClickListener(this);
     }
 
     protected void onMusicServiceConnected() {
@@ -73,12 +79,18 @@ public abstract class BaseActivity extends AppCompatActivity
 
     @Override
     public void onClick(View view) {
+        if (mMusicService == null) {
+            return;
+        }
         switch (view.getId()) {
             case R.id.relative_sub_controller:
                 showPlayScreen();
                 break;
-            case R.id.button_play_main:
+            case R.id.button_play_sub:
                 mMusicService.changeMediaState();
+                break;
+            case R.id.button_next_sub:
+                mMusicService.handleNext();
                 break;
             default:
                 break;
@@ -110,13 +122,16 @@ public abstract class BaseActivity extends AppCompatActivity
 
     @Override
     public void updateTracks(ArrayList<Track> tracks) {
-        //no need to implement
+        if (tracks.size() == 0) {
+            mRelativeSubController.setVisibility(View.GONE);
+        } else {
+            mRelativeSubController.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
     public void updateState(int playState) {
         mProgressBarMain.setVisibility(View.GONE);
-        mButtonPlay.setEnabled(true);
         switch (playState) {
             case PlayState.PLAYING:
                 mButtonPlay.setBackgroundResource(R.drawable.ic_pause);
@@ -125,7 +140,6 @@ public abstract class BaseActivity extends AppCompatActivity
                 mButtonPlay.setBackgroundResource(R.drawable.ic_play_arrow);
                 break;
             case PlayState.PREPARING:
-                mButtonPlay.setEnabled(false);
                 mButtonPlay.setBackgroundResource(R.drawable.ic_play_arrow);
                 mProgressBarMain.setVisibility(View.VISIBLE);
                 break;
@@ -145,6 +159,7 @@ public abstract class BaseActivity extends AppCompatActivity
                                 int playState) {
         updateState(playState);
         updateTrack(track);
+        updateTracks(tracks);
     }
 
 }

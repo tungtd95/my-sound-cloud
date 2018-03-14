@@ -47,7 +47,7 @@ public class CategoryActivity extends BaseActivity
         mMusicService = MusicService.getInstance();
         mProgressDialog = new ProgressDialog(this);
         mProgressDialog.setMessage(
-                new StringBuilder(getString(R.string.loading))
+                new StringBuilder(getString(R.string.msg_loading))
                         .append(" ")
                         .append(mCategory.getName())
                         .toString());
@@ -67,8 +67,6 @@ public class CategoryActivity extends BaseActivity
         mPresenter.setView(this);
         mPresenter.setCategory((Category) getIntent().getExtras().getParcelable(EXTRA_CATEGORY));
         mPresenter.onStart();
-        mRelativeSubController = findViewById(R.id.relative_sub_controller);
-        mRelativeSubController.setOnClickListener(this);
     }
 
     @Override

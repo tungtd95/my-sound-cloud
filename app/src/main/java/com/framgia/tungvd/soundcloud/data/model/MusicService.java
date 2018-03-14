@@ -92,14 +92,20 @@ public class MusicService extends Service
         if (mMediaPlayer == null) {
             return;
         }
-        if (mMediaPlayer.isPlaying()) {
-            mMediaPlayer.pause();
-            mPlayState = PlayState.PAUSED;
-        } else {
-            mMediaPlayer.start();
-            mPlayState = PlayState.PLAYING;
+        switch (mPlayState) {
+            case PlayState.PLAYING:
+                mMediaPlayer.pause();
+                mPlayState = PlayState.PAUSED;
+                notifyStateChanged();
+                break;
+            case PlayState.PAUSED:
+                mMediaPlayer.start();
+                mPlayState = PlayState.PLAYING;
+                notifyStateChanged();
+                break;
+            default:
+                break;
         }
-        notifyStateChanged();
     }
 
     public void handleShuffle() {
@@ -145,12 +151,16 @@ public class MusicService extends Service
     /**
      * invoked then user click any song
      */
+    private static final String TAG = "MusicService";
+
     public void handleNewTrack(int position) {
         if (mTracks == null || mMediaPlayer == null || mTracks.size() == 0) {
             return;
         }
         mCurrentTrackIndex = position;
-        mMediaPlayer.reset();
+
+        mMediaPlayer.pause();
+        mMediaPlayer.stop();
         mMediaPlayer.release();
         mMediaPlayer = null;
         mMediaPlayer = new MediaPlayer();
@@ -160,16 +170,23 @@ public class MusicService extends Service
             notifyStateChanged();
             mMediaPlayer.prepareAsync();
             mMediaPlayer.setOnPreparedListener(MusicService.this);
-            mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mediaPlayer) {
-                    handleNext();
-                }
-            });
         } catch (IOException e) {
             e.printStackTrace();
         }
         notifyTrackChanged();
+    }
+
+    @Override
+    public void onPrepared(MediaPlayer mediaPlayer) {
+        mMediaPlayer.start();
+        mPlayState = PlayState.PLAYING;
+        mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mediaPlayer) {
+                handleNext();
+            }
+        });
+        notifyStateChanged();
     }
 
     @Nullable
@@ -184,6 +201,12 @@ public class MusicService extends Service
         }
     }
 
+    /**
+     * you can register many time if you want, but just one instance
+     * was stored in observers
+     *
+     * @param observer that interested in music service's information
+     */
     @Override
     public void register(MusicServiceObserver observer) {
         observer.updateFirstTime(mSetting.getLoopMode(),
@@ -193,14 +216,10 @@ public class MusicService extends Service
                 mTracks.size() == 0 ? null : mTracks.get(mCurrentTrackIndex),
                 mTracks,
                 mPlayState);
+        if (mMusicServiceObservers.contains(observer)) {
+            return;
+        }
         mMusicServiceObservers.add(observer);
-    }
-
-    @Override
-    public void onPrepared(MediaPlayer mediaPlayer) {
-        mMediaPlayer.start();
-        mPlayState = PlayState.PLAYING;
-        notifyStateChanged();
     }
 
     @Override

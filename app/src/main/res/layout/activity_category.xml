@@ -5,15 +5,21 @@
     android:background="@color/color_background_recycler"
     android:clipToPadding="false">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/recycler_view_items"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginLeft="@dimen/layout_margin_large"
-        android:layout_marginRight="@dimen/layout_margin_large"
-        android:background="@drawable/rect"
-        android:paddingBottom="@dimen/sub_controller_height" />
+        android:layout_height="match_parent">
 
-    <include layout="@layout/sub_controller" />
+        <include layout="@layout/sub_controller" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recycler_view_items"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@+id/relative_sub_controller"
+            android:layout_marginLeft="@dimen/layout_margin_large"
+            android:layout_marginRight="@dimen/layout_margin_large"
+            android:background="@drawable/rect" />
+
+    </RelativeLayout>
 
 </android.support.design.widget.CoordinatorLayout>

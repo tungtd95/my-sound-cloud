@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.framgia.tungvd.soundcloud.R;
 import com.framgia.tungvd.soundcloud.data.model.Track;
@@ -16,6 +17,12 @@ public class RecentDetailFragment extends BaseFragment
         implements RecentDetailContract.View {
 
     private RecentDetailContract.Presenter mPresenter;
+    private TextView mTextViewTitle;
+    private TextView mTextViewDescription;
+    private TextView mTextViewCreateAt;
+    private TextView mTextViewTaglist;
+    private TextView mTextViewGenre;
+    private TextView mTextViewUser;
 
     @Nullable
     @Override
@@ -23,6 +30,24 @@ public class RecentDetailFragment extends BaseFragment
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_detail, container, false);
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        initView(view);
+        mPresenter = new RecentDetailPresenter();
+        mPresenter.setView(this);
+        mPresenter.onStart();
+    }
+
+    void initView(View view) {
+        mTextViewCreateAt = view.findViewById(R.id.text_created_at);
+        mTextViewDescription = view.findViewById(R.id.text_description);
+        mTextViewGenre = view.findViewById(R.id.text_genre);
+        mTextViewTitle = view.findViewById(R.id.text_title);
+        mTextViewTaglist = view.findViewById(R.id.text_tag_list);
+        mTextViewUser = view.findViewById(R.id.text_user);
     }
 
     @Override
@@ -42,7 +67,15 @@ public class RecentDetailFragment extends BaseFragment
 
     @Override
     public void updateTrack(@Nullable Track track) {
-
+        if (track == null) {
+            return;
+        }
+        mTextViewTitle.setText(track.getTitle());
+        mTextViewDescription.setText(track.getDescription());
+        mTextViewGenre.setText(track.getGenre());
+        mTextViewCreateAt.setText(track.getCreateAt());
+        mTextViewTaglist.setText(track.getTagList());
+        mTextViewUser.setText(track.getUserName());
     }
 
     @Override
