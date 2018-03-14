@@ -1,8 +1,11 @@
 package com.framgia.tungvd.soundcloud.screen.recentplaylist;
 
+import com.framgia.tungvd.soundcloud.data.model.Track;
+
 public class RecentPlaylistPresenter implements RecentPlaylistContract.Presenter {
 
-    RecentPlaylistContract.View mView;
+    private static final String TAG = "RecentPlaylistPresenter";
+    private RecentPlaylistContract.View mView;
 
     @Override
     public void setView(RecentPlaylistContract.View view) {
@@ -17,5 +20,10 @@ public class RecentPlaylistPresenter implements RecentPlaylistContract.Presenter
     @Override
     public void onStop() {
 
+    }
+
+    @Override
+    public void download(Track track) {
+        // TODO: 03/16/18 implement download track
     }
 }

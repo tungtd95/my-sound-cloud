@@ -25,6 +25,14 @@ public class DownloadBottomSheetFragment extends BottomSheetDialogFragment
     private TextView mTextViewDownload;
     private TextView mTextViewDelete;
 
+    public static DownloadBottomSheetFragment newInstance(Track track) {
+        DownloadBottomSheetFragment fragment = new DownloadBottomSheetFragment();
+        Bundle bundle = new Bundle();
+        bundle.putParcelable(DownloadBottomSheetFragment.ARGUMENT_TRACK, track);
+        fragment.setArguments(bundle);
+        return fragment;
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater,

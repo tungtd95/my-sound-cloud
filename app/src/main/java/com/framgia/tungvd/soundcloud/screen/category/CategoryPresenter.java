@@ -55,4 +55,9 @@ public class CategoryPresenter implements CategoryContract.Presenter{
     public void setCategory(Category category) {
         mCategory = category;
     }
+
+    @Override
+    public void download(Track track) {
+        // TODO: 03/16/18 implement download track
+    }
 }

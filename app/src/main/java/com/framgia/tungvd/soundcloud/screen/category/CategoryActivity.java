@@ -4,10 +4,9 @@ import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.View;
 
 import com.framgia.tungvd.soundcloud.R;
-import com.framgia.tungvd.soundcloud.custom.RecyclerItemClickListener;
+import com.framgia.tungvd.soundcloud.custom.MyItemClickListener;
 import com.framgia.tungvd.soundcloud.custom.TrackAdapter;
 import com.framgia.tungvd.soundcloud.data.model.Category;
 import com.framgia.tungvd.soundcloud.data.model.MusicService;
@@ -16,12 +15,13 @@ import com.framgia.tungvd.soundcloud.data.source.TracksRepository;
 import com.framgia.tungvd.soundcloud.data.source.local.TracksLocalDataSource;
 import com.framgia.tungvd.soundcloud.data.source.remote.TracksRemoteDataSource;
 import com.framgia.tungvd.soundcloud.screen.BaseActivity;
+import com.framgia.tungvd.soundcloud.screen.download.DownloadBottomSheetFragment;
 import com.framgia.tungvd.soundcloud.util.AppExecutors;
 
 import java.util.List;
 
 public class CategoryActivity extends BaseActivity
-        implements CategoryContract.View, RecyclerItemClickListener.OnItemClickListener{
+        implements CategoryContract.View, MyItemClickListener{
 
     public static final String EXTRA_CATEGORY =
             "com.framgia.tungvd.soundcloud.screen.category.extras.EXTRA_CATEGORY";
@@ -54,12 +54,10 @@ public class CategoryActivity extends BaseActivity
         mRecyclerViewItems = findViewById(R.id.recycler_view_items);
 
         mTrackAdapter = new TrackAdapter();
+        mTrackAdapter.setItemClickListener(this);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         mRecyclerViewItems.setLayoutManager(layoutManager);
         mRecyclerViewItems.setAdapter(mTrackAdapter);
-        mRecyclerViewItems.addOnItemTouchListener(
-                new RecyclerItemClickListener(this, mRecyclerViewItems, this));
-
         mPresenter = new CategoryPresenter(
                 TracksRepository.getInstance(TracksRemoteDataSource.getInstance(),
                         TracksLocalDataSource.getInstance(new AppExecutors(),
@@ -67,19 +65,6 @@ public class CategoryActivity extends BaseActivity
         mPresenter.setView(this);
         mPresenter.setCategory((Category) getIntent().getExtras().getParcelable(EXTRA_CATEGORY));
         mPresenter.onStart();
-    }
-
-    @Override
-    public void onItemClick(View view, int position) {
-        if (mMusicService != null) {
-            mMusicService.setTracks(mTrackAdapter.getTracks());
-            mMusicService.handleNewTrack(position);
-        }
-    }
-
-    @Override
-    public void onItemLongClick(View view, int position) {
-
     }
 
     @Override
@@ -100,5 +85,23 @@ public class CategoryActivity extends BaseActivity
     public void onBackPressed() {
         super.onBackPressed();
         finish();
+    }
+
+    @Override
+    public void onItemClicked(int position) {
+        if (mMusicService != null) {
+            mMusicService.setTracks(mTrackAdapter.getTracks());
+            mMusicService.handleNewTrack(position);
+        }
+    }
+
+    @Override
+    public void onItemDetail(Track track) {
+        mPresenter.download(track);
+        DownloadBottomSheetFragment fragment = new DownloadBottomSheetFragment();
+        Bundle bundle = new Bundle();
+        bundle.putParcelable(DownloadBottomSheetFragment.ARGUMENT_TRACK, track);
+        fragment.setArguments(bundle);
+        fragment.show(getSupportFragmentManager(), fragment.getTag());
     }
 }

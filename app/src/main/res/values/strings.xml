@@ -12,4 +12,7 @@
     <string name="title_tag_list">Tag list:</string>
     <string name="title_genre">Genre:</string>
     <string name="title_user">User:</string>
+    <string name="title_download">Download</string>
+    <string name="title_delete">Delete</string>
+    <string name="title_play">Play</string>
 </resources>

@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.framgia.tungvd.soundcloud.R;
@@ -13,9 +14,16 @@ import com.framgia.tungvd.soundcloud.data.model.Track;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.TrackViewHolder>{
+public class TrackAdapter
+        extends RecyclerView.Adapter<TrackAdapter.TrackViewHolder> {
 
     private List<Track> mTracks;
+    private Track mTrack;
+    private MyItemClickListener mItemClickListener;
+
+    public void setItemClickListener(MyItemClickListener itemClickListener) {
+        mItemClickListener = itemClickListener;
+    }
 
     public TrackAdapter() {
         mTracks = new ArrayList<>();
@@ -30,17 +38,23 @@ public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.TrackViewHol
         notifyDataSetChanged();
     }
 
-    @Override
-    public TrackViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater
-                .from(parent.getContext())
-                .inflate(R.layout.item_track, parent, false);
-        return new TrackViewHolder(view);
+    public void setTrack(Track track) {
+        mTrack = track;
+        notifyDataSetChanged();
     }
 
     @Override
-    public void onBindViewHolder(TrackViewHolder holder, int position) {
-        holder.bindView(mTracks.get(position));
+    public TrackAdapter.TrackViewHolder onCreateViewHolder(ViewGroup parent,
+                                                           int viewType) {
+        View view = LayoutInflater
+                .from(parent.getContext())
+                .inflate(R.layout.item_track, parent, false);
+        return new TrackAdapter.TrackViewHolder(view);
+    }
+
+    @Override
+    public void onBindViewHolder(TrackAdapter.TrackViewHolder holder, int position) {
+        holder.bindView(mTracks.get(position), position);
     }
 
     @Override
@@ -54,6 +68,7 @@ public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.TrackViewHol
         private ImageView mImageViewTrack;
         private TextView mTextViewArtist;
         private ImageView mImageViewAction;
+        private RelativeLayout mRelativeItem;
 
         public TrackViewHolder(View itemView) {
             super(itemView);
@@ -61,14 +76,31 @@ public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.TrackViewHol
             mTextViewArtist = itemView.findViewById(R.id.text_item_artist);
             mImageViewTrack = itemView.findViewById(R.id.image_item_track);
             mImageViewAction = itemView.findViewById(R.id.image_item_action);
+            mRelativeItem = itemView.findViewById(R.id.relative_track_item);
         }
 
-        public void bindView(Track track) {
+        public void bindView(final Track track, final int position) {
             if (track == null) {
                 return;
             }
             mTextViewTrack.setText(track.getTitle());
             mTextViewArtist.setText(track.getUserName());
+            mImageViewAction.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (mItemClickListener != null) {
+                        mItemClickListener.onItemDetail(track);
+                    }
+                }
+            });
+            mRelativeItem.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (mItemClickListener != null) {
+                        mItemClickListener.onItemClicked(position);
+                    }
+                }
+            });
         }
     }
 }
