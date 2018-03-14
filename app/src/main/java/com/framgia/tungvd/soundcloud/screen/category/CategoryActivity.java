@@ -2,11 +2,9 @@ package com.framgia.tungvd.soundcloud.screen.category;
 
 import android.app.ProgressDialog;
 import android.os.Bundle;
-import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.widget.RelativeLayout;
 
 import com.framgia.tungvd.soundcloud.R;
 import com.framgia.tungvd.soundcloud.custom.RecyclerItemClickListener;
@@ -18,7 +16,6 @@ import com.framgia.tungvd.soundcloud.data.source.TracksRepository;
 import com.framgia.tungvd.soundcloud.data.source.local.TracksLocalDataSource;
 import com.framgia.tungvd.soundcloud.data.source.remote.TracksRemoteDataSource;
 import com.framgia.tungvd.soundcloud.screen.BaseActivity;
-import com.framgia.tungvd.soundcloud.screen.play.PlayFragment;
 import com.framgia.tungvd.soundcloud.util.AppExecutors;
 
 import java.util.List;

@@ -17,4 +17,8 @@
         <item name="android:backgroundDimEnabled">false</item>
     </style>
 
+    <style name="TabTextStyle" parent="TextAppearance.AppCompat.Body1">
+        <item name="android:textStyle">bold</item>
+    </style>
+
 </resources>
