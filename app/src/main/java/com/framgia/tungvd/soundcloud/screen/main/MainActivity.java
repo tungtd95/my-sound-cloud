@@ -2,9 +2,13 @@ package com.framgia.tungvd.soundcloud.screen.main;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.BottomSheetBehavior;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
+
 import com.framgia.tungvd.soundcloud.R;
 import com.framgia.tungvd.soundcloud.custom.CategoryAdapter;
 import com.framgia.tungvd.soundcloud.custom.EqualSpacingItemDecoration;
@@ -12,10 +16,11 @@ import com.framgia.tungvd.soundcloud.custom.RecyclerItemClickListener;
 import com.framgia.tungvd.soundcloud.data.model.Category;
 import com.framgia.tungvd.soundcloud.screen.BaseActivity;
 import com.framgia.tungvd.soundcloud.screen.category.CategoryActivity;
+
 import java.util.List;
 
 public class MainActivity extends BaseActivity
-        implements MainContract.View, RecyclerItemClickListener.OnItemClickListener{
+        implements MainContract.View, RecyclerItemClickListener.OnItemClickListener {
 
     private static final int GRID_COLUMN_NUMB = 2;
     private static final int GRID_SPACE = 20;

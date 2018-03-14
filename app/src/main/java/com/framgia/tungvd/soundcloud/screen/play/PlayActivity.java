@@ -1,34 +1,31 @@
 package com.framgia.tungvd.soundcloud.screen.play;
 
+import android.content.ComponentName;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
+import android.os.IBinder;
 import android.support.annotation.Nullable;
-import android.support.design.widget.BottomSheetBehavior;
-import android.support.design.widget.BottomSheetDialogFragment;
-import android.support.design.widget.CoordinatorLayout;
-import android.support.v4.app.FragmentManager;
-import android.util.Log;
-import android.view.LayoutInflater;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.framgia.tungvd.soundcloud.R;
 import com.framgia.tungvd.soundcloud.data.model.MusicService;
+import com.framgia.tungvd.soundcloud.data.model.PlayState;
 import com.framgia.tungvd.soundcloud.data.model.Track;
 import com.framgia.tungvd.soundcloud.data.source.setting.LoopMode;
-import com.framgia.tungvd.soundcloud.data.model.PlayState;
 import com.framgia.tungvd.soundcloud.data.source.setting.ShuffleMode;
+import com.framgia.tungvd.soundcloud.screen.main.MainActivity;
 import com.framgia.tungvd.soundcloud.util.UsefulFunc;
 
 import java.util.ArrayList;
 
-public class PlayFragment extends BottomSheetDialogFragment
+public class PlayActivity extends AppCompatActivity
         implements PlayContract.View, View.OnClickListener {
 
     private static final int PROGRESS_MAX = 100;
@@ -47,66 +44,29 @@ public class PlayFragment extends BottomSheetDialogFragment
     private PlayContract.Presenter mPresenter;
     private MusicService mMusicService;
 
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
-    public void setMusicService(MusicService musicService) {
-        mMusicService = musicService;
-    }
-
-    @Override
-    public void show(FragmentManager manager, String tag) {
-        super.show(manager, tag);
-    }
-
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater,
-                             @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.play_screen, container, false);
-    }
-
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        initPlayingView(view);
-        mPresenter = new PlayPresenter();
-        mPresenter.setView(this);
-        mPresenter.onStart();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-//        mImageViewTrack.setImageResource(R.drawable.music_icon_origin);
-        if (mMusicService == null) {
-            return;
+    private ServiceConnection mServiceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+            mMusicService = ((MusicService.MyBinder) iBinder).getMusicService();
+            mMusicService.register(PlayActivity.this);
         }
-        mMusicService.register(this);
-    }
 
-    @Override
-    public void onPause() {
-        super.onPause();
-        if (mMusicService == null) {
-            return;
+        @Override
+        public void onServiceDisconnected(ComponentName componentName) {
+
         }
-        mMusicService.unregister(this);
-    }
+    };
 
-    private void initPlayingView(View view) {
-        mButtonPlay = view.findViewById(R.id.button_play);
-        mButtonNext = view.findViewById(R.id.button_next);
-        mButtonPrevious = view.findViewById(R.id.button_previous);
-        mButtonShuffle = view.findViewById(R.id.button_shuffle);
-        mButtonLoop = view.findViewById(R.id.button_loop);
-        mTextViewProgress = view.findViewById(R.id.text_view_progress);
-        mTextViewDuration = view.findViewById(R.id.text_view_duration);
-        mSeekBarMain = view.findViewById(R.id.seek_bar_main);
-        mImageViewTrack = view.findViewById(R.id.image_view_track);
+    private void initPlayingView() {
+        mButtonPlay = findViewById(R.id.button_play);
+        mButtonNext = findViewById(R.id.button_next);
+        mButtonPrevious = findViewById(R.id.button_previous);
+        mButtonShuffle = findViewById(R.id.button_shuffle);
+        mButtonLoop = findViewById(R.id.button_loop);
+        mTextViewProgress = findViewById(R.id.text_view_progress);
+        mTextViewDuration = findViewById(R.id.text_view_duration);
+        mSeekBarMain = findViewById(R.id.seek_bar_main);
+        mImageViewTrack = findViewById(R.id.image_view_track);
         mSeekBarMain.setMax(PROGRESS_MAX);
         mButtonLoop.setOnClickListener(this);
         mButtonPlay.setOnClickListener(this);
@@ -115,8 +75,60 @@ public class PlayFragment extends BottomSheetDialogFragment
         mButtonShuffle.setOnClickListener(this);
     }
 
+    private void initMusicService() {
+        Intent intent = new Intent(this, MusicService.class);
+        bindService(intent, mServiceConnection, BIND_AUTO_CREATE);
+        startService(intent);
+    }
+
     @Override
-    public void updateLoopMode(final int loopMode) {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.play_screen);
+        initPlayingView();
+        initMusicService();
+        mPresenter = new PlayPresenter();
+        mPresenter.setView(this);
+        mPresenter.onStart();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (mMusicService == null) {
+            return;
+        }
+        mMusicService.unregister(this);
+    }
+
+    @Override
+    public void onClick(View view) {
+        if (mMusicService == null) {
+            return;
+        }
+        switch (view.getId()) {
+            case R.id.button_play:
+                mMusicService.changeMediaState();
+                break;
+            case R.id.button_next:
+                mMusicService.handleNext();
+                break;
+            case R.id.button_previous:
+                mMusicService.handlePrevious();
+                break;
+            case R.id.button_shuffle:
+                mMusicService.handleShuffle();
+                break;
+            case R.id.button_loop:
+                mMusicService.handleLoop();
+                break;
+            default:
+                break;
+        }
+    }
+
+    @Override
+    public void updateLoopMode(int loopMode) {
         switch (loopMode) {
             case LoopMode.ONE:
                 mButtonLoop.setBackgroundResource(R.drawable.ic_repeat_one);
@@ -133,7 +145,7 @@ public class PlayFragment extends BottomSheetDialogFragment
     }
 
     @Override
-    public void updateShuffleMode(final int shuffleMode) {
+    public void updateShuffleMode(int shuffleMode) {
         switch (shuffleMode) {
             case ShuffleMode.ON:
                 mButtonShuffle.setBackgroundResource(R.drawable.ic_shuffle_on);
@@ -147,7 +159,7 @@ public class PlayFragment extends BottomSheetDialogFragment
     }
 
     @Override
-    public void updateProgress(final long progress, final long duration) {
+    public void updateProgress(long progress, long duration) {
         long temp = duration + 1;
         mSeekBarMain.setProgress((int) (progress * PROGRESS_MAX / temp));
         mTextViewProgress.setText(UsefulFunc
@@ -158,16 +170,16 @@ public class PlayFragment extends BottomSheetDialogFragment
 
     @Override
     public void updateTrack(@Nullable Track track) {
-        // TODO: 03/09/18 display recent track
+        // TODO: 03/13/18 implement later
     }
 
     @Override
     public void updateTracks(ArrayList<Track> tracks) {
-        // TODO: 03/09/18 display recent tracks
+        // TODO: 03/13/18 implement later
     }
 
     @Override
-    public void updateState(final int playState) {
+    public void updateState(int playState) {
         mButtonPlay.setClickable(true);
         switch (playState) {
             case PlayState.PLAYING:
@@ -206,29 +218,11 @@ public class PlayFragment extends BottomSheetDialogFragment
     }
 
     @Override
-    public void onClick(View view) {
-        if (mMusicService == null) {
-            return;
-        }
-        switch (view.getId()) {
-            case R.id.button_play:
-                mMusicService.changeMediaState();
-                break;
-            case R.id.button_next:
-                mMusicService.handleNext();
-                break;
-            case R.id.button_previous:
-                mMusicService.handlePrevious();
-                break;
-            case R.id.button_shuffle:
-                mMusicService.handleShuffle();
-                break;
-            case R.id.button_loop:
-                mMusicService.handleLoop();
-                break;
-            default:
-                break;
-        }
-    }
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+        overridePendingTransition(android.support.v7.appcompat.R.anim.abc_fade_in,
+                android.support.design.R.anim.design_bottom_sheet_slide_out);
 
+    }
 }

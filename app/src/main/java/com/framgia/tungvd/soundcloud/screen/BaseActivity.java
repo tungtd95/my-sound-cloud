@@ -17,16 +17,13 @@ import com.framgia.tungvd.soundcloud.data.model.MusicService;
 import com.framgia.tungvd.soundcloud.data.model.PlayState;
 import com.framgia.tungvd.soundcloud.data.model.Track;
 import com.framgia.tungvd.soundcloud.data.model.playobserver.MusicServiceObserver;
-import com.framgia.tungvd.soundcloud.screen.play.PlayFragment;
+import com.framgia.tungvd.soundcloud.screen.play.PlayActivity;
 
 import java.util.ArrayList;
 
 public abstract class BaseActivity extends AppCompatActivity
         implements View.OnClickListener, MusicServiceObserver {
 
-    private static final String TAG = "BaseActivity";
-
-    protected PlayFragment mPlayFragment;
     protected RelativeLayout mRelativeSubController;
     protected MusicService mMusicService;
     protected ProgressBar mProgressBarMain;
@@ -66,9 +63,12 @@ public abstract class BaseActivity extends AppCompatActivity
     }
 
     protected void showPlayScreen() {
-        mPlayFragment = new PlayFragment();
-        mPlayFragment.setMusicService(mMusicService);
-        mPlayFragment.show(getSupportFragmentManager(), mPlayFragment.getTag());
+        Intent intent = new Intent(this, PlayActivity.class);
+        startActivity(intent);
+        overridePendingTransition(
+                android.support.design.R.anim.design_bottom_sheet_slide_in,
+                android.support.v7.appcompat.R.anim.abc_fade_out
+        );
     }
 
     @Override
@@ -116,6 +116,7 @@ public abstract class BaseActivity extends AppCompatActivity
     @Override
     public void updateState(int playState) {
         mProgressBarMain.setVisibility(View.GONE);
+        mButtonPlay.setEnabled(true);
         switch (playState) {
             case PlayState.PLAYING:
                 mButtonPlay.setBackgroundResource(R.drawable.ic_pause);
@@ -124,6 +125,7 @@ public abstract class BaseActivity extends AppCompatActivity
                 mButtonPlay.setBackgroundResource(R.drawable.ic_play_arrow);
                 break;
             case PlayState.PREPARING:
+                mButtonPlay.setEnabled(false);
                 mButtonPlay.setBackgroundResource(R.drawable.ic_play_arrow);
                 mProgressBarMain.setVisibility(View.VISIBLE);
                 break;
@@ -144,4 +146,5 @@ public abstract class BaseActivity extends AppCompatActivity
         updateState(playState);
         updateTrack(track);
     }
+
 }
