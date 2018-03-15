@@ -39,8 +39,6 @@ public class MainActivity extends BaseActivity
 
     private void initView() {
         initBaseView();
-        mRelativeSubController = findViewById(R.id.relative_sub_controller);
-        mRelativeSubController.setOnClickListener(this);
         mRecyclerViewCategories = findViewById(R.id.recycler_view);
         RecyclerView.LayoutManager layoutManager =
                 new GridLayoutManager(this, GRID_COLUMN_NUMB);

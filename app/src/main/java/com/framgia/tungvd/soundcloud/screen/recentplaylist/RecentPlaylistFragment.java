@@ -10,7 +10,6 @@ import android.view.ViewGroup;
 
 import com.framgia.tungvd.soundcloud.R;
 import com.framgia.tungvd.soundcloud.custom.RecyclerItemClickListener;
-import com.framgia.tungvd.soundcloud.data.model.MusicService;
 import com.framgia.tungvd.soundcloud.data.model.Track;
 import com.framgia.tungvd.soundcloud.screen.BaseFragment;
 
@@ -22,12 +21,6 @@ public class RecentPlaylistFragment extends BaseFragment
     private RecentPlaylistContract.Presenter mPresenter;
     private RecyclerView mRecyclerViewPlaylist;
     private TrackAdapterRecentPlay mAdapterRecentPlay;
-    private MusicService mMusicService;
-
-    public void setMusicService(MusicService musicService) {
-        mMusicService = musicService;
-        musicService.register(this);
-    }
 
     @Nullable
     @Override

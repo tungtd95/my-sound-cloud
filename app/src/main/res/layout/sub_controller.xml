@@ -3,11 +3,13 @@
     android:id="@+id/relative_sub_controller"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_alignParentBottom="true"
     android:layout_gravity="bottom"
     android:background="@drawable/rect"
     android:elevation="@dimen/shadow_medium"
     android:gravity="center"
-    android:translationZ="@dimen/shadow_medium">
+    android:translationZ="@dimen/shadow_medium"
+    android:visibility="gone">
 
     <ProgressBar
         android:id="@+id/progress_main"
@@ -32,17 +34,26 @@
             android:src="@drawable/ic_music" />
 
         <Button
-            android:id="@+id/button_play_main"
-            android:layout_width="@dimen/sub_controller_button_height"
-            android:layout_height="@dimen/sub_controller_button_height"
+            android:id="@+id/button_next_sub"
+            android:layout_width="@dimen/sub_controller_button_height_small"
+            android:layout_height="@dimen/sub_controller_button_height_small"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
+            android:background="@drawable/ic_skip_next" />
+
+        <Button
+            android:id="@+id/button_play_sub"
+            android:layout_width="@dimen/sub_controller_button_height"
+            android:layout_height="@dimen/sub_controller_button_height"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@+id/button_next_sub"
             android:background="@drawable/ic_play_arrow" />
+
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_toLeftOf="@id/button_play_main"
+            android:layout_toLeftOf="@id/button_play_sub"
             android:layout_toRightOf="@id/image_track"
             android:gravity="center">
 
