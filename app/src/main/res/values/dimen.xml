@@ -25,4 +25,8 @@
 
     <dimen name="tab_height">40dp</dimen>
     <dimen name="tab_indicator_height">4dp</dimen>
+
+    <dimen name="download_item_height">40dp</dimen>
+    <dimen name="download_item_image_height">30dp</dimen>
+    <dimen name="download_text_size">17sp</dimen>
 </resources>
