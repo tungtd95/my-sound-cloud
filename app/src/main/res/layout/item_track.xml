@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/colorWhite"
+    android:background="@color/color_white"
     android:gravity="center">
 
     <RelativeLayout
@@ -22,7 +22,7 @@
             android:layout_height="@dimen/sub_controller_button_height"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:background="@color/colorWhite" />
+            android:background="@color/color_white" />
 
         <RelativeLayout
             android:layout_width="match_parent"

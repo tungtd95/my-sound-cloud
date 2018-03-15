@@ -7,10 +7,13 @@ import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -20,7 +23,9 @@ import com.framgia.tungvd.soundcloud.data.model.PlayState;
 import com.framgia.tungvd.soundcloud.data.model.Track;
 import com.framgia.tungvd.soundcloud.data.source.setting.LoopMode;
 import com.framgia.tungvd.soundcloud.data.source.setting.ShuffleMode;
-import com.framgia.tungvd.soundcloud.screen.main.MainActivity;
+import com.framgia.tungvd.soundcloud.screen.recentdetail.RecentDetailFragment;
+import com.framgia.tungvd.soundcloud.screen.recentplaylist.RecentPlaylistFragment;
+import com.framgia.tungvd.soundcloud.screen.recenttrack.RecentTrackFragment;
 import com.framgia.tungvd.soundcloud.util.UsefulFunc;
 
 import java.util.ArrayList;
@@ -39,16 +44,21 @@ public class PlayActivity extends AppCompatActivity
     private TextView mTextViewProgress;
     private TextView mTextViewDuration;
     private SeekBar mSeekBarMain;
-    private ImageView mImageViewTrack;
+    private ViewPager mViewPager;
 
     private PlayContract.Presenter mPresenter;
     private MusicService mMusicService;
-
+    private RecentPlaylistFragment mRecentPlaylistFragment;
+    private RecentDetailFragment mRecentDetailFragment;
+    private RecentTrackFragment mRecentTrackFragment;
     private ServiceConnection mServiceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
             mMusicService = ((MusicService.MyBinder) iBinder).getMusicService();
             mMusicService.register(PlayActivity.this);
+            mMusicService.register(mRecentDetailFragment);
+            mMusicService.register(mRecentPlaylistFragment);
+            mMusicService.register(mRecentTrackFragment);
         }
 
         @Override
@@ -66,13 +76,25 @@ public class PlayActivity extends AppCompatActivity
         mTextViewProgress = findViewById(R.id.text_view_progress);
         mTextViewDuration = findViewById(R.id.text_view_duration);
         mSeekBarMain = findViewById(R.id.seek_bar_main);
-        mImageViewTrack = findViewById(R.id.image_view_track);
+        mViewPager = findViewById(R.id.viewpager);
         mSeekBarMain.setMax(PROGRESS_MAX);
         mButtonLoop.setOnClickListener(this);
         mButtonPlay.setOnClickListener(this);
         mButtonPrevious.setOnClickListener(this);
         mButtonNext.setOnClickListener(this);
         mButtonShuffle.setOnClickListener(this);
+        mRecentPlaylistFragment = new RecentPlaylistFragment();
+        mRecentDetailFragment = new RecentDetailFragment();
+        mRecentTrackFragment = new RecentTrackFragment();
+        ArrayList<Fragment> fragments = new ArrayList<>();
+        fragments.add(mRecentPlaylistFragment);
+        fragments.add(mRecentTrackFragment);
+        fragments.add(mRecentDetailFragment);
+        ArrayList<String> names = new ArrayList<>();
+        names.add(getResources().getString(R.string.playlist));
+        names.add(getResources().getString(R.string.playing));
+        names.add(getResources().getString(R.string.detail));
+        mViewPager.setAdapter(new MyPagerAdapter(getSupportFragmentManager(), fragments, names));
     }
 
     private void initMusicService() {
@@ -84,21 +106,12 @@ public class PlayActivity extends AppCompatActivity
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.play_screen);
+        setContentView(R.layout.activity_play);
         initPlayingView();
         initMusicService();
         mPresenter = new PlayPresenter();
         mPresenter.setView(this);
         mPresenter.onStart();
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        if (mMusicService == null) {
-            return;
-        }
-        mMusicService.unregister(this);
     }
 
     @Override
@@ -170,12 +183,15 @@ public class PlayActivity extends AppCompatActivity
 
     @Override
     public void updateTrack(@Nullable Track track) {
-        // TODO: 03/13/18 implement later
+        if (track == null) {
+            return;
+        }
+        setTitle(track.getTitle());
     }
 
     @Override
     public void updateTracks(ArrayList<Track> tracks) {
-        // TODO: 03/13/18 implement later
+        // no need to implement
     }
 
     @Override
@@ -220,9 +236,15 @@ public class PlayActivity extends AppCompatActivity
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+        if (mMusicService == null) {
+            return;
+        }
+        mMusicService.unregister(this);
+        mMusicService.unregister(mRecentDetailFragment);
+        mMusicService.unregister(mRecentPlaylistFragment);
+        mMusicService.unregister(mRecentTrackFragment);
         finish();
         overridePendingTransition(android.support.v7.appcompat.R.anim.abc_fade_in,
                 android.support.design.R.anim.design_bottom_sheet_slide_out);
-
     }
 }

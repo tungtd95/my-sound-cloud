@@ -6,8 +6,8 @@
     android:layout_gravity="bottom"
     android:background="@drawable/rect"
     android:elevation="@dimen/shadow_medium"
-    android:translationZ="@dimen/shadow_medium"
-    android:gravity="center">
+    android:gravity="center"
+    android:translationZ="@dimen/shadow_medium">
 
     <ProgressBar
         android:id="@+id/progress_main"
@@ -28,8 +28,8 @@
             android:id="@+id/image_track"
             android:layout_width="@dimen/sub_controller_height"
             android:layout_height="@dimen/sub_controller_height"
-            android:src="@drawable/ic_music"
-            android:padding="@dimen/controller_padding_bottom"/>
+            android:padding="@dimen/controller_padding_bottom"
+            android:src="@drawable/ic_music" />
 
         <Button
             android:id="@+id/button_play_main"
