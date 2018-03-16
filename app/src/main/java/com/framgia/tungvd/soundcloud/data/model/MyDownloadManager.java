@@ -20,12 +20,14 @@ public class MyDownloadManager implements DownloadObservable {
     private Context mContext;
     private ArrayList<Track> mTracksDownloading;
     private ArrayList<Long> mIdTrackDownloading;
+    private ArrayList<Track> mTracksDownloaded;
     private ArrayList<DownloadObserver> mObservers;
 
     private MyDownloadManager(Context context) {
         mContext = context;
         mTracksDownloading = new ArrayList<>();
         mIdTrackDownloading = new ArrayList<>();
+        mTracksDownloaded = new ArrayList<>();
         mObservers = new ArrayList<>();
     }
 
@@ -59,7 +61,7 @@ public class MyDownloadManager implements DownloadObservable {
                 new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
         mTracksDownloading.add(track);
         mIdTrackDownloading.add(id);
-        notifyDownloadingTracksChanged();
+        notifyDownloadStateChanged();
     }
 
     private BroadcastReceiver onDownload = new BroadcastReceiver() {
@@ -68,8 +70,11 @@ public class MyDownloadManager implements DownloadObservable {
             long id = intent.getExtras().getLong(DownloadManager.EXTRA_DOWNLOAD_ID);
             for (int i = 0; i < mIdTrackDownloading.size(); i++) {
                 if (mIdTrackDownloading.get(i) == id) {
+                    mTracksDownloaded.add(mTracksDownloading.get(i));
                     mIdTrackDownloading.remove(i);
                     mTracksDownloading.remove(i);
+                    notifyDownloadStateChanged();
+                    break;
                 }
             }
         }
@@ -82,6 +87,11 @@ public class MyDownloadManager implements DownloadObservable {
         for (Track t : mTracksDownloading) {
             if (t.getId() == track.getId()) {
                 return DownloadState.DOWNLOADING;
+            }
+        }
+        for (Track t : mTracksDownloaded) {
+            if (t.getId() == track.getId()) {
+                return DownloadState.DOWNLOADED;
             }
         }
         return DownloadState.DOWNLOADABLE;
@@ -101,9 +111,9 @@ public class MyDownloadManager implements DownloadObservable {
     }
 
     @Override
-    public void notifyDownloadingTracksChanged() {
+    public void notifyDownloadStateChanged() {
         for (DownloadObserver o : mObservers) {
-            o.updateDownloadingTracks(mTracksDownloading);
+            o.updateDownloadState();
         }
     }
 }

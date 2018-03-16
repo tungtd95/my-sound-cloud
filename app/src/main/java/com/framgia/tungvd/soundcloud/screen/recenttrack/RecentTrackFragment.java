@@ -1,21 +1,36 @@
 package com.framgia.tungvd.soundcloud.screen.recenttrack;
 
+import android.graphics.Color;
+import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import com.framgia.tungvd.soundcloud.R;
+import com.framgia.tungvd.soundcloud.data.model.DownloadState;
+import com.framgia.tungvd.soundcloud.data.model.MyDownloadManager;
 import com.framgia.tungvd.soundcloud.data.model.Track;
+import com.framgia.tungvd.soundcloud.data.model.downloadobserver.DownloadObserver;
+import com.framgia.tungvd.soundcloud.data.model.playobserver.MusicServiceObserver;
 import com.framgia.tungvd.soundcloud.screen.BaseFragment;
+import com.makeramen.roundedimageview.RoundedTransformationBuilder;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Transformation;
 
 import java.util.ArrayList;
 
 public class RecentTrackFragment extends BaseFragment
-        implements RecentTrackContract.View {
+        implements RecentTrackContract.View, DownloadObserver {
 
     private RecentTrackContract.Presenter mPresenter;
+    private ImageView mImageTrack;
+    private ImageView mImageDownload;
+    private MyDownloadManager mMyDownloadManager;
+    private Track mTrack;
 
     @Nullable
     @Override
@@ -28,9 +43,56 @@ public class RecentTrackFragment extends BaseFragment
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        initView(view);
         mPresenter = new RecentTrackPresenter();
         mPresenter.setView(this);
         mPresenter.onStart();
+        mMyDownloadManager = MyDownloadManager.getInstance(getActivity());
+        mMyDownloadManager.register(this);
+        updateView();
+        mImageDownload.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mMyDownloadManager.download(mTrack);
+            }
+        });
+    }
+
+    void initView(View view) {
+        mImageDownload = view.findViewById(R.id.image_download);
+        mImageTrack = view.findViewById(R.id.image_track);
+    }
+
+    void updateView() {
+        if (mTrack == null) {
+            return;
+        }
+        mImageDownload.setClickable(false);
+        switch (mMyDownloadManager.getDownloadState(mTrack)) {
+            case DownloadState.DOWNLOADABLE:
+                mImageDownload.setClickable(true);
+                mImageDownload.setBackgroundResource(R.drawable.ic_cloud_download);
+                break;
+            case DownloadState.DOWNLOADED:
+                mImageDownload.setBackgroundResource(R.drawable.ic_cloud_done);
+                break;
+            case DownloadState.DOWNLOADING:
+                mImageDownload.setBackgroundResource(R.drawable.download_animation);
+                AnimationDrawable animation = (AnimationDrawable) mImageDownload.getBackground();
+                animation.start();
+                break;
+            case DownloadState.UN_DOWNLOADABLE:
+                mImageDownload.setBackgroundResource(R.drawable.ic_cloud_off);
+                break;
+            default:
+                break;
+        }
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        mMyDownloadManager.unregister(this);
     }
 
     @Override
@@ -50,7 +112,24 @@ public class RecentTrackFragment extends BaseFragment
 
     @Override
     public void updateTrack(@Nullable Track track) {
-        // TODO: 03/13/18 change track background
+        mTrack = track;
+        Transformation transformation = new RoundedTransformationBuilder()
+                .oval(true)
+                .build();
+        Picasso.get().load(track.getArtworkUrl()).fit()
+                .transform(transformation).centerInside()
+                .into(mImageTrack, new Callback() {
+            @Override
+            public void onSuccess() {
+
+            }
+
+            @Override
+            public void onError(Exception e) {
+                mImageTrack.setImageResource(R.drawable.music_icon_origin);
+            }
+        });
+        updateView();
     }
 
     @Override
@@ -75,4 +154,8 @@ public class RecentTrackFragment extends BaseFragment
         updateState(playState);
     }
 
+    @Override
+    public void updateDownloadState() {
+        updateView();
+    }
 }

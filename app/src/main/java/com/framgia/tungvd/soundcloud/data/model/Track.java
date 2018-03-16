@@ -25,6 +25,7 @@ public class Track implements Parcelable {
     private String mAvatarUrl;
     private Bitmap mImageBitMap;
     private String mDownloadUrl;
+    private String mArtworkUrl;
 
     private Track(Builder builder) {
         mKind = builder.mKind;
@@ -43,6 +44,7 @@ public class Track implements Parcelable {
         mUserName = builder.mUserName;
         mAvatarUrl = builder.mAvatarUrl;
         mDownloadUrl = builder.mDownloadUrl;
+        mArtworkUrl = builder.mArtworkUrl;
     }
 
     protected Track(Parcel in) {
@@ -63,6 +65,7 @@ public class Track implements Parcelable {
         mAvatarUrl = in.readString();
         mImageBitMap = in.readParcelable(Bitmap.class.getClassLoader());
         mDownloadUrl = in.readString();
+        mArtworkUrl = in.readString();
     }
 
     public static final Creator<Track> CREATOR = new Creator<Track>() {
@@ -101,6 +104,7 @@ public class Track implements Parcelable {
         parcel.writeString(mAvatarUrl);
         parcel.writeParcelable(mImageBitMap, i);
         parcel.writeString(mDownloadUrl);
+        parcel.writeString(mArtworkUrl);
     }
 
     public static class Builder {
@@ -120,6 +124,7 @@ public class Track implements Parcelable {
         private String mUserName = "";
         private String mAvatarUrl = "";
         private String mDownloadUrl = "";
+        private String mArtworkUrl = "";
 
         public Builder kind(String kind) {
             mKind = kind;
@@ -189,6 +194,11 @@ public class Track implements Parcelable {
                     .append(Constant.SoundCloud.PARAM_CLIENT)
                     .append(BuildConfig.SOUND_CLOUD_KEY)
                     .toString();
+            return this;
+        }
+
+        public Builder artworkUrl(String artworkUrl) {
+            mArtworkUrl = artworkUrl;
             return this;
         }
 
@@ -278,5 +288,13 @@ public class Track implements Parcelable {
 
     public void setDownloadUrl(String downloadUrl) {
         mDownloadUrl = downloadUrl;
+    }
+
+    public String getArtworkUrl() {
+        return mArtworkUrl;
+    }
+
+    public void setArtworkUrl(String artworkUrl) {
+        mArtworkUrl = artworkUrl;
     }
 }

@@ -15,6 +15,7 @@ public class Constant {
         public static final String PARAM_CLIENT = "?client_id=";
         public static final String PARAM_DOT = "%3A";
         public static final String EXTENSION = ".mp4";
+        public static final String NULL_VALUE = "null";
     }
 
     public class JsonProperties {
@@ -39,6 +40,7 @@ public class Constant {
         public static final String AVATAR_URL = "avatar_url";
         public static final String USER = "user";
         public static final String DOWNLOAD_URL = "download_url";
+        public static final String ARTWORK_URL = "artwork_url";
     }
 
 }

@@ -116,6 +116,7 @@ public class GetDataAsyncTask extends AsyncTask<String, Void, Void> {
             String labelName = jso.getString(Constant.JsonProperties.LABEL_NAME);
             String streamUrl = jso.getString(Constant.JsonProperties.STREAM_URL);
             String downloadUrl = "";
+            String artworkUrl = jso.getString(Constant.JsonProperties.ARTWORK_URL);
             if (downloadable) {
                 downloadUrl = jso.getString(Constant.JsonProperties.DOWNLOAD_URL);
             }
@@ -141,6 +142,7 @@ public class GetDataAsyncTask extends AsyncTask<String, Void, Void> {
                     .streamUrl(streamUrl)
                     .user(userId, userName, avatarUrl)
                     .downloadUrl(downloadUrl)
+                    .artworkUrl(artworkUrl)
                     .build();
 
             tracks.add(track);

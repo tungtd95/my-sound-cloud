@@ -10,6 +10,8 @@ import android.widget.TextView;
 
 import com.framgia.tungvd.soundcloud.R;
 import com.framgia.tungvd.soundcloud.data.model.Track;
+import com.framgia.tungvd.soundcloud.util.Constant;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -101,6 +103,10 @@ public class TrackAdapter
                     }
                 }
             });
+            if (!track.getArtworkUrl().equals(Constant.SoundCloud.NULL_VALUE)) {
+                Picasso.get().load(track.getArtworkUrl())
+                        .fit().centerInside().into(mImageViewTrack);
+            }
         }
     }
 }

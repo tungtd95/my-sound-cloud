@@ -2,6 +2,7 @@ package com.framgia.tungvd.soundcloud.screen.download;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -11,14 +12,14 @@ import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.framgia.tungvd.soundcloud.R;
+import com.framgia.tungvd.soundcloud.data.model.DownloadState;
 import com.framgia.tungvd.soundcloud.data.model.Track;
 import com.framgia.tungvd.soundcloud.data.model.MyDownloadManager;
 import com.framgia.tungvd.soundcloud.data.model.downloadobserver.DownloadObserver;
-
-import java.util.List;
 
 public class DownloadBottomSheetFragment extends BottomSheetDialogFragment
         implements DownloadContract.View, DownloadObserver {
@@ -27,12 +28,14 @@ public class DownloadBottomSheetFragment extends BottomSheetDialogFragment
 
     private DownloadContract.Presenter mPresenter;
     private Track mTrack;
+    private MyDownloadManager mMyDownloadManager;
 
     private TextView mTextViewTrack;
     private TextView mTextViewUser;
     private TextView mTextViewPlay;
     private TextView mTextViewDownload;
     private TextView mTextViewDelete;
+    private ImageView mImageDownload;
 
     public static DownloadBottomSheetFragment newInstance(Track track) {
         DownloadBottomSheetFragment fragment = new DownloadBottomSheetFragment();
@@ -54,6 +57,8 @@ public class DownloadBottomSheetFragment extends BottomSheetDialogFragment
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         initView(view);
+        mMyDownloadManager = MyDownloadManager.getInstance(getContext());
+        mMyDownloadManager.register(this);
         mTrack = getArguments().getParcelable(ARGUMENT_TRACK);
         mTextViewTrack.setText(mTrack.getTitle());
         mTextViewUser.setText(mTrack.getUserName());
@@ -61,21 +66,60 @@ public class DownloadBottomSheetFragment extends BottomSheetDialogFragment
             @Override
             public void onClick(View view) {
                 if (permissionOK()) {
-                    goOn();
+                    download();
                 } else {
                     requestPermission();
                 }
             }
         });
-        if (!mTrack.isDownloadable()) {
-            mTextViewDownload.setTextColor(getActivity()
-                    .getResources()
-                    .getColor(R.color.color_gray));
-            mTextViewDownload.setClickable(false);
-            return;
-        }
-        MyDownloadManager downloadManager = MyDownloadManager.getInstance(getContext());
+        updateState();
+    }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        mMyDownloadManager.unregister(this);
+    }
+
+    void updateState() {
+        switch (mMyDownloadManager.getDownloadState(mTrack)) {
+            case DownloadState.DOWNLOADING:
+                mTextViewDownload.setTextColor(getActivity()
+                        .getResources()
+                        .getColor(R.color.color_black));
+                mTextViewDownload.setClickable(false);
+                mImageDownload.setBackgroundResource(R.drawable.download_animation);
+                AnimationDrawable animation = (AnimationDrawable) mImageDownload.getBackground();
+                animation.start();
+                break;
+            case DownloadState.DOWNLOADED:
+                mTextViewDownload.setTextColor(getActivity()
+                        .getResources()
+                        .getColor(R.color.color_black));
+                mImageDownload.setBackgroundResource(R.drawable.ic_cloud_done);
+                mTextViewDownload.setClickable(false);
+                break;
+            case DownloadState.DOWNLOADABLE:
+                mTextViewDownload.setTextColor(getActivity()
+                        .getResources()
+                        .getColor(R.color.color_black));
+                mImageDownload.setBackgroundResource(R.drawable.ic_cloud_download);
+                break;
+            case DownloadState.UN_DOWNLOADABLE:
+                mTextViewDownload.setTextColor(getActivity()
+                        .getResources()
+                        .getColor(R.color.color_gray));
+                mTextViewDownload.setClickable(false);
+                mImageDownload.setBackgroundResource(R.drawable.ic_cloud_off);
+                break;
+            default:
+                mTextViewDownload.setTextColor(getActivity()
+                        .getResources()
+                        .getColor(R.color.color_gray));
+                mTextViewDownload.setClickable(false);
+                mImageDownload.setBackgroundResource(R.drawable.ic_cloud_off);
+                break;
+        }
     }
 
     void initView(View view) {
@@ -84,6 +128,7 @@ public class DownloadBottomSheetFragment extends BottomSheetDialogFragment
         mTextViewPlay = view.findViewById(R.id.text_play);
         mTextViewDownload = view.findViewById(R.id.text_download);
         mTextViewDelete = view.findViewById(R.id.text_delete);
+        mImageDownload = view.findViewById(R.id.image_download);
     }
 
     @Override
@@ -115,16 +160,20 @@ public class DownloadBottomSheetFragment extends BottomSheetDialogFragment
             @NonNull int[] grantResults
     ) {
         if (permissionOK()) {
-            goOn();
+            download();
         }
     }
 
-    private void goOn() {
+    private void download() {
         MyDownloadManager.getInstance(getActivity()).download(mTrack);
     }
 
     @Override
-    public void updateDownloadingTracks(List<Track> tracks) {
-
+    public void updateDownloadState() {
+        try {
+            updateState();
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
