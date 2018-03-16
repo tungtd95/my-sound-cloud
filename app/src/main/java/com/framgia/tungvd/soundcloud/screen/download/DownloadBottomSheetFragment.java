@@ -16,9 +16,12 @@ import android.widget.TextView;
 import com.framgia.tungvd.soundcloud.R;
 import com.framgia.tungvd.soundcloud.data.model.Track;
 import com.framgia.tungvd.soundcloud.data.model.MyDownloadManager;
+import com.framgia.tungvd.soundcloud.data.model.downloadobserver.DownloadObserver;
+
+import java.util.List;
 
 public class DownloadBottomSheetFragment extends BottomSheetDialogFragment
-        implements DownloadContract.View {
+        implements DownloadContract.View, DownloadObserver {
 
     public static final String ARGUMENT_TRACK = "ARGUMENT_TRACK";
 
@@ -69,7 +72,10 @@ public class DownloadBottomSheetFragment extends BottomSheetDialogFragment
                     .getResources()
                     .getColor(R.color.color_gray));
             mTextViewDownload.setClickable(false);
+            return;
         }
+        MyDownloadManager downloadManager = MyDownloadManager.getInstance(getContext());
+
     }
 
     void initView(View view) {
@@ -115,5 +121,10 @@ public class DownloadBottomSheetFragment extends BottomSheetDialogFragment
 
     private void goOn() {
         MyDownloadManager.getInstance(getActivity()).download(mTrack);
+    }
+
+    @Override
+    public void updateDownloadingTracks(List<Track> tracks) {
+
     }
 }

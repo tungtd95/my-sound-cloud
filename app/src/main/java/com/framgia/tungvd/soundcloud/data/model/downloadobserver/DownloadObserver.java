@@ -6,5 +6,4 @@ import java.util.List;
 
 public interface DownloadObserver {
     void updateDownloadingTracks(List<Track> tracks);
-    void updateFirstTime(List<Track> tracks);
 }

@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
-import android.util.Log;
 
 import com.framgia.tungvd.soundcloud.data.model.downloadobserver.DownloadObservable;
 import com.framgia.tungvd.soundcloud.data.model.downloadobserver.DownloadObserver;
@@ -60,6 +59,7 @@ public class MyDownloadManager implements DownloadObservable {
                 new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
         mTracksDownloading.add(track);
         mIdTrackDownloading.add(id);
+        notifyDownloadingTracksChanged();
     }
 
     private BroadcastReceiver onDownload = new BroadcastReceiver() {
@@ -75,13 +75,16 @@ public class MyDownloadManager implements DownloadObservable {
         }
     };
 
-    public boolean isDownloading(Track track) {
+    public @DownloadState int getDownloadState(Track track) {
+        if (!track.isDownloadable()) {
+            return DownloadState.UN_DOWNLOADABLE;
+        }
         for (Track t : mTracksDownloading) {
             if (t.getId() == track.getId()) {
-                return true;
+                return DownloadState.DOWNLOADING;
             }
         }
-        return false;
+        return DownloadState.DOWNLOADABLE;
     }
 
     @Override
@@ -90,7 +93,6 @@ public class MyDownloadManager implements DownloadObservable {
             return;
         }
         mObservers.add(observer);
-        observer.updateFirstTime(mTracksDownloading);
     }
 
     @Override
@@ -101,7 +103,7 @@ public class MyDownloadManager implements DownloadObservable {
     @Override
     public void notifyDownloadingTracksChanged() {
         for (DownloadObserver o : mObservers) {
-            o.updateFirstTime(mTracksDownloading);
+            o.updateDownloadingTracks(mTracksDownloading);
         }
     }
 }
