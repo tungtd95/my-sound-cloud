@@ -7,7 +7,7 @@ import android.os.Parcelable;
 import com.framgia.tungvd.soundcloud.BuildConfig;
 import com.framgia.tungvd.soundcloud.util.Constant;
 
-public class Track implements Parcelable{
+public class Track implements Parcelable {
     private String mKind;
     private long mId;
     private String mCreateAt;
@@ -24,6 +24,7 @@ public class Track implements Parcelable{
     private String mUserName;
     private String mAvatarUrl;
     private Bitmap mImageBitMap;
+    private String mDownloadUrl;
 
     private Track(Builder builder) {
         mKind = builder.mKind;
@@ -41,6 +42,7 @@ public class Track implements Parcelable{
         mUserId = builder.mUserId;
         mUserName = builder.mUserName;
         mAvatarUrl = builder.mAvatarUrl;
+        mDownloadUrl = builder.mDownloadUrl;
     }
 
     protected Track(Parcel in) {
@@ -60,6 +62,7 @@ public class Track implements Parcelable{
         mUserName = in.readString();
         mAvatarUrl = in.readString();
         mImageBitMap = in.readParcelable(Bitmap.class.getClassLoader());
+        mDownloadUrl = in.readString();
     }
 
     public static final Creator<Track> CREATOR = new Creator<Track>() {
@@ -97,6 +100,7 @@ public class Track implements Parcelable{
         parcel.writeString(mUserName);
         parcel.writeString(mAvatarUrl);
         parcel.writeParcelable(mImageBitMap, i);
+        parcel.writeString(mDownloadUrl);
     }
 
     public static class Builder {
@@ -115,6 +119,7 @@ public class Track implements Parcelable{
         private long mUserId = -1;
         private String mUserName = "";
         private String mAvatarUrl = "";
+        private String mDownloadUrl = "";
 
         public Builder kind(String kind) {
             mKind = kind;
@@ -153,6 +158,14 @@ public class Track implements Parcelable{
 
         public Builder genre(String genre) {
             mGenre = genre;
+            return this;
+        }
+
+        public Builder downloadUrl(String url) {
+            mDownloadUrl = new StringBuilder(url)
+                    .append(Constant.SoundCloud.PARAM_CLIENT)
+                    .append(BuildConfig.SOUND_CLOUD_KEY)
+                    .toString();
             return this;
         }
 
@@ -257,5 +270,13 @@ public class Track implements Parcelable{
 
     public void setImageBitMap(Bitmap imageBitMap) {
         mImageBitMap = imageBitMap;
+    }
+
+    public String getDownloadUrl() {
+        return mDownloadUrl;
+    }
+
+    public void setDownloadUrl(String downloadUrl) {
+        mDownloadUrl = downloadUrl;
     }
 }

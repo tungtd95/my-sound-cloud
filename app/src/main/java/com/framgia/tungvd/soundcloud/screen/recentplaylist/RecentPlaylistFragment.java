@@ -18,7 +18,7 @@ import com.framgia.tungvd.soundcloud.screen.download.DownloadBottomSheetFragment
 import java.util.ArrayList;
 
 public class RecentPlaylistFragment extends BaseFragment
-        implements RecentPlaylistContract.View, MyItemClickListener{
+        implements RecentPlaylistContract.View, MyItemClickListener {
 
     private RecentPlaylistContract.Presenter mPresenter;
     private RecyclerView mRecyclerViewPlaylist;

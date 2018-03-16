@@ -14,6 +14,7 @@ public class Constant {
                 "https://api.soundcloud.com/tracks?client_id=%s&genre=soundcloud%sgenres%s%s&page=%d";
         public static final String PARAM_CLIENT = "?client_id=";
         public static final String PARAM_DOT = "%3A";
+        public static final String EXTENSION = ".mp4";
     }
 
     public class JsonProperties {
@@ -37,6 +38,7 @@ public class Constant {
         public static final String USER_NAME = "username";
         public static final String AVATAR_URL = "avatar_url";
         public static final String USER = "user";
+        public static final String DOWNLOAD_URL = "download_url";
     }
 
 }

@@ -1,10 +1,13 @@
 package com.framgia.tungvd.soundcloud.screen.recentplaylist;
 
+import android.app.DownloadManager;
+import android.net.Uri;
+import android.util.Log;
+
 import com.framgia.tungvd.soundcloud.data.model.Track;
 
 public class RecentPlaylistPresenter implements RecentPlaylistContract.Presenter {
 
-    private static final String TAG = "RecentPlaylistPresenter";
     private RecentPlaylistContract.View mView;
 
     @Override

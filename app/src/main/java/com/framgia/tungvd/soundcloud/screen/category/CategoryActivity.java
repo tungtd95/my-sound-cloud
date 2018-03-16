@@ -98,10 +98,7 @@ public class CategoryActivity extends BaseActivity
     @Override
     public void onItemDetail(Track track) {
         mPresenter.download(track);
-        DownloadBottomSheetFragment fragment = new DownloadBottomSheetFragment();
-        Bundle bundle = new Bundle();
-        bundle.putParcelable(DownloadBottomSheetFragment.ARGUMENT_TRACK, track);
-        fragment.setArguments(bundle);
+        DownloadBottomSheetFragment fragment = DownloadBottomSheetFragment.newInstance(track);
         fragment.show(getSupportFragmentManager(), fragment.getTag());
     }
 }
