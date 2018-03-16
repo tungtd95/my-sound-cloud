@@ -9,18 +9,20 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.framgia.tungvd.soundcloud.R;
-import com.framgia.tungvd.soundcloud.custom.RecyclerItemClickListener;
+import com.framgia.tungvd.soundcloud.custom.MyItemClickListener;
+import com.framgia.tungvd.soundcloud.custom.TrackAdapter;
 import com.framgia.tungvd.soundcloud.data.model.Track;
 import com.framgia.tungvd.soundcloud.screen.BaseFragment;
+import com.framgia.tungvd.soundcloud.screen.download.DownloadBottomSheetFragment;
 
 import java.util.ArrayList;
 
 public class RecentPlaylistFragment extends BaseFragment
-        implements RecentPlaylistContract.View, RecyclerItemClickListener.OnItemClickListener {
+        implements RecentPlaylistContract.View, MyItemClickListener{
 
     private RecentPlaylistContract.Presenter mPresenter;
     private RecyclerView mRecyclerViewPlaylist;
-    private TrackAdapterRecentPlay mAdapterRecentPlay;
+    private TrackAdapter mAdapterRecentPlay;
 
     @Nullable
     @Override
@@ -34,14 +36,10 @@ public class RecentPlaylistFragment extends BaseFragment
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         mRecyclerViewPlaylist = view.findViewById(R.id.recycler_recent_playlist);
-        mAdapterRecentPlay = new TrackAdapterRecentPlay();
+        mAdapterRecentPlay = new TrackAdapter();
+        mAdapterRecentPlay.setItemClickListener(this);
         mRecyclerViewPlaylist.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRecyclerViewPlaylist.setAdapter(mAdapterRecentPlay);
-        mRecyclerViewPlaylist.addOnItemTouchListener(new RecyclerItemClickListener(
-                getActivity(),
-                mRecyclerViewPlaylist,
-                this)
-        );
         mPresenter = new RecentPlaylistPresenter();
         mPresenter.setView(this);
         mPresenter.onStart();
@@ -91,12 +89,14 @@ public class RecentPlaylistFragment extends BaseFragment
     }
 
     @Override
-    public void onItemClick(View view, int position) {
+    public void onItemClicked(int position) {
         mMusicService.handleNewTrack(position);
     }
 
     @Override
-    public void onItemLongClick(View view, int position) {
-
+    public void onItemDetail(Track track) {
+        mPresenter.download(track);
+        DownloadBottomSheetFragment fragment = DownloadBottomSheetFragment.newInstance(track);
+        fragment.show(getFragmentManager(), fragment.getTag());
     }
 }

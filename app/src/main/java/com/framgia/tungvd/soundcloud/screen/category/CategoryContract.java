@@ -16,5 +16,6 @@ public interface CategoryContract {
     interface Presenter extends BasePresenter<View> {
         void getTracks();
         void setCategory(@Genre Category category);
+        void download(Track track);
     }
 }

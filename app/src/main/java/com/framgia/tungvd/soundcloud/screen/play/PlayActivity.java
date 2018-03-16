@@ -33,6 +33,7 @@ public class PlayActivity extends AppCompatActivity
 
     private static final int PROGRESS_MAX = 100;
     private static final int ONE_SECOND = 1000; /* millisecond */
+    private static final int DEFAULT_PAGE = 1;
 
     private Button mButtonPlay;
     private Button mButtonNext;
@@ -90,6 +91,7 @@ public class PlayActivity extends AppCompatActivity
         names.add(getResources().getString(R.string.title_playing));
         names.add(getResources().getString(R.string.title_detail));
         mViewPager.setAdapter(new MyPagerAdapter(getSupportFragmentManager(), fragments, names));
+        mViewPager.setCurrentItem(DEFAULT_PAGE);
     }
 
     private void initMusicService() {
