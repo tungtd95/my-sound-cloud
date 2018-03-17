@@ -15,7 +15,7 @@ import com.framgia.tungvd.soundcloud.data.source.TracksRepository;
 import com.framgia.tungvd.soundcloud.data.source.local.TracksLocalDataSource;
 import com.framgia.tungvd.soundcloud.data.source.remote.TracksRemoteDataSource;
 import com.framgia.tungvd.soundcloud.screen.BaseActivity;
-import com.framgia.tungvd.soundcloud.screen.download.DownloadBottomSheetFragment;
+import com.framgia.tungvd.soundcloud.screen.detail.DetailBottomSheetFragment;
 import com.framgia.tungvd.soundcloud.util.AppExecutors;
 
 import java.util.List;
@@ -98,7 +98,7 @@ public class CategoryActivity extends BaseActivity
     @Override
     public void onItemDetail(Track track) {
         mPresenter.download(track);
-        DownloadBottomSheetFragment fragment = DownloadBottomSheetFragment.newInstance(track);
+        DetailBottomSheetFragment fragment = DetailBottomSheetFragment.newInstance(track);
         fragment.show(getSupportFragmentManager(), fragment.getTag());
     }
 }

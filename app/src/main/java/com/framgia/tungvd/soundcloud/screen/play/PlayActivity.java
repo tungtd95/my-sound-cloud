@@ -16,6 +16,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.framgia.tungvd.soundcloud.R;
+import com.framgia.tungvd.soundcloud.custom.MyPagerAdapter;
 import com.framgia.tungvd.soundcloud.data.model.MusicService;
 import com.framgia.tungvd.soundcloud.data.model.PlayState;
 import com.framgia.tungvd.soundcloud.data.model.Track;

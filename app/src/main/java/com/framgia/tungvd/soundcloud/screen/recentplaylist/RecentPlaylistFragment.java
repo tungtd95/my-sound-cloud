@@ -13,7 +13,7 @@ import com.framgia.tungvd.soundcloud.custom.MyItemClickListener;
 import com.framgia.tungvd.soundcloud.custom.TrackAdapter;
 import com.framgia.tungvd.soundcloud.data.model.Track;
 import com.framgia.tungvd.soundcloud.screen.BaseFragment;
-import com.framgia.tungvd.soundcloud.screen.download.DownloadBottomSheetFragment;
+import com.framgia.tungvd.soundcloud.screen.detail.DetailBottomSheetFragment;
 
 import java.util.ArrayList;
 
@@ -96,7 +96,7 @@ public class RecentPlaylistFragment extends BaseFragment
     @Override
     public void onItemDetail(Track track) {
         mPresenter.download(track);
-        DownloadBottomSheetFragment fragment = DownloadBottomSheetFragment.newInstance(track);
+        DetailBottomSheetFragment fragment = DetailBottomSheetFragment.newInstance(track);
         fragment.show(getFragmentManager(), fragment.getTag());
     }
 }

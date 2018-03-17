@@ -1,4 +1,4 @@
-package com.framgia.tungvd.soundcloud.screen.download;
+package com.framgia.tungvd.soundcloud.screen.detail;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
@@ -21,12 +21,12 @@ import com.framgia.tungvd.soundcloud.data.model.Track;
 import com.framgia.tungvd.soundcloud.data.model.MyDownloadManager;
 import com.framgia.tungvd.soundcloud.data.model.downloadobserver.DownloadObserver;
 
-public class DownloadBottomSheetFragment extends BottomSheetDialogFragment
-        implements DownloadContract.View, DownloadObserver {
+public class DetailBottomSheetFragment extends BottomSheetDialogFragment
+        implements DetailContract.View, DownloadObserver {
 
     public static final String ARGUMENT_TRACK = "ARGUMENT_TRACK";
 
-    private DownloadContract.Presenter mPresenter;
+    private DetailContract.Presenter mPresenter;
     private Track mTrack;
     private MyDownloadManager mMyDownloadManager;
 
@@ -37,10 +37,10 @@ public class DownloadBottomSheetFragment extends BottomSheetDialogFragment
     private TextView mTextViewDelete;
     private ImageView mImageDownload;
 
-    public static DownloadBottomSheetFragment newInstance(Track track) {
-        DownloadBottomSheetFragment fragment = new DownloadBottomSheetFragment();
+    public static DetailBottomSheetFragment newInstance(Track track) {
+        DetailBottomSheetFragment fragment = new DetailBottomSheetFragment();
         Bundle bundle = new Bundle();
-        bundle.putParcelable(DownloadBottomSheetFragment.ARGUMENT_TRACK, track);
+        bundle.putParcelable(DetailBottomSheetFragment.ARGUMENT_TRACK, track);
         fragment.setArguments(bundle);
         return fragment;
     }

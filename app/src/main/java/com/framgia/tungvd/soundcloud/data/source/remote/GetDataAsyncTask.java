@@ -24,16 +24,27 @@ public class GetDataAsyncTask extends AsyncTask<String, Void, Void> {
 
     private static final int READ_TIMEOUT = 10000; /*millisecond*/
     private static final int CONNECT_TIMEOUT = 15000; /*millisecond*/
+    private static final int LIMIT_DEFAULT = -1;
 
     private LoadTracksCallback mCallback;
     private ArrayList<Track> mTracks;
     private String mGenre;
     private int mPage;
+    private int mLimit = LIMIT_DEFAULT;
 
-    public GetDataAsyncTask(@Genre String genre, int page, @NonNull LoadTracksCallback callback) {
+    public GetDataAsyncTask(@Genre String genre, int page,
+                            @NonNull LoadTracksCallback callback) {
         mCallback = callback;
         mPage = page;
         mGenre = genre;
+    }
+
+    public GetDataAsyncTask(@Genre String genre, int page, int limit,
+                            @NonNull LoadTracksCallback callback) {
+        mCallback = callback;
+        mPage = page;
+        mGenre = genre;
+        mLimit = limit;
     }
 
     @Override
@@ -46,6 +57,12 @@ public class GetDataAsyncTask extends AsyncTask<String, Void, Void> {
                 Constant.SoundCloud.PARAM_DOT,
                 mGenre,
                 mPage);
+        if (mLimit != LIMIT_DEFAULT) {
+            url = new StringBuilder(url)
+                    .append(Constant.SoundCloud.PARAM_LIMIT)
+                    .append(mLimit)
+                    .toString();
+        }
         try {
             String data = getJSONStringFromURL(url);
             mTracks = getTracksFromJson(data);
@@ -68,7 +85,7 @@ public class GetDataAsyncTask extends AsyncTask<String, Void, Void> {
 
     private String getJSONStringFromURL(String urlString) throws IOException {
 
-        HttpURLConnection urlConnection = null;
+        HttpURLConnection urlConnection;
 
         URL url = new URL(urlString);
 

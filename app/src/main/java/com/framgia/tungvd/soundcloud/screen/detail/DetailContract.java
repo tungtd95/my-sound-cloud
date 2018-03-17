@@ -1,8 +1,8 @@
-package com.framgia.tungvd.soundcloud.screen.download;
+package com.framgia.tungvd.soundcloud.screen.detail;
 
 import com.framgia.tungvd.soundcloud.screen.BasePresenter;
 
-public interface DownloadContract {
+public interface DetailContract {
     interface View {
         void displayDownloadProgress(int progress);
     }

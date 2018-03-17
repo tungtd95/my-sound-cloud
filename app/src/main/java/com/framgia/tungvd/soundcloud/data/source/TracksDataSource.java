@@ -16,7 +16,11 @@ public interface TracksDataSource {
 
     void getTracks(@NonNull LoadTracksCallback callback);
 
-    void getTracksByGenre(@Genre String genre, int page, @NonNull LoadTracksCallback callback);
+    void getTracksByGenre(@Genre String genre, int page,
+                          @NonNull LoadTracksCallback callback);
+
+    void getTracksByGenre(@Genre String genre, int page, int limit,
+                          @NonNull LoadTracksCallback callback);
 
     void deleteTrack(@NonNull long trackId);
 
