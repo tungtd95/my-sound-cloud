@@ -1,6 +1,5 @@
 package com.framgia.tungvd.soundcloud.data.model;
 
-import android.graphics.Bitmap;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -23,9 +22,10 @@ public class Track implements Parcelable {
     private long mUserId;
     private String mUserName;
     private String mAvatarUrl;
-    private Bitmap mImageBitMap;
     private String mDownloadUrl;
     private String mArtworkUrl;
+    private boolean mDownloaded;
+    private String mLocalPath;
 
     private Track(Builder builder) {
         mKind = builder.mKind;
@@ -45,6 +45,8 @@ public class Track implements Parcelable {
         mAvatarUrl = builder.mAvatarUrl;
         mDownloadUrl = builder.mDownloadUrl;
         mArtworkUrl = builder.mArtworkUrl;
+        mDownloaded = false;
+        mLocalPath = "";
     }
 
     protected Track(Parcel in) {
@@ -63,7 +65,6 @@ public class Track implements Parcelable {
         mUserId = in.readLong();
         mUserName = in.readString();
         mAvatarUrl = in.readString();
-        mImageBitMap = in.readParcelable(Bitmap.class.getClassLoader());
         mDownloadUrl = in.readString();
         mArtworkUrl = in.readString();
     }
@@ -102,7 +103,6 @@ public class Track implements Parcelable {
         parcel.writeLong(mUserId);
         parcel.writeString(mUserName);
         parcel.writeString(mAvatarUrl);
-        parcel.writeParcelable(mImageBitMap, i);
         parcel.writeString(mDownloadUrl);
         parcel.writeString(mArtworkUrl);
     }
@@ -274,14 +274,6 @@ public class Track implements Parcelable {
         return mAvatarUrl;
     }
 
-    public Bitmap getImageBitMap() {
-        return mImageBitMap;
-    }
-
-    public void setImageBitMap(Bitmap imageBitMap) {
-        mImageBitMap = imageBitMap;
-    }
-
     public String getDownloadUrl() {
         return mDownloadUrl;
     }
@@ -296,5 +288,21 @@ public class Track implements Parcelable {
 
     public void setArtworkUrl(String artworkUrl) {
         mArtworkUrl = artworkUrl;
+    }
+
+    public boolean isDownloaded() {
+        return mDownloaded;
+    }
+
+    public void setDownloaded(boolean downloaded) {
+        mDownloaded = downloaded;
+    }
+
+    public String getLocalPath() {
+        return mLocalPath;
+    }
+
+    public void setLocalPath(String localPath) {
+        mLocalPath = localPath;
     }
 }
