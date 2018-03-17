@@ -19,9 +19,6 @@ public interface TracksDataSource {
     void getTracksByGenre(@Genre String genre, int page,
                           @NonNull LoadTracksCallback callback);
 
-    void getTracksByGenre(@Genre String genre, int page, int limit,
-                          @NonNull LoadTracksCallback callback);
-
     void deleteTrack(@NonNull long trackId);
 
     void saveTrack(@NonNull Track track);

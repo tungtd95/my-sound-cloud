@@ -35,6 +35,7 @@ public class Category implements Parcelable {
     @Genre
     private String mGenre;
     private String mName;
+    private String mImageUrl;
 
     public Category(@Genre String genre) {
         mGenre = genre;
@@ -120,6 +121,7 @@ public class Category implements Parcelable {
     protected Category(Parcel in) {
         mGenre = in.readString();
         mName = in.readString();
+        mImageUrl = in.readString();
     }
 
     public static final Creator<Category> CREATOR = new Creator<Category>() {
@@ -142,6 +144,14 @@ public class Category implements Parcelable {
         return mName;
     }
 
+    public String getImageUrl() {
+        return mImageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        mImageUrl = imageUrl;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -151,5 +161,6 @@ public class Category implements Parcelable {
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeString(mGenre);
         parcel.writeString(mName);
+        parcel.writeString(mImageUrl);
     }
 }

@@ -37,12 +37,6 @@ public class TracksRepository implements TracksDataSource {
     }
 
     @Override
-    public void getTracksByGenre(String genre, int page, int limit,
-                                 @NonNull LoadTracksCallback callback) {
-        mTracksRemoteDataSource.getTracksByGenre(genre, page, limit, callback);
-    }
-
-    @Override
     public void deleteTrack(@NonNull long trackId) {
         mTracksLocalDataSource.deleteTrack(trackId);
     }

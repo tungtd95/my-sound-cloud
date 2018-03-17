@@ -7,6 +7,8 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 
 import com.framgia.tungvd.soundcloud.R;
@@ -56,8 +58,27 @@ public class MainActivity extends BaseActivity
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mMainPresenter.getCategoriesImage();
+    }
+
+    @Override
     public void showCategories(List<Category> categories) {
         mCategoryAdapter.setCategories(categories);
+    }
+
+    @Override
+    public void showImageCategory(int position, String imageUrl) {
+        mCategoryAdapter.getCategories().get(position).setImageUrl(imageUrl);
+        mCategoryAdapter.notifyItemChanged(position);
     }
 
     @Override

@@ -1,6 +1,5 @@
 package com.framgia.tungvd.soundcloud.screen.recenttrack;
 
-import android.graphics.Color;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -14,7 +13,6 @@ import com.framgia.tungvd.soundcloud.data.model.DownloadState;
 import com.framgia.tungvd.soundcloud.data.model.MyDownloadManager;
 import com.framgia.tungvd.soundcloud.data.model.Track;
 import com.framgia.tungvd.soundcloud.data.model.downloadobserver.DownloadObserver;
-import com.framgia.tungvd.soundcloud.data.model.playobserver.MusicServiceObserver;
 import com.framgia.tungvd.soundcloud.screen.BaseFragment;
 import com.makeramen.roundedimageview.RoundedTransformationBuilder;
 import com.squareup.picasso.Callback;
@@ -60,7 +58,7 @@ public class RecentTrackFragment extends BaseFragment
 
     void initView(View view) {
         mImageDownload = view.findViewById(R.id.image_download);
-        mImageTrack = view.findViewById(R.id.image_track);
+        mImageTrack = view.findViewById(R.id.image_track_sub);
     }
 
     void updateView() {

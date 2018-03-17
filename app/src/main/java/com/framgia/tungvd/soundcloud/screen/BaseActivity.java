@@ -9,6 +9,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -19,6 +20,8 @@ import com.framgia.tungvd.soundcloud.data.model.PlayState;
 import com.framgia.tungvd.soundcloud.data.model.Track;
 import com.framgia.tungvd.soundcloud.data.model.playobserver.MusicServiceObserver;
 import com.framgia.tungvd.soundcloud.screen.play.PlayActivity;
+import com.framgia.tungvd.soundcloud.util.Constant;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
@@ -32,6 +35,7 @@ public abstract class BaseActivity extends AppCompatActivity
     protected TextView mTextViewTrackArtist;
     private Button mButtonPlay;
     private Button mButtonNext;
+    private ImageView mImageTrackSub;
 
     private ServiceConnection mServiceConnection = new ServiceConnection() {
         @Override
@@ -53,6 +57,7 @@ public abstract class BaseActivity extends AppCompatActivity
         mProgressBarMain = findViewById(R.id.progress_main);
         mTextViewTrackArtist = findViewById(R.id.text_track_artist_sub);
         mRelativeSubController = findViewById(R.id.relative_sub_controller);
+        mImageTrackSub = findViewById(R.id.image_track_sub);
         mRelativeSubController.setOnClickListener(this);
         mButtonPlay.setOnClickListener(this);
         mButtonNext.setOnClickListener(this);
@@ -117,6 +122,12 @@ public abstract class BaseActivity extends AppCompatActivity
         if (track != null) {
             mTextViewTrackName.setText(track.getTitle());
             mTextViewTrackArtist.setText(track.getUserName());
+            if (!track.getArtworkUrl().isEmpty() &&
+                    !track.getArtworkUrl().equals(Constant.SoundCloud.NULL_VALUE)) {
+                Picasso.get().load(track.getArtworkUrl()).into(mImageTrackSub);
+            } else {
+                mImageTrackSub.setImageResource(R.drawable.ic_music);
+            }
         }
     }
 

@@ -83,7 +83,7 @@
         app:layout_constraintStart_toEndOf="@+id/image_play" />
 
     <ImageView
-        android:id="@+id/image_track"
+        android:id="@+id/image_track_sub"
         android:layout_width="@dimen/item_track_height"
         android:layout_height="@dimen/item_track_height"
         android:layout_marginBottom="@dimen/dp_16"
@@ -102,7 +102,7 @@
         android:layout_marginStart="@dimen/dp_8"
         app:layout_constraintBottom_toTopOf="@+id/text_play"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/image_track" />
+        app:layout_constraintStart_toEndOf="@+id/image_track_sub" />
 
     <TextView
         android:id="@+id/text_track"
@@ -117,6 +117,6 @@
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/text_user"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/image_track" />
+        app:layout_constraintStart_toEndOf="@+id/image_track_sub" />
 
 </android.support.constraint.ConstraintLayout>

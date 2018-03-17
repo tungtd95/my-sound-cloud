@@ -4,10 +4,12 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.framgia.tungvd.soundcloud.R;
 import com.framgia.tungvd.soundcloud.data.model.Category;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,10 +52,12 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
     public class CategoryViewHolder extends RecyclerView.ViewHolder {
 
         private TextView mTextViewCategory;
+        private ImageView mImageCategory;
 
         public CategoryViewHolder(View itemView) {
             super(itemView);
             mTextViewCategory = itemView.findViewById(R.id.text_view_category);
+            mImageCategory = itemView.findViewById(R.id.image_category);
         }
 
         public void bindView(Category category) {
@@ -61,6 +65,9 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
                 return;
             }
             mTextViewCategory.setText(category.getName());
+            if (category.getImageUrl() != null && !category.getImageUrl().isEmpty()) {
+                Picasso.get().load(category.getImageUrl()).fit().centerCrop().into(mImageCategory);
+            }
         }
     }
 }

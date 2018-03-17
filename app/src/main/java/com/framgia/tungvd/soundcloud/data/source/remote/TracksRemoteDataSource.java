@@ -1,5 +1,6 @@
 package com.framgia.tungvd.soundcloud.data.source.remote;
 
+import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 
 import com.framgia.tungvd.soundcloud.data.model.Track;
@@ -29,13 +30,8 @@ public class TracksRemoteDataSource implements TracksDataSource {
     @Override
     public void getTracksByGenre(@Genre String genre, int page,
                                  @NonNull LoadTracksCallback callback) {
-        new GetDataAsyncTask(genre, page, callback).execute("");
-    }
-
-    @Override
-    public void getTracksByGenre(@Genre String genre, int page, int limit,
-                                 @NonNull LoadTracksCallback callback) {
-        new GetDataAsyncTask(genre, page, limit, callback).execute("");
+        new GetDataAsyncTask(genre, page, callback)
+                .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, "");
     }
 
     @Override

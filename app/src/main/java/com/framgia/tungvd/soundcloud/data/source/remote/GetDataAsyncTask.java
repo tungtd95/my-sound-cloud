@@ -2,6 +2,7 @@ package com.framgia.tungvd.soundcloud.data.source.remote;
 
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.framgia.tungvd.soundcloud.BuildConfig;
 import com.framgia.tungvd.soundcloud.data.model.Track;
@@ -39,14 +40,6 @@ public class GetDataAsyncTask extends AsyncTask<String, Void, Void> {
         mGenre = genre;
     }
 
-    public GetDataAsyncTask(@Genre String genre, int page, int limit,
-                            @NonNull LoadTracksCallback callback) {
-        mCallback = callback;
-        mPage = page;
-        mGenre = genre;
-        mLimit = limit;
-    }
-
     @Override
     protected Void doInBackground(@Genre String... strings) {
 
@@ -57,12 +50,6 @@ public class GetDataAsyncTask extends AsyncTask<String, Void, Void> {
                 Constant.SoundCloud.PARAM_DOT,
                 mGenre,
                 mPage);
-        if (mLimit != LIMIT_DEFAULT) {
-            url = new StringBuilder(url)
-                    .append(Constant.SoundCloud.PARAM_LIMIT)
-                    .append(mLimit)
-                    .toString();
-        }
         try {
             String data = getJSONStringFromURL(url);
             mTracks = getTracksFromJson(data);

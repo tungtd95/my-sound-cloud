@@ -60,12 +60,6 @@ public class TracksLocalDataSource implements TracksDataSource {
     }
 
     @Override
-    public void getTracksByGenre(String genre, int page, int limit,
-                                 @NonNull LoadTracksCallback callback) {
-        //not required for the local data
-    }
-
-    @Override
     public void deleteTrack(@NonNull final long trackId) {
         Runnable runnable = new Runnable() {
             @Override

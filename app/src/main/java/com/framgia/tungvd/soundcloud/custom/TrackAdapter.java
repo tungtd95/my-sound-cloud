@@ -106,6 +106,8 @@ public class TrackAdapter
             if (!track.getArtworkUrl().equals(Constant.SoundCloud.NULL_VALUE)) {
                 Picasso.get().load(track.getArtworkUrl())
                         .fit().centerInside().into(mImageViewTrack);
+            } else {
+                mImageViewTrack.setImageResource(R.drawable.ic_music);
             }
         }
     }
