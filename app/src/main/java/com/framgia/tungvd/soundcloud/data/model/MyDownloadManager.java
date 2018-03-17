@@ -9,10 +9,18 @@ import android.net.Uri;
 
 import com.framgia.tungvd.soundcloud.data.model.downloadobserver.DownloadObservable;
 import com.framgia.tungvd.soundcloud.data.model.downloadobserver.DownloadObserver;
+import com.framgia.tungvd.soundcloud.data.source.TracksDataSource;
+import com.framgia.tungvd.soundcloud.data.source.TracksRepository;
+import com.framgia.tungvd.soundcloud.data.source.local.MyDBHelper;
+import com.framgia.tungvd.soundcloud.data.source.local.TracksLocalDataSource;
+import com.framgia.tungvd.soundcloud.data.source.remote.TracksRemoteDataSource;
+import com.framgia.tungvd.soundcloud.util.AppExecutors;
 import com.framgia.tungvd.soundcloud.util.Constant;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Handler;
 
 public class MyDownloadManager implements DownloadObservable {
 
@@ -20,15 +28,38 @@ public class MyDownloadManager implements DownloadObservable {
     private Context mContext;
     private ArrayList<Track> mTracksDownloading;
     private ArrayList<Long> mIdTrackDownloading;
-    private ArrayList<Track> mTracksDownloaded;
+    private ArrayList<String> mPathTrackDownloading;
+
+    private List<Track> mTracksDownloaded;
     private ArrayList<DownloadObserver> mObservers;
+    private TracksRepository mTracksRepository;
 
     private MyDownloadManager(Context context) {
         mContext = context;
+        mTracksRepository = TracksRepository.getInstance(TracksRemoteDataSource.getInstance(),
+                TracksLocalDataSource.getInstance(new AppExecutors(),
+                        MyDBHelper.getInstance(context)));
         mTracksDownloading = new ArrayList<>();
         mIdTrackDownloading = new ArrayList<>();
         mTracksDownloaded = new ArrayList<>();
+        mPathTrackDownloading = new ArrayList<>();
         mObservers = new ArrayList<>();
+        updateDownloadedTrack();
+    }
+
+    void updateDownloadedTrack() {
+        mTracksRepository.getDownloadedTracks(new TracksDataSource.LoadTracksCallback() {
+            @Override
+            public void onTracksLoaded(List<Track> tracks) {
+                mTracksDownloaded = tracks;
+                notifyDownloadedTracksChanged();
+            }
+
+            @Override
+            public void onDataNotAvailable() {
+
+            }
+        });
     }
 
     public static MyDownloadManager getInstance(Context context) {
@@ -61,6 +92,7 @@ public class MyDownloadManager implements DownloadObservable {
                 new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
         mTracksDownloading.add(track);
         mIdTrackDownloading.add(id);
+        mPathTrackDownloading.add(file.getAbsolutePath());
         notifyDownloadStateChanged();
         notifyDownloadingTracksChanged();
     }
@@ -71,19 +103,29 @@ public class MyDownloadManager implements DownloadObservable {
             long id = intent.getExtras().getLong(DownloadManager.EXTRA_DOWNLOAD_ID);
             for (int i = 0; i < mIdTrackDownloading.size(); i++) {
                 if (mIdTrackDownloading.get(i) == id) {
-                    mTracksDownloaded.add(mTracksDownloading.get(i));
+                    Track trackDownloaded = mTracksDownloading.get(i);
+                    trackDownloaded.setDownloaded(true);
+                    trackDownloaded.setLocalPath(mPathTrackDownloading.get(i));
+                    mTracksRepository.saveTrack(trackDownloaded,
+                            new TracksDataSource.SaveTracksCallback() {
+                                @Override
+                                public void onSaveTrackFinished() {
+                                    updateDownloadedTrack();
+                                }
+                            });
                     mIdTrackDownloading.remove(i);
                     mTracksDownloading.remove(i);
+                    mPathTrackDownloading.remove(i);
                     notifyDownloadStateChanged();
                     notifyDownloadingTracksChanged();
-                    notifyDownloadedTracksChanged();
                     break;
                 }
             }
         }
     };
 
-    public @DownloadState int getDownloadState(Track track) {
+    public @DownloadState
+    int getDownloadState(Track track) {
         if (!track.isDownloadable()) {
             return DownloadState.UN_DOWNLOADABLE;
         }

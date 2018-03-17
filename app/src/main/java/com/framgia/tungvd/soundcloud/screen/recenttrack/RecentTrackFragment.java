@@ -1,8 +1,15 @@
 package com.framgia.tungvd.soundcloud.screen.recenttrack;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
+import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,11 +32,13 @@ import java.util.List;
 public class RecentTrackFragment extends BaseFragment
         implements RecentTrackContract.View, DownloadObserver {
 
+    private static final int REQUEST_PERMISSION = 1;
     private RecentTrackContract.Presenter mPresenter;
     private ImageView mImageTrack;
     private ImageView mImageDownload;
     private MyDownloadManager mMyDownloadManager;
     private Track mTrack;
+    private Handler mHandler;
 
     @Nullable
     @Override
@@ -42,6 +51,7 @@ public class RecentTrackFragment extends BaseFragment
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        mHandler = new Handler();
         initView(view);
         mPresenter = new RecentTrackPresenter();
         mPresenter.setView(this);
@@ -52,9 +62,38 @@ public class RecentTrackFragment extends BaseFragment
         mImageDownload.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mMyDownloadManager.download(mTrack);
+                if (isPermissionGranted()) {
+                    mMyDownloadManager.download(mTrack);
+                } else {
+                    requestPermission();
+                }
             }
         });
+    }
+
+    public void requestPermission() {
+        ActivityCompat.requestPermissions(
+                getActivity(),
+                new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                REQUEST_PERMISSION);
+    }
+
+    public boolean isPermissionGranted() {
+        return ContextCompat.checkSelfPermission(getActivity(),
+                Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                == PackageManager.PERMISSION_GRANTED;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(
+            int requestCode,
+            @NonNull String[] permissions,
+            @NonNull int[] grantResults
+    ) {
+        if (isPermissionGranted()) {
+            Log.i("TAG", "permission granted");
+            mMyDownloadManager.download(mTrack);
+        }
     }
 
     void initView(View view) {
@@ -118,16 +157,16 @@ public class RecentTrackFragment extends BaseFragment
         Picasso.get().load(track.getArtworkUrl()).fit()
                 .transform(transformation).centerInside()
                 .into(mImageTrack, new Callback() {
-            @Override
-            public void onSuccess() {
+                    @Override
+                    public void onSuccess() {
 
-            }
+                    }
 
-            @Override
-            public void onError(Exception e) {
-                mImageTrack.setImageResource(R.drawable.music_icon_origin);
-            }
-        });
+                    @Override
+                    public void onError(Exception e) {
+                        mImageTrack.setImageResource(R.drawable.music_icon_origin);
+                    }
+                });
         updateView();
     }
 
@@ -155,7 +194,13 @@ public class RecentTrackFragment extends BaseFragment
 
     @Override
     public void updateDownloadState() {
-        updateView();
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                updateView();
+            }
+        };
+        mHandler.post(runnable);
     }
 
     @Override
@@ -165,7 +210,7 @@ public class RecentTrackFragment extends BaseFragment
 
     @Override
     public void updateDownloadedTracks(List<Track> tracks) {
-        //no need to implement
+        updateDownloadState();
     }
 
     @Override

@@ -40,8 +40,13 @@ public class TracksRemoteDataSource implements TracksDataSource {
     }
 
     @Override
-    public void saveTrack(@NonNull Track track) {
+    public void saveTrack(@NonNull Track track, @NonNull SaveTracksCallback callback) {
         //not required in remote data source
+    }
+
+    @Override
+    public void getDownloadedTracks(@NonNull LoadTracksCallback callback) {
+        //not supported
     }
 
 }

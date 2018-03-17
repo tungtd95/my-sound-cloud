@@ -8,6 +8,7 @@ import com.framgia.tungvd.soundcloud.data.source.CategoriesDataSource;
 import com.framgia.tungvd.soundcloud.data.source.CategoriesRepository;
 import com.framgia.tungvd.soundcloud.data.source.TracksDataSource;
 import com.framgia.tungvd.soundcloud.data.source.TracksRepository;
+import com.framgia.tungvd.soundcloud.data.source.local.MyDBHelper;
 import com.framgia.tungvd.soundcloud.data.source.local.TracksLocalDataSource;
 import com.framgia.tungvd.soundcloud.data.source.remote.TracksRemoteDataSource;
 import com.framgia.tungvd.soundcloud.util.AppExecutors;
@@ -28,10 +29,9 @@ public class MainPresenter implements MainContract.Presenter {
     private Random mRandom;
     private List<Category> mCategories;
 
-    public MainPresenter() {
+    public MainPresenter(TracksRepository repository) {
         mCategoriesRepository = CategoriesRepository.getInstance();
-        mTracksRepository = TracksRepository.getInstance(TracksRemoteDataSource.getInstance(),
-                TracksLocalDataSource.getInstance(new AppExecutors(), null));
+        mTracksRepository = repository;
         mRandom = new Random();
     }
 

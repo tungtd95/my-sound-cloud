@@ -56,9 +56,11 @@ public class MyDBHelper extends SQLiteOpenHelper implements PlaylistDao, TracksD
             "DROP TABLE IF EXISTS " + Constant.PlaylistEntry.TABLE_NAME;
 
     private static final String SQL_CREATE_TRACK_PLAYLIST_ENTRIES =
-            "CREATE TABLE " + Constant.PlaylistEntry.TABLE_NAME + " (" +
-                    Constant.TrackPlaylistEntry.COLUMN_ID_TRACK + " INTEGER PRIMARY KEY," +
-                    Constant.TrackPlaylistEntry.COLUMN_ID_PLAYLIST + " INTEGER PRIMARY KEY)";
+            "CREATE TABLE " + Constant.TrackPlaylistEntry.TABLE_NAME + " (" +
+                    Constant.TrackPlaylistEntry.COLUMN_ID_TRACK + " INTEGER," +
+                    Constant.TrackPlaylistEntry.COLUMN_ID_PLAYLIST + " INTEGER, PRIMARY KEY( " +
+                    Constant.TrackPlaylistEntry.COLUMN_ID_TRACK + ", " +
+                    Constant.TrackPlaylistEntry.COLUMN_ID_PLAYLIST + " ))";
 
     private static final String SQL_DELETE_TRACK_PLAYLIST_ENTRIES =
             "DROP TABLE IF EXISTS " + Constant.TrackPlaylistEntry.TABLE_NAME;
@@ -69,7 +71,7 @@ public class MyDBHelper extends SQLiteOpenHelper implements PlaylistDao, TracksD
         super(context, DB_NAME, null, DB_VERSION);
     }
 
-    public MyDBHelper getInstance(Context context) {
+    public static MyDBHelper getInstance(Context context) {
         if (sInstance == null) {
             synchronized (MyDBHelper.class) {
                 if (sInstance == null) {
@@ -96,75 +98,16 @@ public class MyDBHelper extends SQLiteOpenHelper implements PlaylistDao, TracksD
     }
 
     @Override
-    public List<Track> getTracks() {
-        Cursor cursor = getReadableDatabase().query(Constant.TrackEntry.TABLE_NAME,
-                null, null, null, null, null, null);
-        List<Track> tracks = new ArrayList<>();
-        while (cursor.moveToNext()) {
-            String kind = cursor.getString(
-                    cursor.getColumnIndexOrThrow(Constant.TrackEntry.COLUMN_KIND));
-            long id = cursor.getLong(
-                    cursor.getColumnIndexOrThrow(Constant.TrackEntry.COLUMN_ID));
-            String createAt = cursor.getString(
-                    cursor.getColumnIndexOrThrow(Constant.TrackEntry.COLUMN_CREATED_AT));
-            long duration = cursor.getLong(
-                    cursor.getColumnIndexOrThrow(Constant.TrackEntry.COLUMN_DURATION));
-            String state = cursor.getString(
-                    cursor.getColumnIndexOrThrow(Constant.TrackEntry.COLUMN_STATE));
-            String tagList = cursor.getString(
-                    cursor.getColumnIndexOrThrow(Constant.TrackEntry.COLUMN_TAG_LIST));
-            boolean downloadable = cursor.getInt(
-                    cursor.getColumnIndexOrThrow(Constant.TrackEntry.COLUMN_DOWNLOADABLE))
-                    == TRUE_VALUE;
-            String genre = cursor.getString(
-                    cursor.getColumnIndexOrThrow(Constant.TrackEntry.COLUMN_GENRE));
-            boolean downloaded = cursor.getInt(
-                    cursor.getColumnIndexOrThrow(Constant.TrackEntry.COLUMN_DOWNLOADED))
-                    == TRUE_VALUE;
-            String localPath = cursor.getString(
-                    cursor.getColumnIndexOrThrow(Constant.TrackEntry.COLUMN_LOCAL_PATH));
-            String title = cursor.getString(
-                    cursor.getColumnIndexOrThrow(Constant.TrackEntry.COLUMN_TITLE));
-            String description = cursor.getString(
-                    cursor.getColumnIndexOrThrow(Constant.TrackEntry.COLUMN_DESCRIPTION));
-            String labelName = cursor.getString(
-                    cursor.getColumnIndexOrThrow(Constant.TrackEntry.COLUMN_LABEL_NAME));
-            String streamUrl = cursor.getString(
-                    cursor.getColumnIndexOrThrow(Constant.TrackEntry.COLUMN_STREAM_URL));
-            String artworkUrl = cursor.getString(
-                    cursor.getColumnIndexOrThrow(Constant.TrackEntry.COLUMN_ARTWORK_URL));
-            String downloadUrl = cursor.getString(
-                    cursor.getColumnIndexOrThrow(Constant.TrackEntry.COLUMN_DOWNLOAD_URL));
-            long userId = cursor.getLong(
-                    cursor.getColumnIndexOrThrow(Constant.TrackEntry.COLUMN_USER_ID));
-            String userName = cursor.getString(
-                    cursor.getColumnIndexOrThrow(Constant.TrackEntry.COLUMN_USER_NAME));
-            String avatarUrl = cursor.getString(
-                    cursor.getColumnIndexOrThrow(Constant.TrackEntry.COLUMN_AVATAR_URL));
-            Track track = new Track.Builder()
-                    .kind(kind)
-                    .id(id)
-                    .createAt(createAt)
-                    .duration(duration)
-                    .state(state)
-                    .tagList(tagList)
-                    .downloadable(downloadable)
-                    .genre(genre)
-                    .title(title)
-                    .description(description)
-                    .labelName(labelName)
-                    .streamUrl(streamUrl)
-                    .user(userId, userName, avatarUrl)
-                    .downloadUrl(downloadUrl)
-                    .artworkUrl(artworkUrl)
-                    .build();
-            track.setLocalPath(localPath);
-            track.setDownloaded(downloaded);
-            tracks.add(track);
-        }
-        cursor.close();
+    public List<Track> getLocalTracks() {
+        return handleTracksCursor(getReadableDatabase().query(Constant.TrackEntry.TABLE_NAME,
+                null, null, null, null, null, null));
+    }
 
-        return tracks;
+    @Override
+    public List<Track> getDownloadedTracks() {
+        return handleTracksCursor(getReadableDatabase().query(Constant.TrackEntry.TABLE_NAME, null,
+                new StringBuilder(Constant.TrackEntry.COLUMN_DOWNLOADED).append(EQUAL).toString(),
+                new String[]{String.valueOf(TRUE_VALUE)}, null, null, null));
     }
 
     @Override
@@ -254,5 +197,74 @@ public class MyDBHelper extends SQLiteOpenHelper implements PlaylistDao, TracksD
         getWritableDatabase().delete(Constant.TrackPlaylistEntry.TABLE_NAME,
                 whereClause,
                 new String[]{String.valueOf(playlist.getId()), String.valueOf(track.getId())});
+    }
+
+    private List<Track> handleTracksCursor(Cursor cursor) {
+        List<Track> tracks = new ArrayList<>();
+        while (cursor.moveToNext()) {
+            String kind = cursor.getString(
+                    cursor.getColumnIndexOrThrow(Constant.TrackEntry.COLUMN_KIND));
+            long id = cursor.getLong(
+                    cursor.getColumnIndexOrThrow(Constant.TrackEntry.COLUMN_ID));
+            String createAt = cursor.getString(
+                    cursor.getColumnIndexOrThrow(Constant.TrackEntry.COLUMN_CREATED_AT));
+            long duration = cursor.getLong(
+                    cursor.getColumnIndexOrThrow(Constant.TrackEntry.COLUMN_DURATION));
+            String state = cursor.getString(
+                    cursor.getColumnIndexOrThrow(Constant.TrackEntry.COLUMN_STATE));
+            String tagList = cursor.getString(
+                    cursor.getColumnIndexOrThrow(Constant.TrackEntry.COLUMN_TAG_LIST));
+            boolean downloadable = cursor.getInt(
+                    cursor.getColumnIndexOrThrow(Constant.TrackEntry.COLUMN_DOWNLOADABLE))
+                    == TRUE_VALUE;
+            String genre = cursor.getString(
+                    cursor.getColumnIndexOrThrow(Constant.TrackEntry.COLUMN_GENRE));
+            boolean downloaded = cursor.getInt(
+                    cursor.getColumnIndexOrThrow(Constant.TrackEntry.COLUMN_DOWNLOADED))
+                    == TRUE_VALUE;
+            String localPath = cursor.getString(
+                    cursor.getColumnIndexOrThrow(Constant.TrackEntry.COLUMN_LOCAL_PATH));
+            String title = cursor.getString(
+                    cursor.getColumnIndexOrThrow(Constant.TrackEntry.COLUMN_TITLE));
+            String description = cursor.getString(
+                    cursor.getColumnIndexOrThrow(Constant.TrackEntry.COLUMN_DESCRIPTION));
+            String labelName = cursor.getString(
+                    cursor.getColumnIndexOrThrow(Constant.TrackEntry.COLUMN_LABEL_NAME));
+            String streamUrl = cursor.getString(
+                    cursor.getColumnIndexOrThrow(Constant.TrackEntry.COLUMN_STREAM_URL));
+            String artworkUrl = cursor.getString(
+                    cursor.getColumnIndexOrThrow(Constant.TrackEntry.COLUMN_ARTWORK_URL));
+            String downloadUrl = cursor.getString(
+                    cursor.getColumnIndexOrThrow(Constant.TrackEntry.COLUMN_DOWNLOAD_URL));
+            long userId = cursor.getLong(
+                    cursor.getColumnIndexOrThrow(Constant.TrackEntry.COLUMN_USER_ID));
+            String userName = cursor.getString(
+                    cursor.getColumnIndexOrThrow(Constant.TrackEntry.COLUMN_USER_NAME));
+            String avatarUrl = cursor.getString(
+                    cursor.getColumnIndexOrThrow(Constant.TrackEntry.COLUMN_AVATAR_URL));
+            Track track = new Track.Builder()
+                    .kind(kind)
+                    .id(id)
+                    .createAt(createAt)
+                    .duration(duration)
+                    .state(state)
+                    .tagList(tagList)
+                    .downloadable(downloadable)
+                    .genre(genre)
+                    .title(title)
+                    .description(description)
+                    .labelName(labelName)
+                    .streamUrl(streamUrl)
+                    .user(userId, userName, avatarUrl)
+                    .downloadUrl(downloadUrl)
+                    .artworkUrl(artworkUrl)
+                    .build();
+            track.setLocalPath(localPath);
+            track.setDownloaded(downloaded);
+            tracks.add(track);
+        }
+        cursor.close();
+
+        return tracks;
     }
 }

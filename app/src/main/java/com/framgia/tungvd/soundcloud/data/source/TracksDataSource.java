@@ -14,6 +14,10 @@ public interface TracksDataSource {
         void onDataNotAvailable();
     }
 
+    interface SaveTracksCallback {
+        void onSaveTrackFinished();
+    }
+
     void getTracks(@NonNull LoadTracksCallback callback);
 
     void getTracksByGenre(@Genre String genre, int page,
@@ -21,5 +25,7 @@ public interface TracksDataSource {
 
     void deleteTrack(@NonNull long trackId);
 
-    void saveTrack(@NonNull Track track);
+    void saveTrack(@NonNull Track track, @NonNull SaveTracksCallback callback);
+
+    void getDownloadedTracks(@NonNull LoadTracksCallback callback);
 }

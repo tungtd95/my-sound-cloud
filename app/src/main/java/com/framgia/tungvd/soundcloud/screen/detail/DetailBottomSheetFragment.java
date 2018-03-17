@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetDialogFragment;
@@ -27,6 +28,7 @@ public class DetailBottomSheetFragment extends BottomSheetDialogFragment
         implements DetailContract.View, DownloadObserver {
 
     public static final String ARGUMENT_TRACK = "ARGUMENT_TRACK";
+    private static final int REQUEST_PERMISSION = 1;
 
     private DetailContract.Presenter mPresenter;
     private Track mTrack;
@@ -38,6 +40,7 @@ public class DetailBottomSheetFragment extends BottomSheetDialogFragment
     private TextView mTextViewDownload;
     private TextView mTextViewDelete;
     private ImageView mImageDownload;
+    private Handler mHandler;
 
     public static DetailBottomSheetFragment newInstance(Track track) {
         DetailBottomSheetFragment fragment = new DetailBottomSheetFragment();
@@ -67,13 +70,14 @@ public class DetailBottomSheetFragment extends BottomSheetDialogFragment
         mTextViewDownload.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (permissionOK()) {
+                if (isPermissionGranted()) {
                     download();
                 } else {
                     requestPermission();
                 }
             }
         });
+        mHandler = new Handler();
         updateState();
     }
 
@@ -141,16 +145,12 @@ public class DetailBottomSheetFragment extends BottomSheetDialogFragment
     public void requestPermission() {
         ActivityCompat.requestPermissions(
                 getActivity(),
-                new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                1);
+                new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                REQUEST_PERMISSION);
     }
 
-    public boolean permissionOK() {
+    public boolean isPermissionGranted() {
         return ContextCompat.checkSelfPermission(getActivity(),
-                Manifest.permission.READ_EXTERNAL_STORAGE)
-                == PackageManager.PERMISSION_GRANTED &&
-                ContextCompat.checkSelfPermission(getActivity(),
                         Manifest.permission.WRITE_EXTERNAL_STORAGE)
                         == PackageManager.PERMISSION_GRANTED;
     }
@@ -161,7 +161,7 @@ public class DetailBottomSheetFragment extends BottomSheetDialogFragment
             @NonNull String[] permissions,
             @NonNull int[] grantResults
     ) {
-        if (permissionOK()) {
+        if (isPermissionGranted()) {
             download();
         }
     }
@@ -172,11 +172,13 @@ public class DetailBottomSheetFragment extends BottomSheetDialogFragment
 
     @Override
     public void updateDownloadState() {
-        try {
-            updateState();
-        }catch (Exception e) {
-            e.printStackTrace();
-        }
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                updateState();
+            }
+        };
+        mHandler.post(runnable);
     }
 
     @Override
@@ -186,7 +188,7 @@ public class DetailBottomSheetFragment extends BottomSheetDialogFragment
 
     @Override
     public void updateDownloadedTracks(List<Track> tracks) {
-        //no need to implement
+        updateDownloadState();
     }
 
     @Override

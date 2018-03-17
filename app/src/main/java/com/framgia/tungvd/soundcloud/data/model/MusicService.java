@@ -151,8 +151,6 @@ public class MusicService extends Service
     /**
      * invoked then user click any song
      */
-    private static final String TAG = "MusicService";
-
     public void handleNewTrack(int position) {
         if (mTracks == null || mMediaPlayer == null || mTracks.size() == 0) {
             return;

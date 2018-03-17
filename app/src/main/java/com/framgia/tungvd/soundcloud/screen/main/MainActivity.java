@@ -17,9 +17,14 @@ import com.framgia.tungvd.soundcloud.custom.CategoryAdapter;
 import com.framgia.tungvd.soundcloud.custom.EqualSpacingItemDecoration;
 import com.framgia.tungvd.soundcloud.custom.RecyclerItemClickListener;
 import com.framgia.tungvd.soundcloud.data.model.Category;
+import com.framgia.tungvd.soundcloud.data.source.TracksRepository;
+import com.framgia.tungvd.soundcloud.data.source.local.MyDBHelper;
+import com.framgia.tungvd.soundcloud.data.source.local.TracksLocalDataSource;
+import com.framgia.tungvd.soundcloud.data.source.remote.TracksRemoteDataSource;
 import com.framgia.tungvd.soundcloud.screen.BaseActivity;
 import com.framgia.tungvd.soundcloud.screen.category.CategoryActivity;
 import com.framgia.tungvd.soundcloud.screen.download.DownloadActivity;
+import com.framgia.tungvd.soundcloud.util.AppExecutors;
 
 import java.util.List;
 
@@ -54,7 +59,10 @@ public class MainActivity extends BaseActivity
         mRecyclerViewCategories.addOnItemTouchListener(
                 new RecyclerItemClickListener(this, mRecyclerViewCategories, this));
 
-        mMainPresenter = new MainPresenter();
+        mMainPresenter = new MainPresenter(TracksRepository
+                .getInstance(TracksRemoteDataSource.getInstance(),
+                        TracksLocalDataSource.getInstance(new AppExecutors(),
+                                MyDBHelper.getInstance(this))));
         mMainPresenter.setView(this);
         mMainPresenter.onStart();
     }

@@ -21,7 +21,7 @@ public class TracksLocalDataSource implements TracksDataSource {
     }
 
     public static TracksLocalDataSource getInstance(@NonNull AppExecutors appExecutors,
-                                                    TracksDao tracksDao) {
+                                                    @NonNull TracksDao tracksDao) {
         if (sInstance == null) {
             synchronized (TracksLocalDataSource.class) {
                 if (sInstance == null) {
@@ -37,7 +37,7 @@ public class TracksLocalDataSource implements TracksDataSource {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                final List<Track> tracks = mTracksDao.getTracks();
+                final List<Track> tracks = mTracksDao.getLocalTracks();
                 mAppExecutors.mainThread().execute(new Runnable() {
                     @Override
                     public void run() {
@@ -71,11 +71,28 @@ public class TracksLocalDataSource implements TracksDataSource {
     }
 
     @Override
-    public void saveTrack(@NonNull final Track track) {
+    public void saveTrack(@NonNull final Track track, @NonNull final SaveTracksCallback callback) {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
                 mTracksDao.insertTrack(track);
+                callback.onSaveTrackFinished();
+            }
+        };
+        mAppExecutors.diskIO().execute(runnable);
+    }
+
+    @Override
+    public void getDownloadedTracks(@NonNull final LoadTracksCallback callback) {
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                List<Track> tracks = mTracksDao.getDownloadedTracks();
+                if (tracks.isEmpty()) {
+                    callback.onDataNotAvailable();
+                } else {
+                    callback.onTracksLoaded(tracks);
+                }
             }
         };
         mAppExecutors.diskIO().execute(runnable);

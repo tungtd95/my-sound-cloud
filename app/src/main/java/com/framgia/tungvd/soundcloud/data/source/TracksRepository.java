@@ -42,7 +42,12 @@ public class TracksRepository implements TracksDataSource {
     }
 
     @Override
-    public void saveTrack(@NonNull Track track) {
-        mTracksLocalDataSource.saveTrack(track);
+    public void saveTrack(@NonNull Track track, @NonNull SaveTracksCallback callback) {
+        mTracksLocalDataSource.saveTrack(track, callback);
+    }
+
+    @Override
+    public void getDownloadedTracks(@NonNull LoadTracksCallback callback) {
+        mTracksLocalDataSource.getDownloadedTracks(callback);
     }
 }

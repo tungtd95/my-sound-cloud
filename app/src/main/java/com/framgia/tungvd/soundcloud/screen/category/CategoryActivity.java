@@ -13,6 +13,7 @@ import com.framgia.tungvd.soundcloud.data.model.Category;
 import com.framgia.tungvd.soundcloud.data.model.MusicService;
 import com.framgia.tungvd.soundcloud.data.model.Track;
 import com.framgia.tungvd.soundcloud.data.source.TracksRepository;
+import com.framgia.tungvd.soundcloud.data.source.local.MyDBHelper;
 import com.framgia.tungvd.soundcloud.data.source.local.TracksLocalDataSource;
 import com.framgia.tungvd.soundcloud.data.source.remote.TracksRemoteDataSource;
 import com.framgia.tungvd.soundcloud.screen.BaseActivity;
@@ -63,7 +64,7 @@ public class CategoryActivity extends BaseActivity
         mPresenter = new CategoryPresenter(
                 TracksRepository.getInstance(TracksRemoteDataSource.getInstance(),
                         TracksLocalDataSource.getInstance(new AppExecutors(),
-                                null)));
+                                MyDBHelper.getInstance(this))));
         mPresenter.setView(this);
         mPresenter.setCategory((Category) getIntent().getExtras().getParcelable(EXTRA_CATEGORY));
         mPresenter.onStart();

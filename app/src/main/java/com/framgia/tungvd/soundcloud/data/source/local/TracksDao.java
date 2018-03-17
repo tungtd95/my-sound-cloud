@@ -5,30 +5,13 @@ import com.framgia.tungvd.soundcloud.data.model.Track;
 import java.util.List;
 
 public interface TracksDao {
-    /**
-     * Select all tracks from the tracks table
-     *
-     * @return all tracks
-     */
-    List<Track> getTracks();
+    List<Track> getLocalTracks();
 
-    /**
-     * insert a downloaded track into database
-     *
-     * @param track tobe insert
-     */
+    List<Track> getDownloadedTracks();
+
     void insertTrack(Track track);
 
-    /**
-     * delete existed track by id
-     *
-     * @param trackId
-     * @return the number of tracks deleted. should always be 1.
-     */
     int deleteTrackById(long trackId);
 
-    /**
-     * delete all tracks in the database
-     */
     void deleteTracks();
 }

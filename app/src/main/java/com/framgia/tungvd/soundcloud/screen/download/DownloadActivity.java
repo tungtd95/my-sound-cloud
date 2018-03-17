@@ -1,6 +1,7 @@
 package com.framgia.tungvd.soundcloud.screen.download;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -20,11 +21,13 @@ public class DownloadActivity extends BaseActivity implements DownloadContract.V
     private RecyclerView mRecyclerDownloading;
     private TrackAdapter mAdapterDownloaded;
     private TrackAdapter mAdapterDownloading;
+    private Handler mHandler;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_download);
+        mHandler = new Handler();
         initView();
         initMusicService();
         MyDownloadManager.getInstance(this).register(this);
@@ -68,8 +71,14 @@ public class DownloadActivity extends BaseActivity implements DownloadContract.V
     }
 
     @Override
-    public void updateDownloadedTracks(List<Track> tracks) {
-        mAdapterDownloaded.setTracks(tracks);
+    public void updateDownloadedTracks(final List<Track> tracks) {
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                mAdapterDownloaded.setTracks(tracks);
+            }
+        };
+        mHandler.post(runnable);
     }
 
     @Override
