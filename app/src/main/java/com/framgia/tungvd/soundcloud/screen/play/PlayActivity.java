@@ -10,6 +10,8 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.SeekBar;
@@ -65,6 +67,7 @@ public class PlayActivity extends AppCompatActivity
     };
 
     private void initPlayingView() {
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         mButtonPlay = findViewById(R.id.button_play);
         mButtonNext = findViewById(R.id.button_next);
         mButtonPrevious = findViewById(R.id.button_previous);
@@ -95,6 +98,12 @@ public class PlayActivity extends AppCompatActivity
         mViewPager.setCurrentItem(DEFAULT_PAGE);
     }
 
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return super.onSupportNavigateUp();
+    }
+
     private void initMusicService() {
         Intent intent = new Intent(this, MusicService.class);
         bindService(intent, mServiceConnection, BIND_AUTO_CREATE);
@@ -112,6 +121,12 @@ public class PlayActivity extends AppCompatActivity
         mPresenter.onStart();
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.menu_main, menu);
+        return true;
+    }
 
     @Override
     public void onClick(View view) {

@@ -62,6 +62,7 @@ public class MyDownloadManager implements DownloadObservable {
         mTracksDownloading.add(track);
         mIdTrackDownloading.add(id);
         notifyDownloadStateChanged();
+        notifyDownloadingTracksChanged();
     }
 
     private BroadcastReceiver onDownload = new BroadcastReceiver() {
@@ -74,6 +75,8 @@ public class MyDownloadManager implements DownloadObservable {
                     mIdTrackDownloading.remove(i);
                     mTracksDownloading.remove(i);
                     notifyDownloadStateChanged();
+                    notifyDownloadingTracksChanged();
+                    notifyDownloadedTracksChanged();
                     break;
                 }
             }
@@ -103,6 +106,7 @@ public class MyDownloadManager implements DownloadObservable {
             return;
         }
         mObservers.add(observer);
+        observer.updateFirstTime(mTracksDownloaded, mTracksDownloading);
     }
 
     @Override
@@ -114,6 +118,20 @@ public class MyDownloadManager implements DownloadObservable {
     public void notifyDownloadStateChanged() {
         for (DownloadObserver o : mObservers) {
             o.updateDownloadState();
+        }
+    }
+
+    @Override
+    public void notifyDownloadingTracksChanged() {
+        for (DownloadObserver o : mObservers) {
+            o.updateDownloadingTracks(mTracksDownloading);
+        }
+    }
+
+    @Override
+    public void notifyDownloadedTracksChanged() {
+        for (DownloadObserver o : mObservers) {
+            o.updateDownloadedTracks(mTracksDownloaded);
         }
     }
 }

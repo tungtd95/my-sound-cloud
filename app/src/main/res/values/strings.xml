@@ -16,4 +16,6 @@
     <string name="title_delete">Delete</string>
     <string name="title_play">Play</string>
     <string name="title_playlists">Playlists</string>
+    <string name="title_downloading">Downloading</string>
+    <string name="title_downloaded">Downloaded</string>
 </resources>

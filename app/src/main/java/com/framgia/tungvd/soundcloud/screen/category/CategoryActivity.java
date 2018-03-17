@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.MenuItem;
 
 import com.framgia.tungvd.soundcloud.R;
 import com.framgia.tungvd.soundcloud.custom.MyItemClickListener;
@@ -44,6 +45,7 @@ public class CategoryActivity extends BaseActivity
 
     private void initView() {
         initBaseView();
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         mMusicService = MusicService.getInstance();
         mProgressDialog = new ProgressDialog(this);
         mProgressDialog.setMessage(
@@ -65,6 +67,12 @@ public class CategoryActivity extends BaseActivity
         mPresenter.setView(this);
         mPresenter.setCategory((Category) getIntent().getExtras().getParcelable(EXTRA_CATEGORY));
         mPresenter.onStart();
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return super.onSupportNavigateUp();
     }
 
     @Override

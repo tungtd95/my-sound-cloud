@@ -1,5 +1,6 @@
 package com.framgia.tungvd.soundcloud.custom;
 
+import android.graphics.drawable.AnimationDrawable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,6 +23,7 @@ public class TrackAdapter
     private List<Track> mTracks;
     private Track mTrack;
     private MyItemClickListener mItemClickListener;
+    private boolean isDownloading;
 
     public void setItemClickListener(MyItemClickListener itemClickListener) {
         mItemClickListener = itemClickListener;
@@ -29,6 +31,11 @@ public class TrackAdapter
 
     public TrackAdapter() {
         mTracks = new ArrayList<>();
+    }
+
+    public TrackAdapter(boolean isDownloading) {
+        mTracks = new ArrayList<>();
+        this.isDownloading = isDownloading;
     }
 
     public List<Track> getTracks() {
@@ -108,6 +115,13 @@ public class TrackAdapter
                         .fit().centerInside().into(mImageViewTrack);
             } else {
                 mImageViewTrack.setImageResource(R.drawable.ic_music);
+            }
+
+            if (isDownloading) {
+                mImageViewAction.setClickable(false);
+                mImageViewAction.setBackgroundResource(R.drawable.download_animation);
+                AnimationDrawable animation = (AnimationDrawable) mImageViewAction.getBackground();
+                animation.start();
             }
         }
     }

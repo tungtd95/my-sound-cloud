@@ -20,6 +20,7 @@ import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Transformation;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class RecentTrackFragment extends BaseFragment
         implements RecentTrackContract.View, DownloadObserver {
@@ -155,5 +156,20 @@ public class RecentTrackFragment extends BaseFragment
     @Override
     public void updateDownloadState() {
         updateView();
+    }
+
+    @Override
+    public void updateDownloadingTracks(List<Track> tracks) {
+        //no need to implement
+    }
+
+    @Override
+    public void updateDownloadedTracks(List<Track> tracks) {
+        //no need to implement
+    }
+
+    @Override
+    public void updateFirstTime(List<Track> tracksDownloaded, List<Track> tracksDownloading) {
+        //no need to implement
     }
 }

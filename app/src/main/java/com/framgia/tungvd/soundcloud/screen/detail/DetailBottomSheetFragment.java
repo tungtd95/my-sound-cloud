@@ -21,6 +21,8 @@ import com.framgia.tungvd.soundcloud.data.model.Track;
 import com.framgia.tungvd.soundcloud.data.model.MyDownloadManager;
 import com.framgia.tungvd.soundcloud.data.model.downloadobserver.DownloadObserver;
 
+import java.util.List;
+
 public class DetailBottomSheetFragment extends BottomSheetDialogFragment
         implements DetailContract.View, DownloadObserver {
 
@@ -175,5 +177,20 @@ public class DetailBottomSheetFragment extends BottomSheetDialogFragment
         }catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void updateDownloadingTracks(List<Track> tracks) {
+        //no need to implement
+    }
+
+    @Override
+    public void updateDownloadedTracks(List<Track> tracks) {
+        //no need to implement
+    }
+
+    @Override
+    public void updateFirstTime(List<Track> tracksDownloaded, List<Track> tracksDownloading) {
+        //no need to implement
     }
 }

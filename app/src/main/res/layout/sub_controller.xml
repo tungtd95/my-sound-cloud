@@ -9,7 +9,7 @@
     android:elevation="@dimen/shadow_medium"
     android:gravity="center"
     android:translationZ="@dimen/shadow_medium"
-    android:visibility="gone">
+    android:visibility="visible">
 
     <ProgressBar
         android:id="@+id/progress_main"

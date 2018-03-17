@@ -26,6 +26,8 @@
         <activity android:name=".screen.category.CategoryActivity" />
 
         <activity android:name=".screen.play.PlayActivity" />
+
+        <activity android:name=".screen.download.DownloadActivity" />
     </application>
 
 </manifest>
