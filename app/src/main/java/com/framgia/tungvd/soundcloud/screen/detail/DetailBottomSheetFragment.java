@@ -40,6 +40,7 @@ public class DetailBottomSheetFragment extends BottomSheetDialogFragment
     private TextView mTextViewDownload;
     private TextView mTextViewDelete;
     private ImageView mImageDownload;
+    private ImageView mImageCreatePlayList;
     private Handler mHandler;
 
     public static DetailBottomSheetFragment newInstance(Track track) {
@@ -135,6 +136,7 @@ public class DetailBottomSheetFragment extends BottomSheetDialogFragment
         mTextViewDownload = view.findViewById(R.id.text_download);
         mTextViewDelete = view.findViewById(R.id.text_delete);
         mImageDownload = view.findViewById(R.id.image_download);
+        mImageCreatePlayList = view.findViewById(R.id.image_create_playlist);
     }
 
     @Override

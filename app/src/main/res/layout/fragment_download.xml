@@ -14,8 +14,7 @@
         android:layout_marginLeft="@dimen/dp_8"
         android:layout_marginStart="@dimen/dp_8"
         android:src="@drawable/ic_delete"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/text_delete"
+        app:layout_constraintBottom_toTopOf="@+id/image_playlist"
         app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
@@ -28,7 +27,7 @@
         android:layout_marginStart="@dimen/dp_8"
         android:gravity="center_vertical"
         android:text="@string/title_delete"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/text_playlist"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/image_delete" />
 
@@ -40,7 +39,6 @@
         android:layout_marginLeft="@dimen/dp_8"
         android:layout_marginStart="@dimen/dp_8"
         app:layout_constraintBottom_toTopOf="@+id/image_delete"
-        app:layout_constraintEnd_toStartOf="@+id/text_download"
         app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
@@ -66,7 +64,6 @@
         android:layout_marginStart="@dimen/dp_8"
         android:src="@drawable/play_gray"
         app:layout_constraintBottom_toTopOf="@+id/image_download"
-        app:layout_constraintEnd_toStartOf="@+id/text_play"
         app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
@@ -86,9 +83,9 @@
         android:id="@+id/image_track_sub"
         android:layout_width="@dimen/item_track_height"
         android:layout_height="@dimen/item_track_height"
-        android:layout_marginBottom="@dimen/dp_16"
-        android:layout_marginLeft="@dimen/dp_8"
-        android:layout_marginStart="@dimen/dp_8"
+        android:layout_marginBottom="@dimen/dp_8"
+        android:layout_marginLeft="@dimen/dp_16"
+        android:layout_marginStart="@dimen/dp_16"
         app:layout_constraintBottom_toTopOf="@+id/image_play"
         app:layout_constraintStart_toStartOf="parent"
         app:srcCompat="@drawable/ic_music" />
@@ -97,11 +94,12 @@
         android:id="@+id/text_user"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="24dp"
+        android:layout_marginBottom="@dimen/dp_16"
         android:layout_marginLeft="@dimen/dp_8"
         android:layout_marginStart="@dimen/dp_8"
         app:layout_constraintBottom_toTopOf="@+id/text_play"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/image_track_sub" />
 
     <TextView
@@ -118,5 +116,50 @@
         app:layout_constraintBottom_toTopOf="@+id/text_user"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/image_track_sub" />
+
+    <ImageView
+        android:id="@+id/image_playlist"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/dp_8"
+        android:layout_marginLeft="@dimen/dp_8"
+        android:layout_marginStart="@dimen/dp_8"
+        android:src="@drawable/ic_playlist_add"
+        app:layout_constraintBottom_toTopOf="@+id/recycler_playlist"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/text_playlist"
+        style="@style/DownloadText"
+        android:textColor="@color/color_black"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/download_item_image_height"
+        android:layout_marginBottom="@dimen/dp_8"
+        android:layout_marginLeft="@dimen/dp_8"
+        android:layout_marginStart="@dimen/dp_8"
+        android:text="@string/title_add_to_playlist"
+        app:layout_constraintBottom_toTopOf="@+id/recycler_playlist"
+        app:layout_constraintStart_toEndOf="@+id/image_playlist" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recycler_playlist"
+        android:layout_width="@dimen/recycler_detail_height"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/recycler_detail_padding"
+        android:layout_marginStart="@dimen/recycler_detail_padding"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageView
+        android:id="@+id/image_create_playlist"
+        android:layout_width="@dimen/download_item_image_height"
+        android:layout_height="@dimen/download_item_image_height"
+        android:layout_marginBottom="@dimen/dp_8"
+        android:layout_marginLeft="@dimen/dp_8"
+        android:layout_marginStart="@dimen/dp_8"
+        android:src="@drawable/ic_add_circle"
+        app:layout_constraintBottom_toTopOf="@+id/recycler_playlist"
+        app:layout_constraintStart_toEndOf="@+id/text_playlist" />
 
 </android.support.constraint.ConstraintLayout>

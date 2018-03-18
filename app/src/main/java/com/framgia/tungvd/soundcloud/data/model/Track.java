@@ -45,8 +45,8 @@ public class Track implements Parcelable {
         mAvatarUrl = builder.mAvatarUrl;
         mDownloadUrl = builder.mDownloadUrl;
         mArtworkUrl = builder.mArtworkUrl;
-        mDownloaded = false;
-        mLocalPath = "";
+        mDownloaded = builder.mDownloaded;
+        mLocalPath = builder.mLocalPath;
     }
 
     protected Track(Parcel in) {
@@ -125,6 +125,8 @@ public class Track implements Parcelable {
         private String mAvatarUrl = "";
         private String mDownloadUrl = "";
         private String mArtworkUrl = "";
+        private boolean mDownloaded = false;
+        private String mLocalPath = "";
 
         public Builder kind(String kind) {
             mKind = kind;
@@ -163,6 +165,16 @@ public class Track implements Parcelable {
 
         public Builder genre(String genre) {
             mGenre = genre;
+            return this;
+        }
+
+        public Builder downloaded(Boolean downloaded) {
+            mDownloaded = downloaded;
+            return this;
+        }
+
+        public Builder localPath(String localPath) {
+            mLocalPath = localPath;
             return this;
         }
 

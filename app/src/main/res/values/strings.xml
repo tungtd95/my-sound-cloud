@@ -15,7 +15,12 @@
     <string name="title_download">Download</string>
     <string name="title_delete">Delete</string>
     <string name="title_play">Play</string>
+    <string name="title_add_to_playlist">Add To Playlist</string>
     <string name="title_playlists">Playlists</string>
     <string name="title_downloading">Downloading</string>
     <string name="title_downloaded">Downloaded</string>
+    <string name="msg_play_list_name">New Playlist\'s Name</string>
+    <string name="title_create">Create</string>
+    <string name="title_cancel">Cancel</string>
+    <string name="mgs_empty_name">Name must not empty!</string>
 </resources>

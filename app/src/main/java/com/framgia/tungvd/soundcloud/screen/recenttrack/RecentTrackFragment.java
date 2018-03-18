@@ -65,17 +65,12 @@ public class RecentTrackFragment extends BaseFragment
                 if (isPermissionGranted()) {
                     mMyDownloadManager.download(mTrack);
                 } else {
-                    requestPermission();
+                    requestPermissions(
+                            new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                            REQUEST_PERMISSION);
                 }
             }
         });
-    }
-
-    public void requestPermission() {
-        ActivityCompat.requestPermissions(
-                getActivity(),
-                new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                REQUEST_PERMISSION);
     }
 
     public boolean isPermissionGranted() {
@@ -91,7 +86,6 @@ public class RecentTrackFragment extends BaseFragment
             @NonNull int[] grantResults
     ) {
         if (isPermissionGranted()) {
-            Log.i("TAG", "permission granted");
             mMyDownloadManager.download(mTrack);
         }
     }
@@ -177,7 +171,7 @@ public class RecentTrackFragment extends BaseFragment
 
     @Override
     public void updateState(int playState) {
-        // TODO: 03/13/18 add some animation here
+        //no need to implement
     }
 
     @Override

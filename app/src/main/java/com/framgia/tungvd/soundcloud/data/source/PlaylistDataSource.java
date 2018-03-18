@@ -14,9 +14,19 @@ public interface PlaylistDataSource {
         void onDataNotAvailable();
     }
 
+    interface PlaylistInsertCallback {
+        void onSuccess();
+
+        void onFail();
+    }
+
     void getPlaylist(@NonNull PlaylistCallback callback);
-    void savePlaylist(@NonNull Playlist playlist);
+
+    void savePlaylist(@NonNull Playlist playlist, @NonNull PlaylistInsertCallback callback);
+
     void deleteList(@NonNull Playlist playlist);
-    void addTrackToPlaylist(@NonNull Track track,@NonNull Playlist playlist);
-    void removeTrackFromPlaylist(@NonNull Track track,@NonNull Playlist playlist);
+
+    void addTrackToPlaylist(@NonNull Track track, @NonNull Playlist playlist);
+
+    void removeTrackFromPlaylist(@NonNull Track track, @NonNull Playlist playlist);
 }

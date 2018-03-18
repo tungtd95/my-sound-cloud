@@ -8,13 +8,31 @@ import com.framgia.tungvd.soundcloud.data.source.PlaylistDataSource;
 
 
 public class PlaylistRemoteDataSource implements PlaylistDataSource {
+
+    private static PlaylistRemoteDataSource sInstance;
+
+    private PlaylistRemoteDataSource() {
+
+    }
+
+    public static PlaylistRemoteDataSource getInstance() {
+        if (sInstance == null) {
+            synchronized (PlaylistRemoteDataSource.class) {
+                if (sInstance == null) {
+                    sInstance = new PlaylistRemoteDataSource();
+                }
+            }
+        }
+        return sInstance;
+    }
+
     @Override
     public void getPlaylist(@NonNull PlaylistCallback callback) {
 
     }
 
     @Override
-    public void savePlaylist(@NonNull Playlist playlist) {
+    public void savePlaylist(@NonNull Playlist playlist, @NonNull PlaylistInsertCallback callback) {
 
     }
 

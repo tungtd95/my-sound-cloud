@@ -150,7 +150,8 @@ public class MyDBHelper extends SQLiteOpenHelper implements PlaylistDao, TracksD
 
     @Override
     public List<Playlist> getPlaylist() {
-        return null;
+        return handlePlaylistCursor(getReadableDatabase().query(Constant.PlaylistEntry.TABLE_NAME,
+                null, null, null, null, null, null));
     }
 
     @Override
@@ -161,11 +162,28 @@ public class MyDBHelper extends SQLiteOpenHelper implements PlaylistDao, TracksD
     }
 
     @Override
-    public void insertPlaylist(Playlist playlist) {
+    public boolean insertPlaylist(Playlist playlist) {
+        if (!getPlayList(playlist.getName()).isEmpty()) {
+            return false;
+        }
         ContentValues values = new ContentValues();
         values.put(Constant.PlaylistEntry.COLUMN_ID, playlist.getId());
         values.put(Constant.PlaylistEntry.COLUMN_NAME, playlist.getName());
-        getWritableDatabase().insert(Constant.PlaylistEntry.TABLE_NAME, null, values);
+        long result = getWritableDatabase()
+                .insert(Constant.PlaylistEntry.TABLE_NAME, null, values);
+        if (result == -1) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public List<Playlist> getPlayList(String name) {
+        return handlePlaylistCursor(getReadableDatabase().query(Constant.PlaylistEntry.TABLE_NAME,
+                null,
+                new StringBuilder(Constant.PlaylistEntry.COLUMN_NAME).append(EQUAL).toString(),
+                new String[]{name},
+                null, null, null));
     }
 
     @Override
@@ -174,7 +192,7 @@ public class MyDBHelper extends SQLiteOpenHelper implements PlaylistDao, TracksD
         values.put(Constant.PlaylistEntry.COLUMN_ID, playlist.getId());
         values.put(Constant.PlaylistEntry.COLUMN_NAME, playlist.getName());
         getWritableDatabase().update(Constant.PlaylistEntry.TABLE_NAME, values,
-                new StringBuilder(playlist.getId()).append(EQUAL).toString(),
+                new StringBuilder(String.valueOf(playlist.getId())).append(EQUAL).toString(),
                 new String[]{String.valueOf(playlist.getId())});
     }
 
@@ -197,6 +215,19 @@ public class MyDBHelper extends SQLiteOpenHelper implements PlaylistDao, TracksD
         getWritableDatabase().delete(Constant.TrackPlaylistEntry.TABLE_NAME,
                 whereClause,
                 new String[]{String.valueOf(playlist.getId()), String.valueOf(track.getId())});
+    }
+
+    private List<Playlist> handlePlaylistCursor(Cursor cursor) {
+        List<Playlist> playlists = new ArrayList<>();
+        while (cursor.moveToNext()) {
+            long id = cursor.getLong(
+                    cursor.getColumnIndexOrThrow(Constant.PlaylistEntry.COLUMN_ID));
+            String name = cursor.getString(
+                    cursor.getColumnIndexOrThrow(Constant.PlaylistEntry.COLUMN_NAME));
+            playlists.add(new Playlist(id, name));
+        }
+        cursor.close();
+        return playlists;
     }
 
     private List<Track> handleTracksCursor(Cursor cursor) {
@@ -242,7 +273,7 @@ public class MyDBHelper extends SQLiteOpenHelper implements PlaylistDao, TracksD
                     cursor.getColumnIndexOrThrow(Constant.TrackEntry.COLUMN_USER_NAME));
             String avatarUrl = cursor.getString(
                     cursor.getColumnIndexOrThrow(Constant.TrackEntry.COLUMN_AVATAR_URL));
-            Track track = new Track.Builder()
+            tracks.add(new Track.Builder()
                     .kind(kind)
                     .id(id)
                     .createAt(createAt)
@@ -258,10 +289,9 @@ public class MyDBHelper extends SQLiteOpenHelper implements PlaylistDao, TracksD
                     .user(userId, userName, avatarUrl)
                     .downloadUrl(downloadUrl)
                     .artworkUrl(artworkUrl)
-                    .build();
-            track.setLocalPath(localPath);
-            track.setDownloaded(downloaded);
-            tracks.add(track);
+                    .localPath(localPath)
+                    .downloaded(downloaded)
+                    .build());
         }
         cursor.close();
 

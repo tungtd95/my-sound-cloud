@@ -13,7 +13,9 @@ public interface PlaylistDao {
 
     void deletePlaylist(Playlist playlist);
 
-    void insertPlaylist(Playlist playlist);
+    boolean insertPlaylist(Playlist playlist);
+
+    List<Playlist> getPlayList(String name);
 
     void updatePlaylist(Playlist playlist);
 

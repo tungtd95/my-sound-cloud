@@ -3,17 +3,22 @@ package com.framgia.tungvd.soundcloud.data.model;
 import java.util.ArrayList;
 
 public class Playlist {
-    private int mId;
+    private long mId;
     private String mName;
     private ArrayList<Track> mTracks;
 
-    public Playlist(int id, String name, ArrayList<Track> tracks) {
+    public Playlist(long id, String name, ArrayList<Track> tracks) {
         mId = id;
         mName = name;
         mTracks = tracks;
     }
 
-    public int getId() {
+    public Playlist(long id, String name) {
+        mId = id;
+        mName = name;
+    }
+
+    public long getId() {
         return mId;
     }
 

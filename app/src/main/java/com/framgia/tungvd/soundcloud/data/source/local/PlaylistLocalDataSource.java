@@ -10,7 +10,7 @@ import com.framgia.tungvd.soundcloud.util.AppExecutors;
 
 public class PlaylistLocalDataSource implements PlaylistDataSource {
 
-    private static volatile PlaylistLocalDataSource sInstance;
+    private static PlaylistLocalDataSource sInstance;
     private PlaylistDao mPlaylistDao;
     private AppExecutors mAppExecutors;
 
@@ -38,8 +38,14 @@ public class PlaylistLocalDataSource implements PlaylistDataSource {
     }
 
     @Override
-    public void savePlaylist(@NonNull Playlist playlist) {
-
+    public void savePlaylist(@NonNull final Playlist playlist, PlaylistInsertCallback callback) {
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                mPlaylistDao.insertPlaylist(playlist);
+            }
+        };
+        mAppExecutors.diskIO().execute(runnable);
     }
 
     @Override
