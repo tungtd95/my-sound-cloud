@@ -7,6 +7,8 @@ import com.framgia.tungvd.soundcloud.data.model.Track;
 import com.framgia.tungvd.soundcloud.data.source.PlaylistDataSource;
 import com.framgia.tungvd.soundcloud.util.AppExecutors;
 
+import java.util.List;
+
 
 public class PlaylistLocalDataSource implements PlaylistDataSource {
 
@@ -33,16 +35,31 @@ public class PlaylistLocalDataSource implements PlaylistDataSource {
     }
 
     @Override
-    public void getPlaylist(@NonNull PlaylistCallback callback) {
-
-    }
-
-    @Override
-    public void savePlaylist(@NonNull final Playlist playlist, PlaylistInsertCallback callback) {
+    public void getPlaylist(@NonNull final PlaylistCallback callback) {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                mPlaylistDao.insertPlaylist(playlist);
+                List<Playlist> playlists = mPlaylistDao.getPlaylist();
+                if (playlists.isEmpty()) {
+                    callback.onDataNotAvailable();
+                } else {
+                    callback.onPlaylistLoaded(playlists);
+                }
+            }
+        };
+        mAppExecutors.diskIO().execute(runnable);
+    }
+
+    @Override
+    public void savePlaylist(@NonNull final Playlist playlist, final PlaylistInsertCallback callback) {
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                if(mPlaylistDao.insertPlaylist(playlist)) {
+                    callback.onSuccess();
+                } else {
+                    callback.onFail();
+                }
             }
         };
         mAppExecutors.diskIO().execute(runnable);

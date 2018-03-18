@@ -4,10 +4,9 @@ import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.MenuItem;
 
 import com.framgia.tungvd.soundcloud.R;
-import com.framgia.tungvd.soundcloud.custom.MyItemClickListener;
+import com.framgia.tungvd.soundcloud.custom.TrackClickListener;
 import com.framgia.tungvd.soundcloud.custom.TrackAdapter;
 import com.framgia.tungvd.soundcloud.data.model.Category;
 import com.framgia.tungvd.soundcloud.data.model.MusicService;
@@ -23,7 +22,7 @@ import com.framgia.tungvd.soundcloud.util.AppExecutors;
 import java.util.List;
 
 public class CategoryActivity extends BaseActivity
-        implements CategoryContract.View, MyItemClickListener{
+        implements CategoryContract.View, TrackClickListener {
 
     public static final String EXTRA_CATEGORY =
             "com.framgia.tungvd.soundcloud.screen.category.extras.EXTRA_CATEGORY";

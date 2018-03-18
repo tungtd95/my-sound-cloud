@@ -9,7 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.framgia.tungvd.soundcloud.R;
-import com.framgia.tungvd.soundcloud.custom.MyItemClickListener;
+import com.framgia.tungvd.soundcloud.custom.TrackClickListener;
 import com.framgia.tungvd.soundcloud.custom.TrackAdapter;
 import com.framgia.tungvd.soundcloud.data.model.Track;
 import com.framgia.tungvd.soundcloud.screen.BaseFragment;
@@ -18,7 +18,7 @@ import com.framgia.tungvd.soundcloud.screen.detail.DetailBottomSheetFragment;
 import java.util.ArrayList;
 
 public class RecentPlaylistFragment extends BaseFragment
-        implements RecentPlaylistContract.View, MyItemClickListener {
+        implements RecentPlaylistContract.View, TrackClickListener {
 
     private RecentPlaylistContract.Presenter mPresenter;
     private RecyclerView mRecyclerViewPlaylist;

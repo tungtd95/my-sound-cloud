@@ -10,21 +10,32 @@ import android.widget.Toast;
 
 import com.framgia.tungvd.soundcloud.R;
 import com.framgia.tungvd.soundcloud.data.model.Playlist;
+import com.framgia.tungvd.soundcloud.data.source.PlaylistDataSource;
+import com.framgia.tungvd.soundcloud.data.source.PlaylistRepository;
+import com.framgia.tungvd.soundcloud.data.source.local.MyDBHelper;
+import com.framgia.tungvd.soundcloud.data.source.local.PlaylistLocalDataSource;
+import com.framgia.tungvd.soundcloud.data.source.remote.PlaylistRemoteDataSource;
+import com.framgia.tungvd.soundcloud.util.AppExecutors;
 
-public class CreatePlaylistDialog extends Dialog implements View.OnClickListener{
+public class CreatePlaylistDialog extends Dialog implements View.OnClickListener {
 
     private EditText mEditName;
     private Button mButtonCreate;
     private Button mButtonCancel;
+    private PlaylistRepository mPlaylistRepository;
+    private PlaylistDataSource.PlaylistInsertCallback mPlaylistInsertCallback;
 
-    public CreatePlaylistDialog(@NonNull Context context) {
+    public CreatePlaylistDialog(@NonNull Context context,
+                                PlaylistRepository playlistRepository,
+                                PlaylistDataSource.PlaylistInsertCallback callback) {
         super(context);
         setContentView(R.layout.dialog_create_playlist);
         setCancelable(false);
+        mPlaylistInsertCallback = callback;
         mEditName = findViewById(R.id.edit_playlist_name);
         mButtonCreate = findViewById(R.id.button_create);
         mButtonCancel = findViewById(R.id.button_cancel);
-
+        mPlaylistRepository = playlistRepository;
         mButtonCancel.setOnClickListener(this);
         mButtonCreate.setOnClickListener(this);
     }
@@ -43,7 +54,12 @@ public class CreatePlaylistDialog extends Dialog implements View.OnClickListener
                             Toast.LENGTH_SHORT).show();
                     return;
                 }
-                Playlist playlist = new Playlist(System.currentTimeMillis(), name);
+                mPlaylistRepository.savePlaylist(new Playlist(System.currentTimeMillis(), name),
+                        mPlaylistInsertCallback);
+                dismiss();
+                break;
+            default:
+                dismiss();
                 break;
         }
     }

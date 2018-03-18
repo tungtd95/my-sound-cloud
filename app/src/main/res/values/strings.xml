@@ -23,4 +23,6 @@
     <string name="title_create">Create</string>
     <string name="title_cancel">Cancel</string>
     <string name="mgs_empty_name">Name must not empty!</string>
+    <string name="msg_saved_playlist">Saved</string>
+    <string name="msg_saved_fail">Saving fail</string>
 </resources>

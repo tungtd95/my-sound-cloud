@@ -22,10 +22,10 @@ public class TrackAdapter
 
     private List<Track> mTracks;
     private Track mTrack;
-    private MyItemClickListener mItemClickListener;
+    private TrackClickListener mItemClickListener;
     private boolean isDownloading;
 
-    public void setItemClickListener(MyItemClickListener itemClickListener) {
+    public void setItemClickListener(TrackClickListener itemClickListener) {
         mItemClickListener = itemClickListener;
     }
 
