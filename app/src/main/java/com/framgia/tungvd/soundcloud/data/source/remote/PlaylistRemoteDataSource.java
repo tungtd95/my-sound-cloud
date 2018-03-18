@@ -42,7 +42,8 @@ public class PlaylistRemoteDataSource implements PlaylistDataSource {
     }
 
     @Override
-    public void addTrackToPlaylist(@NonNull Track track, @NonNull Playlist playlist) {
+    public void addTrackToPlaylist(@NonNull Track track, @NonNull Playlist playlist,
+                                   @NonNull PlaylistInsertCallback callback) {
 
     }
 

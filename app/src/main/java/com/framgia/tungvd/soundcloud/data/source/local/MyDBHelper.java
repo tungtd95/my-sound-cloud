@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.framgia.tungvd.soundcloud.data.model.Playlist;
 import com.framgia.tungvd.soundcloud.data.model.Track;
@@ -17,8 +18,15 @@ import java.util.List;
 public class MyDBHelper extends SQLiteOpenHelper implements PlaylistDao, TracksDao {
 
     private static final int DB_VERSION = 1;
-    private static final String EQUAL = " = ?";
+
+    private static final String EQUAL_Q = " = ?";
     private static final String AND = " AND ";
+    private static final String WHERE = " WHERE ";
+    private static final String DOT = ".";
+    private static final String SELECT_ALL = "SELECT * FROM ";
+    private static final String COMMA = ", ";
+    private static final String EQUAL = " = ";
+
     private static final String DB_NAME = "soundcloud.db";
     private static final int TRUE_VALUE = 1;
     private static final int FALSE_VALUE = 0;
@@ -98,17 +106,43 @@ public class MyDBHelper extends SQLiteOpenHelper implements PlaylistDao, TracksD
     }
 
     @Override
-    public List<Track> getLocalTracks() {
+    public List<Track> getTracks() {
         return handleTracksCursor(getReadableDatabase().query(Constant.TrackEntry.TABLE_NAME,
                 null, null, null, null, null, null));
     }
 
     @Override
-    public List<Track> getDownloadedTracks() {
+    public List<Track> getTracks(boolean isOnlyDownloaded) {
+        if (!isOnlyDownloaded) {
+            return getTracks();
+        }
         return handleTracksCursor(getReadableDatabase().query(Constant.TrackEntry.TABLE_NAME, null,
-                new StringBuilder(Constant.TrackEntry.COLUMN_DOWNLOADED).append(EQUAL).toString(),
+                new StringBuilder(Constant.TrackEntry.COLUMN_DOWNLOADED).append(EQUAL_Q).toString(),
                 new String[]{String.valueOf(TRUE_VALUE)}, null, null, null));
     }
+
+    @Override
+    public List<Track> getTracks(@NonNull Playlist playlist) {
+        String q = new StringBuilder(SELECT_ALL)
+                .append(Constant.TrackEntry.TABLE_NAME)
+                .append(COMMA)
+                .append(Constant.TrackPlaylistEntry.TABLE_NAME)
+                .append(WHERE)
+                .append(Constant.TrackEntry.TABLE_NAME)
+                .append(DOT)
+                .append(Constant.TrackEntry.COLUMN_ID)
+                .append(EQUAL)
+                .append(Constant.TrackPlaylistEntry.TABLE_NAME)
+                .append(DOT)
+                .append(Constant.TrackPlaylistEntry.COLUMN_ID_TRACK)
+                .append(AND)
+                .append(Constant.TrackPlaylistEntry.COLUMN_ID_PLAYLIST)
+                .append(EQUAL)
+                .append(playlist.getId())
+                .toString();
+        return handleTracksCursor(getReadableDatabase().rawQuery(q, null));
+    }
+
 
     @Override
     public void insertTrack(Track track) {
@@ -139,7 +173,7 @@ public class MyDBHelper extends SQLiteOpenHelper implements PlaylistDao, TracksD
     @Override
     public int deleteTrackById(long trackId) {
         return getWritableDatabase().delete(Constant.TrackEntry.TABLE_NAME,
-                new StringBuilder(Constant.TrackEntry.COLUMN_ID).append(EQUAL).toString(),
+                new StringBuilder(Constant.TrackEntry.COLUMN_ID).append(EQUAL_Q).toString(),
                 new String[]{String.valueOf(trackId)});
     }
 
@@ -157,7 +191,7 @@ public class MyDBHelper extends SQLiteOpenHelper implements PlaylistDao, TracksD
     @Override
     public void deletePlaylist(Playlist playlist) {
         getWritableDatabase().delete(Constant.PlaylistEntry.TABLE_NAME,
-                new StringBuilder(Constant.PlaylistEntry.COLUMN_ID).append(EQUAL).toString(),
+                new StringBuilder(Constant.PlaylistEntry.COLUMN_ID).append(EQUAL_Q).toString(),
                 new String[]{String.valueOf(playlist.getId())});
     }
 
@@ -181,7 +215,7 @@ public class MyDBHelper extends SQLiteOpenHelper implements PlaylistDao, TracksD
     public List<Playlist> getPlayList(String name) {
         return handlePlaylistCursor(getReadableDatabase().query(Constant.PlaylistEntry.TABLE_NAME,
                 null,
-                new StringBuilder(Constant.PlaylistEntry.COLUMN_NAME).append(EQUAL).toString(),
+                new StringBuilder(Constant.PlaylistEntry.COLUMN_NAME).append(EQUAL_Q).toString(),
                 new String[]{name},
                 null, null, null));
     }
@@ -192,25 +226,33 @@ public class MyDBHelper extends SQLiteOpenHelper implements PlaylistDao, TracksD
         values.put(Constant.PlaylistEntry.COLUMN_ID, playlist.getId());
         values.put(Constant.PlaylistEntry.COLUMN_NAME, playlist.getName());
         getWritableDatabase().update(Constant.PlaylistEntry.TABLE_NAME, values,
-                new StringBuilder(String.valueOf(playlist.getId())).append(EQUAL).toString(),
+                new StringBuilder(String.valueOf(playlist.getId())).append(EQUAL_Q).toString(),
                 new String[]{String.valueOf(playlist.getId())});
     }
 
     @Override
-    public void addTrackToPlaylist(@NonNull Track track, @NonNull Playlist playlist) {
+    public boolean addTrackToPlaylist(@NonNull Track track, @NonNull Playlist playlist) {
+        insertTrack(track);
+        List<Track> tracks = getTracks(playlist);
+        for (Track t : tracks) {
+            if (t.getId() == track.getId()) {
+                return false;
+            }
+        }
         ContentValues values = new ContentValues();
         values.put(Constant.TrackPlaylistEntry.COLUMN_ID_PLAYLIST, playlist.getId());
         values.put(Constant.TrackPlaylistEntry.COLUMN_ID_TRACK, track.getId());
         getWritableDatabase().insert(Constant.TrackPlaylistEntry.TABLE_NAME, null, values);
+        return true;
     }
 
     @Override
     public void removeTrackFromPlaylist(@NonNull Track track, @NonNull Playlist playlist) {
         String whereClause = new StringBuilder(Constant.TrackPlaylistEntry.COLUMN_ID_PLAYLIST)
-                .append(EQUAL)
+                .append(EQUAL_Q)
                 .append(AND)
                 .append(Constant.TrackPlaylistEntry.COLUMN_ID_TRACK)
-                .append(EQUAL)
+                .append(EQUAL_Q)
                 .toString();
         getWritableDatabase().delete(Constant.TrackPlaylistEntry.TABLE_NAME,
                 whereClause,

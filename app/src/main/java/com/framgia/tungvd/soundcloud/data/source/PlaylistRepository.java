@@ -45,12 +45,13 @@ public class PlaylistRepository implements PlaylistDataSource {
     }
 
     @Override
-    public void addTrackToPlaylist(@NonNull Track track, @NonNull Playlist playlist) {
-        mLocalDataSource.addTrackToPlaylist(track, playlist);
+    public void addTrackToPlaylist(@NonNull Track track, @NonNull Playlist playlist,
+                                   @NonNull PlaylistInsertCallback callback) {
+        mLocalDataSource.addTrackToPlaylist(track, playlist, callback);
     }
 
     @Override
     public void removeTrackFromPlaylist(@NonNull Track track, @NonNull Playlist playlist) {
-        mLocalDataSource.addTrackToPlaylist(track, playlist);
+        mLocalDataSource.removeTrackFromPlaylist(track, playlist);
     }
 }

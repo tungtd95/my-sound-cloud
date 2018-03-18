@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import com.framgia.tungvd.soundcloud.R;
 import com.framgia.tungvd.soundcloud.custom.adapter.TrackClickListener;
 import com.framgia.tungvd.soundcloud.custom.adapter.TrackAdapter;
+import com.framgia.tungvd.soundcloud.custom.dialog.DetailBottomSheetListener;
 import com.framgia.tungvd.soundcloud.data.model.Track;
 import com.framgia.tungvd.soundcloud.screen.BaseFragment;
 import com.framgia.tungvd.soundcloud.custom.dialog.DetailBottomSheetFragment;
@@ -18,7 +19,7 @@ import com.framgia.tungvd.soundcloud.custom.dialog.DetailBottomSheetFragment;
 import java.util.ArrayList;
 
 public class RecentPlaylistFragment extends BaseFragment
-        implements RecentPlaylistContract.View, TrackClickListener {
+        implements RecentPlaylistContract.View, TrackClickListener, DetailBottomSheetListener {
 
     private RecentPlaylistContract.Presenter mPresenter;
     private RecyclerView mRecyclerViewPlaylist;
@@ -97,6 +98,21 @@ public class RecentPlaylistFragment extends BaseFragment
     public void onItemDetail(Track track) {
         mPresenter.download(track);
         DetailBottomSheetFragment fragment = DetailBottomSheetFragment.newInstance(track);
+        fragment.setDetailBottomSheetListener(this);
         fragment.show(getFragmentManager(), fragment.getTag());
+    }
+
+    @Override
+    public void onDelete(Track track) {
+        if (mMusicService != null) {
+            mMusicService.removeTrack(track);
+        }
+    }
+
+    @Override
+    public void onPlay(Track track) {
+        if (mMusicService != null) {
+            mMusicService.playTrack(track);
+        }
     }
 }

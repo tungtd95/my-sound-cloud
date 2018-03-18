@@ -36,6 +36,7 @@ public class MusicService extends Service
     private @PlayState
     int mPlayState;
     private Setting mSetting;
+    private Track mPlayingTrack;
 
     /**
      * @return static instance of MusicService class
@@ -163,7 +164,8 @@ public class MusicService extends Service
         mMediaPlayer = null;
         mMediaPlayer = new MediaPlayer();
         try {
-            mMediaPlayer.setDataSource(mTracks.get(mCurrentTrackIndex).getSteamUrl());
+            mPlayingTrack = mTracks.get(mCurrentTrackIndex);
+            mMediaPlayer.setDataSource(mPlayingTrack.getSteamUrl());
             mPlayState = PlayState.PREPARING;
             notifyStateChanged();
             mMediaPlayer.prepareAsync();
@@ -172,6 +174,37 @@ public class MusicService extends Service
             e.printStackTrace();
         }
         notifyTrackChanged();
+    }
+
+    public void removeTrack(Track track) {
+        if (track.getId() == mPlayingTrack.getId()) {
+            return;
+        }
+        for (Track t : mTracks) {
+            if (t.getId() == track.getId()) {
+                mTracks.remove(track);
+                for (int i = 0; i < mTracks.size(); i++) {
+                    if (mTracks.get(i).getId() == mPlayingTrack.getId()) {
+                        mCurrentTrackIndex = i;
+                        break;
+                    }
+                }
+                notifyTracksChanged();
+                break;
+            }
+        }
+    }
+
+    public void playTrack(Track track) {
+        if (track.getId() == mTracks.get(mCurrentTrackIndex).getId()) {
+            return;
+        }
+        for (int i = 0; i < mTracks.size(); i++) {
+            if (mTracks.get(i).getId() == track.getId()) {
+                handleNewTrack(i);
+                break;
+            }
+        }
     }
 
     @Override

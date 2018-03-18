@@ -19,7 +19,7 @@ public interface PlaylistDao {
 
     void updatePlaylist(Playlist playlist);
 
-    void addTrackToPlaylist(@NonNull Track track, @NonNull Playlist playlist);
+    boolean addTrackToPlaylist(@NonNull Track track, @NonNull Playlist playlist);
 
     void removeTrackFromPlaylist(@NonNull Track track, @NonNull Playlist playlist);
 }

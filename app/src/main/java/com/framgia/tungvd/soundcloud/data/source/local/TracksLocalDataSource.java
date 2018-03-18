@@ -37,7 +37,7 @@ public class TracksLocalDataSource implements TracksDataSource {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                final List<Track> tracks = mTracksDao.getLocalTracks();
+                final List<Track> tracks = mTracksDao.getTracks();
                 mAppExecutors.mainThread().execute(new Runnable() {
                     @Override
                     public void run() {
@@ -87,7 +87,7 @@ public class TracksLocalDataSource implements TracksDataSource {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                List<Track> tracks = mTracksDao.getDownloadedTracks();
+                List<Track> tracks = mTracksDao.getTracks();
                 if (tracks.isEmpty()) {
                     callback.onDataNotAvailable();
                 } else {

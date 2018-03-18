@@ -24,9 +24,15 @@
         <service android:name=".data.model.MusicService" />
 
         <activity android:name=".screen.category.CategoryActivity" />
-        <activity android:name=".screen.play.PlayActivity" />
-        <activity android:name=".screen.download.DownloadActivity" />
-        <activity android:name=".screen.playlist.PlaylistActivity"></activity>
+        <activity
+            android:name=".screen.play.PlayActivity"
+            android:launchMode="singleInstance" />
+        <activity
+            android:name=".screen.download.DownloadActivity"
+            android:launchMode="singleInstance" />
+        <activity
+            android:name=".screen.playlist.PlaylistActivity"
+            android:launchMode="singleInstance" />
     </application>
 
 </manifest>

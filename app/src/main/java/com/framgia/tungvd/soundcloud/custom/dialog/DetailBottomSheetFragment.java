@@ -8,7 +8,6 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetDialogFragment;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -34,6 +33,7 @@ import com.framgia.tungvd.soundcloud.data.source.local.MyDBHelper;
 import com.framgia.tungvd.soundcloud.data.source.local.PlaylistLocalDataSource;
 import com.framgia.tungvd.soundcloud.data.source.remote.PlaylistRemoteDataSource;
 import com.framgia.tungvd.soundcloud.util.AppExecutors;
+import com.framgia.tungvd.soundcloud.util.Constant;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -60,6 +60,11 @@ public class DetailBottomSheetFragment extends BottomSheetDialogFragment
     private PlaylistAdapter mPlaylistAdapter;
     private Handler mHandler;
     private PlaylistRepository mPlaylistRepository;
+    private DetailBottomSheetListener mDetailBottomSheetListener;
+
+    public void setDetailBottomSheetListener(DetailBottomSheetListener detailBottomSheetListener) {
+        mDetailBottomSheetListener = detailBottomSheetListener;
+    }
 
     public static DetailBottomSheetFragment newInstance(Track track) {
         DetailBottomSheetFragment fragment = new DetailBottomSheetFragment();
@@ -103,6 +108,8 @@ public class DetailBottomSheetFragment extends BottomSheetDialogFragment
         mTextViewTrack.setText(mTrack.getTitle());
         mTextViewUser.setText(mTrack.getUserName());
         mTextViewDownload.setOnClickListener(this);
+        mTextViewPlay.setOnClickListener(this);
+        mTextViewDelete.setOnClickListener(this);
         mHandler = new Handler();
         updateState();
         mImageCreatePlayList.setOnClickListener(this);
@@ -114,7 +121,8 @@ public class DetailBottomSheetFragment extends BottomSheetDialogFragment
         mRecyclerPlaylist.setAdapter(mPlaylistAdapter);
         mRecyclerPlaylist.setLayoutManager(layoutManager);
         mRecyclerPlaylist.addItemDecoration(itemDecoration);
-        if (!mTrack.getArtworkUrl().isEmpty()) {
+        if (!mTrack.getArtworkUrl().isEmpty() &&
+                !mTrack.getArtworkUrl().equals(Constant.SoundCloud.NULL_VALUE)) {
             Picasso.get().load(mTrack.getArtworkUrl()).fit().centerCrop().into(mImageTrackDetail);
         }
         updatePlayList();
@@ -188,8 +196,7 @@ public class DetailBottomSheetFragment extends BottomSheetDialogFragment
     }
 
     public void requestPermission() {
-        ActivityCompat.requestPermissions(
-                getActivity(),
+        requestPermissions(
                 new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
                 REQUEST_PERMISSION);
     }
@@ -252,47 +259,91 @@ public class DetailBottomSheetFragment extends BottomSheetDialogFragment
                 }
                 break;
             case R.id.image_create_playlist:
-                new CreatePlaylistDialog(getContext(),
-                        mPlaylistRepository,
-                        new PlaylistDataSource.PlaylistInsertCallback() {
-                            @Override
-                            public void onSuccess() {
-                                Runnable runnable = new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        Toast.makeText(getContext(), getContext()
-                                                        .getResources()
-                                                        .getText(R.string.msg_saved_playlist),
-                                                Toast.LENGTH_SHORT).show();
-                                        updatePlayList();
-                                    }
-                                };
-                                mHandler.post(runnable);
-                            }
-
-                            @Override
-                            public void onFail() {
-                                Runnable runnable = new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        Toast.makeText(getContext(), getContext()
-                                                        .getResources()
-                                                        .getText(R.string.msg_saved_fail),
-                                                Toast.LENGTH_SHORT).show();
-                                    }
-                                };
-                                mHandler.post(runnable);
-                            }
-                        }).show();
+                showCreatePlaylist();
+                break;
+            case R.id.text_delete:
+                if (mDetailBottomSheetListener != null) {
+                    mDetailBottomSheetListener.onDelete(mTrack);
+                }
+                dismiss();
+                break;
+            case R.id.text_play:
+                if (mDetailBottomSheetListener != null) {
+                    mDetailBottomSheetListener.onPlay(mTrack);
+                }
+                dismiss();
                 break;
             default:
                 break;
         }
     }
 
+    private void showCreatePlaylist() {
+        new CreatePlaylistDialog(getContext(),
+                mPlaylistRepository,
+                new PlaylistDataSource.PlaylistInsertCallback() {
+                    @Override
+                    public void onSuccess() {
+                        Runnable runnable = new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(getContext(), getContext()
+                                                .getResources()
+                                                .getText(R.string.msg_saved),
+                                        Toast.LENGTH_SHORT).show();
+                                updatePlayList();
+                            }
+                        };
+                        mHandler.post(runnable);
+                    }
+
+                    @Override
+                    public void onFail() {
+                        Runnable runnable = new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(getContext(), getContext()
+                                                .getResources()
+                                                .getText(R.string.msg_saved_fail),
+                                        Toast.LENGTH_SHORT).show();
+                            }
+                        };
+                        mHandler.post(runnable);
+                    }
+                }).show();
+    }
+
     @Override
     public void onItemClicked(int position) {
-        // TODO: 03/18/18 add track to playlist
+        mPlaylistRepository.addTrackToPlaylist(mTrack,
+                mPlaylistAdapter.getPlaylists().get(position),
+                new PlaylistDataSource.PlaylistInsertCallback() {
+                    @Override
+                    public void onSuccess() {
+                        Runnable runnable = new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(getContext(),
+                                        getContext().getResources().getText(R.string.msg_saved),
+                                        Toast.LENGTH_SHORT).show();
+                            }
+                        };
+                        mHandler.post(runnable);
+                    }
+
+                    @Override
+                    public void onFail() {
+                        Runnable runnable = new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(getContext(),
+                                        getContext().getResources().getText(R.string.msg_saved_fail),
+                                        Toast.LENGTH_SHORT).show();
+                            }
+                        };
+                        mHandler.post(runnable);
+                    }
+                });
     }
 
     @Override
