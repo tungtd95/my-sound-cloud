@@ -45,7 +45,7 @@ public class DownloadActivity extends BaseActivity implements DownloadContract.V
         mRecyclerDownloaded = findViewById(R.id.recycler_downloaded);
         mRecyclerDownloading = findViewById(R.id.recycler_playlist);
         mAdapterDownloaded = new TrackAdapter();
-        mAdapterDownloading = new TrackAdapter(true);
+        mAdapterDownloading = new TrackAdapter(true, false);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         RecyclerView.LayoutManager layoutManager1 = new LinearLayoutManager(this);
         mRecyclerDownloading.setLayoutManager(layoutManager);

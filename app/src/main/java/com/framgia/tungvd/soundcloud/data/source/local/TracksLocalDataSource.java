@@ -2,6 +2,7 @@ package com.framgia.tungvd.soundcloud.data.source.local;
 
 import android.support.annotation.NonNull;
 
+import com.framgia.tungvd.soundcloud.data.model.Playlist;
 import com.framgia.tungvd.soundcloud.data.model.Track;
 import com.framgia.tungvd.soundcloud.data.source.TracksDataSource;
 import com.framgia.tungvd.soundcloud.util.AppExecutors;
@@ -54,6 +55,23 @@ public class TracksLocalDataSource implements TracksDataSource {
     }
 
     @Override
+    public void getTracks(@NonNull final Playlist playlist,
+                          @NonNull final LoadTracksCallback callback) {
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                List<Track> tracks = mTracksDao.getTracks(playlist);
+                if (tracks.isEmpty()) {
+                    callback.onDataNotAvailable();
+                } else {
+                    callback.onTracksLoaded(tracks);
+                }
+            }
+        };
+        mAppExecutors.diskIO().execute(runnable);
+    }
+
+    @Override
     public void getTracksByGenre(String genre, int page,
                                  @NonNull LoadTracksCallback callback) {
         //not required for the local data
@@ -71,7 +89,8 @@ public class TracksLocalDataSource implements TracksDataSource {
     }
 
     @Override
-    public void saveTrack(@NonNull final Track track, @NonNull final SaveTracksCallback callback) {
+    public void saveTrack(@NonNull final Track track,
+                          @NonNull final SaveTracksCallback callback) {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {

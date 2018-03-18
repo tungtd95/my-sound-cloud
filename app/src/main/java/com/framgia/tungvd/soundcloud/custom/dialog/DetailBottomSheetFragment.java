@@ -91,7 +91,7 @@ public class DetailBottomSheetFragment extends BottomSheetDialogFragment
     public View onCreateView(LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_download, container, false);
+        return inflater.inflate(R.layout.dialog_detail, container, false);
     }
 
     @Override

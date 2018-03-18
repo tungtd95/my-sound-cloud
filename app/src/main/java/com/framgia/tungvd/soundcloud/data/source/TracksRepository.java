@@ -2,6 +2,7 @@ package com.framgia.tungvd.soundcloud.data.source;
 
 import android.support.annotation.NonNull;
 
+import com.framgia.tungvd.soundcloud.data.model.Playlist;
 import com.framgia.tungvd.soundcloud.data.model.Track;
 
 public class TracksRepository implements TracksDataSource {
@@ -28,6 +29,11 @@ public class TracksRepository implements TracksDataSource {
     @Override
     public void getTracks(@NonNull LoadTracksCallback callback) {
         mTracksLocalDataSource.getTracks(callback);
+    }
+
+    @Override
+    public void getTracks(@NonNull Playlist playlist, @NonNull LoadTracksCallback callback) {
+        mTracksLocalDataSource.getTracks(playlist, callback);
     }
 
     @Override

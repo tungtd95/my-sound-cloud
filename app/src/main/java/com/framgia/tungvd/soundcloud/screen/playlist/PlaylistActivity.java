@@ -12,7 +12,10 @@ import com.framgia.tungvd.soundcloud.R;
 import com.framgia.tungvd.soundcloud.custom.dialog.CreatePlaylistDialog;
 import com.framgia.tungvd.soundcloud.custom.adapter.PlaylistAdapter;
 import com.framgia.tungvd.soundcloud.custom.adapter.PlaylistClickListener;
+import com.framgia.tungvd.soundcloud.custom.dialog.PlaylistDetailBottomSheet;
+import com.framgia.tungvd.soundcloud.custom.dialog.PlaylistDetailBottomSheetListener;
 import com.framgia.tungvd.soundcloud.data.model.Playlist;
+import com.framgia.tungvd.soundcloud.data.model.Track;
 import com.framgia.tungvd.soundcloud.data.source.PlaylistDataSource;
 import com.framgia.tungvd.soundcloud.data.source.PlaylistRepository;
 import com.framgia.tungvd.soundcloud.data.source.local.MyDBHelper;
@@ -24,7 +27,7 @@ import com.framgia.tungvd.soundcloud.util.AppExecutors;
 import java.util.List;
 
 public class PlaylistActivity extends BaseActivity
-        implements PlaylistContract.View, PlaylistClickListener{
+        implements PlaylistContract.View, PlaylistClickListener, PlaylistDetailBottomSheetListener{
 
     private PlaylistContract.Presenter mPresenter;
     private RecyclerView mRecyclerPlaylist;
@@ -122,7 +125,10 @@ public class PlaylistActivity extends BaseActivity
 
     @Override
     public void onItemClicked(int position) {
-
+        PlaylistDetailBottomSheet fragment = PlaylistDetailBottomSheet
+                .newInstance(mPlaylistAdapter.getPlaylists().get(position));
+        fragment.setListener(this);
+        fragment.show(getSupportFragmentManager(), fragment.getTag());
     }
 
     @Override
@@ -134,5 +140,13 @@ public class PlaylistActivity extends BaseActivity
     public void onBackPressed() {
         super.onBackPressed();
         finish();
+    }
+
+    @Override
+    public void onItemClicked(List<Track> tracks, int position) {
+        if (mMusicService != null) {
+            mMusicService.setTracks(tracks);
+            mMusicService.handleNewTrack(position);
+        }
     }
 }

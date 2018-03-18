@@ -26,6 +26,8 @@ public class Track implements Parcelable {
     private String mArtworkUrl;
     private boolean mDownloaded;
     private String mLocalPath;
+    private String mStreamUrlOrigin;
+    private String mDownloadUrlOrigin;
 
     private Track(Builder builder) {
         mKind = builder.mKind;
@@ -47,6 +49,8 @@ public class Track implements Parcelable {
         mArtworkUrl = builder.mArtworkUrl;
         mDownloaded = builder.mDownloaded;
         mLocalPath = builder.mLocalPath;
+        mStreamUrlOrigin = builder.mStreamUrlOrigin;
+        mDownloadUrlOrigin = builder.mDownloadUrlOrigin;
     }
 
     protected Track(Parcel in) {
@@ -67,6 +71,8 @@ public class Track implements Parcelable {
         mAvatarUrl = in.readString();
         mDownloadUrl = in.readString();
         mArtworkUrl = in.readString();
+        mStreamUrlOrigin = in.readString();
+        mDownloadUrlOrigin = in.readString();
     }
 
     public static final Creator<Track> CREATOR = new Creator<Track>() {
@@ -105,6 +111,8 @@ public class Track implements Parcelable {
         parcel.writeString(mAvatarUrl);
         parcel.writeString(mDownloadUrl);
         parcel.writeString(mArtworkUrl);
+        parcel.writeString(mStreamUrlOrigin);
+        parcel.writeString(mDownloadUrlOrigin);
     }
 
     public static class Builder {
@@ -127,6 +135,8 @@ public class Track implements Parcelable {
         private String mArtworkUrl = "";
         private boolean mDownloaded = false;
         private String mLocalPath = "";
+        private String mStreamUrlOrigin = "";
+        private String mDownloadUrlOrigin = "";
 
         public Builder kind(String kind) {
             mKind = kind;
@@ -179,6 +189,7 @@ public class Track implements Parcelable {
         }
 
         public Builder downloadUrl(String url) {
+            mDownloadUrlOrigin = url;
             mDownloadUrl = new StringBuilder(url)
                     .append(Constant.SoundCloud.PARAM_CLIENT)
                     .append(BuildConfig.SOUND_CLOUD_KEY)
@@ -202,6 +213,7 @@ public class Track implements Parcelable {
         }
 
         public Builder streamUrl(String streamUrl) {
+            mStreamUrlOrigin = streamUrl;
             mStreamUrl = new StringBuilder(streamUrl)
                     .append(Constant.SoundCloud.PARAM_CLIENT)
                     .append(BuildConfig.SOUND_CLOUD_KEY)
@@ -240,10 +252,6 @@ public class Track implements Parcelable {
 
     public long getDuration() {
         return mDuration;
-    }
-
-    public String getState() {
-        return mState;
     }
 
     public String getTagList() {
@@ -290,16 +298,8 @@ public class Track implements Parcelable {
         return mDownloadUrl;
     }
 
-    public void setDownloadUrl(String downloadUrl) {
-        mDownloadUrl = downloadUrl;
-    }
-
     public String getArtworkUrl() {
         return mArtworkUrl;
-    }
-
-    public void setArtworkUrl(String artworkUrl) {
-        mArtworkUrl = artworkUrl;
     }
 
     public boolean isDownloaded() {
@@ -316,5 +316,13 @@ public class Track implements Parcelable {
 
     public void setLocalPath(String localPath) {
         mLocalPath = localPath;
+    }
+
+    public String getStreamUrlOrigin() {
+        return mStreamUrlOrigin;
+    }
+
+    public String getDownloadUrlOrigin() {
+        return mDownloadUrlOrigin;
     }
 }

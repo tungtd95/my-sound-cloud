@@ -24,6 +24,7 @@ public class TrackAdapter
     private Track mTrack;
     private TrackClickListener mItemClickListener;
     private boolean isDownloading;
+    private boolean isSimple;
 
     public void setItemClickListener(TrackClickListener itemClickListener) {
         mItemClickListener = itemClickListener;
@@ -33,9 +34,10 @@ public class TrackAdapter
         mTracks = new ArrayList<>();
     }
 
-    public TrackAdapter(boolean isDownloading) {
+    public TrackAdapter(boolean isDownloading, boolean isSimple) {
         mTracks = new ArrayList<>();
         this.isDownloading = isDownloading;
+        this.isSimple = isSimple;
     }
 
     public List<Track> getTracks() {
@@ -122,6 +124,10 @@ public class TrackAdapter
                 mImageViewAction.setBackgroundResource(R.drawable.download_animation);
                 AnimationDrawable animation = (AnimationDrawable) mImageViewAction.getBackground();
                 animation.start();
+            }
+
+            if (isSimple) {
+                mImageViewAction.setVisibility(View.GONE);
             }
         }
     }

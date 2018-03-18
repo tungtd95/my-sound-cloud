@@ -2,6 +2,7 @@ package com.framgia.tungvd.soundcloud.data.source;
 
 import android.support.annotation.NonNull;
 
+import com.framgia.tungvd.soundcloud.data.model.Playlist;
 import com.framgia.tungvd.soundcloud.data.model.Track;
 
 import java.util.List;
@@ -19,6 +20,8 @@ public interface TracksDataSource {
     }
 
     void getTracks(@NonNull LoadTracksCallback callback);
+
+    void getTracks(@NonNull Playlist playlist, @NonNull LoadTracksCallback callback);
 
     void getTracksByGenre(@Genre String genre, int page,
                           @NonNull LoadTracksCallback callback);

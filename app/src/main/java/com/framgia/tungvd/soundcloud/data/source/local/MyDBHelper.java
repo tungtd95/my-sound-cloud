@@ -161,11 +161,11 @@ public class MyDBHelper extends SQLiteOpenHelper implements PlaylistDao, TracksD
         contentValues.put(Constant.TrackEntry.COLUMN_TITLE, track.getTitle());
         contentValues.put(Constant.TrackEntry.COLUMN_DESCRIPTION, track.getDescription());
         contentValues.put(Constant.TrackEntry.COLUMN_LABEL_NAME, track.getLabelName());
-        contentValues.put(Constant.TrackEntry.COLUMN_STREAM_URL, track.getSteamUrl());
+        contentValues.put(Constant.TrackEntry.COLUMN_STREAM_URL, track.getStreamUrlOrigin());
         contentValues.put(Constant.TrackEntry.COLUMN_USER_ID, track.getUserId());
         contentValues.put(Constant.TrackEntry.COLUMN_USER_NAME, track.getUserName());
         contentValues.put(Constant.TrackEntry.COLUMN_AVATAR_URL, track.getAvatarUrl());
-        contentValues.put(Constant.TrackEntry.COLUMN_DOWNLOAD_URL, track.getDownloadUrl());
+        contentValues.put(Constant.TrackEntry.COLUMN_DOWNLOAD_URL, track.getDownloadUrlOrigin());
         contentValues.put(Constant.TrackEntry.COLUMN_ARTWORK_URL, track.getArtworkUrl());
         getWritableDatabase().insert(Constant.TrackEntry.TABLE_NAME, null, contentValues);
     }
