@@ -35,7 +35,7 @@ public class PlaylistLocalDataSource implements PlaylistDataSource {
     }
 
     @Override
-    public void getPlaylist(@NonNull final PlaylistCallback callback) {
+    public void getPlaylist(@NonNull final LoadPlaylistCallback callback) {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
@@ -52,7 +52,7 @@ public class PlaylistLocalDataSource implements PlaylistDataSource {
 
     @Override
     public void savePlaylist(@NonNull final Playlist playlist,
-                             final PlaylistInsertCallback callback) {
+                             final PlaylistCallback callback) {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
@@ -67,13 +67,21 @@ public class PlaylistLocalDataSource implements PlaylistDataSource {
     }
 
     @Override
-    public void deleteList(@NonNull Playlist playlist) {
-
+    public void deleteList(@NonNull final Playlist playlist,
+                           @NonNull final PlaylistCallback callback) {
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                mPlaylistDao.deletePlaylist(playlist);
+                callback.onSuccess();
+            }
+        };
+        mAppExecutors.diskIO().execute(runnable);
     }
 
     @Override
     public void addTrackToPlaylist(@NonNull final Track track, @NonNull final Playlist playlist,
-                                   @NonNull final PlaylistInsertCallback callback) {
+                                   @NonNull final PlaylistCallback callback) {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {

@@ -130,7 +130,7 @@
         app:layout_constraintTop_toBottomOf="@+id/image_delete" />
 
     <TextView
-        android:id="@+id/text_playlist"
+        android:id="@+id/text_playlist_delete"
         style="@style/DownloadText"
         android:layout_width="wrap_content"
         android:layout_height="@dimen/download_item_image_height"
@@ -161,7 +161,7 @@
         android:layout_marginStart="@dimen/dp_8"
         android:layout_marginTop="@dimen/dp_16"
         android:src="@drawable/ic_add_circle"
-        app:layout_constraintStart_toEndOf="@+id/text_playlist"
+        app:layout_constraintStart_toEndOf="@+id/text_playlist_delete"
         app:layout_constraintTop_toBottomOf="@+id/text_delete" />
 
 </android.support.constraint.ConstraintLayout>

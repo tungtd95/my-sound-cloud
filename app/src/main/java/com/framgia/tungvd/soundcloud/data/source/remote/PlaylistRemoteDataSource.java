@@ -27,23 +27,23 @@ public class PlaylistRemoteDataSource implements PlaylistDataSource {
     }
 
     @Override
-    public void getPlaylist(@NonNull PlaylistCallback callback) {
+    public void getPlaylist(@NonNull LoadPlaylistCallback callback) {
 
     }
 
     @Override
-    public void savePlaylist(@NonNull Playlist playlist, @NonNull PlaylistInsertCallback callback) {
+    public void savePlaylist(@NonNull Playlist playlist, @NonNull PlaylistCallback callback) {
 
     }
 
     @Override
-    public void deleteList(@NonNull Playlist playlist) {
+    public void deleteList(@NonNull Playlist playlist, @NonNull PlaylistCallback callback) {
 
     }
 
     @Override
     public void addTrackToPlaylist(@NonNull Track track, @NonNull Playlist playlist,
-                                   @NonNull PlaylistInsertCallback callback) {
+                                   @NonNull PlaylistCallback callback) {
 
     }
 

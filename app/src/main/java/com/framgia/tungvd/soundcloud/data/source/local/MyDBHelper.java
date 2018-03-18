@@ -193,6 +193,10 @@ public class MyDBHelper extends SQLiteOpenHelper implements PlaylistDao, TracksD
         getWritableDatabase().delete(Constant.PlaylistEntry.TABLE_NAME,
                 new StringBuilder(Constant.PlaylistEntry.COLUMN_ID).append(EQUAL_Q).toString(),
                 new String[]{String.valueOf(playlist.getId())});
+        getWritableDatabase().delete(Constant.TrackPlaylistEntry.TABLE_NAME,
+                new StringBuilder(Constant.TrackPlaylistEntry.COLUMN_ID_PLAYLIST)
+                        .append(EQUAL_Q).toString(),
+                new String[]{String.valueOf(playlist.getId())});
     }
 
     @Override

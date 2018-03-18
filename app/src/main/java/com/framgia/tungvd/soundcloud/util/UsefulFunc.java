@@ -2,9 +2,9 @@ package com.framgia.tungvd.soundcloud.util;
 
 public class UsefulFunc {
     public static String convertProgressToTime(long progress) {
-        long second = progress % 60;
-        long minute = progress / 60;
         long hour = progress / 3600;
+        long second = progress % 60;
+        long minute = (progress - hour * 3600) / 60;
         String sec = second / 10 != 0 ?
                 String.valueOf(second) : new StringBuilder("0").append(second).toString();
         String min = minute / 10 != 0 ?

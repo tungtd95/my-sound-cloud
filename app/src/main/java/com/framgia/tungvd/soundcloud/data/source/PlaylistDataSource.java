@@ -8,26 +8,26 @@ import com.framgia.tungvd.soundcloud.data.model.Track;
 import java.util.List;
 
 public interface PlaylistDataSource {
-    interface PlaylistCallback {
+    interface LoadPlaylistCallback {
         void onPlaylistLoaded(List<Playlist> playlists);
 
         void onDataNotAvailable();
     }
 
-    interface PlaylistInsertCallback {
+    interface PlaylistCallback {
         void onSuccess();
 
         void onFail();
     }
 
-    void getPlaylist(@NonNull PlaylistCallback callback);
+    void getPlaylist(@NonNull LoadPlaylistCallback callback);
 
-    void savePlaylist(@NonNull Playlist playlist, @NonNull PlaylistInsertCallback callback);
+    void savePlaylist(@NonNull Playlist playlist, @NonNull PlaylistCallback callback);
 
-    void deleteList(@NonNull Playlist playlist);
+    void deleteList(@NonNull Playlist playlist, @NonNull PlaylistCallback callback);
 
     void addTrackToPlaylist(@NonNull Track track, @NonNull Playlist playlist,
-                            @NonNull PlaylistInsertCallback callback);
+                            @NonNull PlaylistCallback callback);
 
     void removeTrackFromPlaylist(@NonNull Track track, @NonNull Playlist playlist);
 }

@@ -43,10 +43,12 @@ public class DetailBottomSheetFragment extends BottomSheetDialogFragment
         PlaylistClickListener {
 
     public static final String ARGUMENT_TRACK = "ARGUMENT_TRACK";
+    public static final String ARGUMENT_SIMPLE = "ARGUMENT_SIMPLE";
     private static final int REQUEST_PERMISSION = 1;
 
     private Track mTrack;
     private MyDownloadManager mMyDownloadManager;
+    private boolean isSimple;
 
     private TextView mTextViewTrack;
     private TextView mTextViewUser;
@@ -56,6 +58,8 @@ public class DetailBottomSheetFragment extends BottomSheetDialogFragment
     private ImageView mImageDownload;
     private ImageView mImageCreatePlayList;
     private ImageView mImageTrackDetail;
+    private ImageView mImagePlay;
+    private ImageView mImageDelete;
     private RecyclerView mRecyclerPlaylist;
     private PlaylistAdapter mPlaylistAdapter;
     private Handler mHandler;
@@ -69,7 +73,17 @@ public class DetailBottomSheetFragment extends BottomSheetDialogFragment
     public static DetailBottomSheetFragment newInstance(Track track) {
         DetailBottomSheetFragment fragment = new DetailBottomSheetFragment();
         Bundle bundle = new Bundle();
+        bundle.putBoolean(ARGUMENT_SIMPLE, false);
         bundle.putParcelable(DetailBottomSheetFragment.ARGUMENT_TRACK, track);
+        fragment.setArguments(bundle);
+        return fragment;
+    }
+
+    public static DetailBottomSheetFragment newInstance(Track track, boolean isSimple) {
+        DetailBottomSheetFragment fragment = new DetailBottomSheetFragment();
+        Bundle bundle = new Bundle();
+        bundle.putParcelable(DetailBottomSheetFragment.ARGUMENT_TRACK, track);
+        bundle.putBoolean(ARGUMENT_SIMPLE, isSimple);
         fragment.setArguments(bundle);
         return fragment;
     }
@@ -84,6 +98,8 @@ public class DetailBottomSheetFragment extends BottomSheetDialogFragment
         mImageCreatePlayList = view.findViewById(R.id.image_create_playlist);
         mRecyclerPlaylist = view.findViewById(R.id.recycler_playlist);
         mImageTrackDetail = view.findViewById(R.id.image_track_detail);
+        mImagePlay = view.findViewById(R.id.image_play);
+        mImageDelete = view.findViewById(R.id.image_delete);
     }
 
     @Nullable
@@ -105,6 +121,7 @@ public class DetailBottomSheetFragment extends BottomSheetDialogFragment
         mMyDownloadManager = MyDownloadManager.getInstance(getContext());
         mMyDownloadManager.register(this);
         mTrack = getArguments().getParcelable(ARGUMENT_TRACK);
+        isSimple = getArguments().getBoolean(ARGUMENT_SIMPLE, false);
         mTextViewTrack.setText(mTrack.getTitle());
         mTextViewUser.setText(mTrack.getUserName());
         mTextViewDownload.setOnClickListener(this);
@@ -126,10 +143,21 @@ public class DetailBottomSheetFragment extends BottomSheetDialogFragment
             Picasso.get().load(mTrack.getArtworkUrl()).fit().centerCrop().into(mImageTrackDetail);
         }
         updatePlayList();
+        if (isSimple) {
+            mTextViewTrack.setVisibility(View.GONE);
+            mTextViewUser.setVisibility(View.GONE);
+            mTextViewPlay.setVisibility(View.GONE);
+            mTextViewDownload.setVisibility(View.GONE);
+            mTextViewDelete.setVisibility(View.GONE);
+            mImageDownload.setVisibility(View.GONE);
+            mImageTrackDetail.setVisibility(View.GONE);
+            mImageDelete.setVisibility(View.GONE);
+            mImagePlay.setVisibility(View.GONE);
+        }
     }
 
     void updatePlayList() {
-        mPlaylistRepository.getPlaylist(new PlaylistDataSource.PlaylistCallback() {
+        mPlaylistRepository.getPlaylist(new PlaylistDataSource.LoadPlaylistCallback() {
             @Override
             public void onPlaylistLoaded(final List<Playlist> playlists) {
                 Runnable runnable = new Runnable() {
@@ -281,7 +309,7 @@ public class DetailBottomSheetFragment extends BottomSheetDialogFragment
     private void showCreatePlaylist() {
         new CreatePlaylistDialog(getContext(),
                 mPlaylistRepository,
-                new PlaylistDataSource.PlaylistInsertCallback() {
+                new PlaylistDataSource.PlaylistCallback() {
                     @Override
                     public void onSuccess() {
                         Runnable runnable = new Runnable() {
@@ -317,7 +345,7 @@ public class DetailBottomSheetFragment extends BottomSheetDialogFragment
     public void onItemClicked(int position) {
         mPlaylistRepository.addTrackToPlaylist(mTrack,
                 mPlaylistAdapter.getPlaylists().get(position),
-                new PlaylistDataSource.PlaylistInsertCallback() {
+                new PlaylistDataSource.PlaylistCallback() {
                     @Override
                     public void onSuccess() {
                         Runnable runnable = new Runnable() {

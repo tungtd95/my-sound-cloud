@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.framgia.tungvd.soundcloud.R;
+import com.framgia.tungvd.soundcloud.custom.dialog.DetailBottomSheetFragment;
 import com.framgia.tungvd.soundcloud.data.model.DownloadState;
 import com.framgia.tungvd.soundcloud.data.model.MyDownloadManager;
 import com.framgia.tungvd.soundcloud.data.model.Track;
@@ -28,12 +29,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RecentTrackFragment extends BaseFragment
-        implements RecentTrackContract.View, DownloadObserver {
+        implements RecentTrackContract.View, DownloadObserver, View.OnClickListener {
 
     private static final int REQUEST_PERMISSION = 1;
     private RecentTrackContract.Presenter mPresenter;
     private ImageView mImageTrack;
     private ImageView mImageDownload;
+    private ImageView mImageAddPlaylist;
     private MyDownloadManager mMyDownloadManager;
     private Track mTrack;
     private Handler mHandler;
@@ -57,18 +59,8 @@ public class RecentTrackFragment extends BaseFragment
         mMyDownloadManager = MyDownloadManager.getInstance(getActivity());
         mMyDownloadManager.register(this);
         updateView();
-        mImageDownload.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (isPermissionGranted()) {
-                    mMyDownloadManager.download(mTrack);
-                } else {
-                    requestPermissions(
-                            new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                            REQUEST_PERMISSION);
-                }
-            }
-        });
+        mImageDownload.setOnClickListener(this);
+        mImageAddPlaylist.setOnClickListener(this);
     }
 
     public boolean isPermissionGranted() {
@@ -91,6 +83,7 @@ public class RecentTrackFragment extends BaseFragment
     void initView(View view) {
         mImageDownload = view.findViewById(R.id.image_download);
         mImageTrack = view.findViewById(R.id.image_track_detail);
+        mImageAddPlaylist = view.findViewById(R.id.image_add_playlist);
     }
 
     void updateView() {
@@ -208,5 +201,26 @@ public class RecentTrackFragment extends BaseFragment
     @Override
     public void updateFirstTime(List<Track> tracksDownloaded, List<Track> tracksDownloading) {
         //no need to implement
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.image_add_playlist:
+                DetailBottomSheetFragment.newInstance(mTrack, true)
+                        .show(getFragmentManager(), getTag());
+                break;
+            case R.id.image_download:
+                if (isPermissionGranted()) {
+                    mMyDownloadManager.download(mTrack);
+                } else {
+                    requestPermissions(
+                            new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                            REQUEST_PERMISSION);
+                }
+                break;
+            default:
+                break;
+        }
     }
 }
