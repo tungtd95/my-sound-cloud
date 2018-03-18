@@ -6,8 +6,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
 import com.framgia.tungvd.soundcloud.R;
-import com.framgia.tungvd.soundcloud.custom.TrackClickListener;
-import com.framgia.tungvd.soundcloud.custom.TrackAdapter;
+import com.framgia.tungvd.soundcloud.custom.adapter.TrackClickListener;
+import com.framgia.tungvd.soundcloud.custom.adapter.TrackAdapter;
 import com.framgia.tungvd.soundcloud.data.model.Category;
 import com.framgia.tungvd.soundcloud.data.model.MusicService;
 import com.framgia.tungvd.soundcloud.data.model.Track;
@@ -16,7 +16,7 @@ import com.framgia.tungvd.soundcloud.data.source.local.MyDBHelper;
 import com.framgia.tungvd.soundcloud.data.source.local.TracksLocalDataSource;
 import com.framgia.tungvd.soundcloud.data.source.remote.TracksRemoteDataSource;
 import com.framgia.tungvd.soundcloud.screen.BaseActivity;
-import com.framgia.tungvd.soundcloud.screen.detail.DetailBottomSheetFragment;
+import com.framgia.tungvd.soundcloud.custom.dialog.DetailBottomSheetFragment;
 import com.framgia.tungvd.soundcloud.util.AppExecutors;
 
 import java.util.List;

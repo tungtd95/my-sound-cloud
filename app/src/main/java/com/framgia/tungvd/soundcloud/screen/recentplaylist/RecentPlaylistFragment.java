@@ -9,11 +9,11 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.framgia.tungvd.soundcloud.R;
-import com.framgia.tungvd.soundcloud.custom.TrackClickListener;
-import com.framgia.tungvd.soundcloud.custom.TrackAdapter;
+import com.framgia.tungvd.soundcloud.custom.adapter.TrackClickListener;
+import com.framgia.tungvd.soundcloud.custom.adapter.TrackAdapter;
 import com.framgia.tungvd.soundcloud.data.model.Track;
 import com.framgia.tungvd.soundcloud.screen.BaseFragment;
-import com.framgia.tungvd.soundcloud.screen.detail.DetailBottomSheetFragment;
+import com.framgia.tungvd.soundcloud.custom.dialog.DetailBottomSheetFragment;
 
 import java.util.ArrayList;
 

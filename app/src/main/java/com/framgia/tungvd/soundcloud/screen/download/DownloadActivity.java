@@ -7,7 +7,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
 import com.framgia.tungvd.soundcloud.R;
-import com.framgia.tungvd.soundcloud.custom.TrackAdapter;
+import com.framgia.tungvd.soundcloud.custom.adapter.TrackAdapter;
 import com.framgia.tungvd.soundcloud.data.model.MyDownloadManager;
 import com.framgia.tungvd.soundcloud.data.model.Track;
 import com.framgia.tungvd.soundcloud.screen.BaseActivity;

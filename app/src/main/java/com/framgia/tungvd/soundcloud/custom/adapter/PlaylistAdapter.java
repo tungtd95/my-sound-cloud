@@ -1,4 +1,4 @@
-package com.framgia.tungvd.soundcloud.custom;
+package com.framgia.tungvd.soundcloud.custom.adapter;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;

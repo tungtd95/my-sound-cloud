@@ -1,4 +1,4 @@
-package com.framgia.tungvd.soundcloud.custom;
+package com.framgia.tungvd.soundcloud.custom.dialog;
 
 import android.app.Dialog;
 import android.content.Context;

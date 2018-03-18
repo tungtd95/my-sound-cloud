@@ -1,4 +1,4 @@
-package com.framgia.tungvd.soundcloud.custom;
+package com.framgia.tungvd.soundcloud.custom.adapter;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;

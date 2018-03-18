@@ -1,4 +1,4 @@
-package com.framgia.tungvd.soundcloud.custom;
+package com.framgia.tungvd.soundcloud.custom.adapter;
 
 import com.framgia.tungvd.soundcloud.data.model.Track;
 

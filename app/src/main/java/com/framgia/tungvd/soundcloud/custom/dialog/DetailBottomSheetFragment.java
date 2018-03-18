@@ -1,4 +1,4 @@
-package com.framgia.tungvd.soundcloud.screen.detail;
+package com.framgia.tungvd.soundcloud.custom.dialog;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
@@ -21,9 +21,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.framgia.tungvd.soundcloud.R;
-import com.framgia.tungvd.soundcloud.custom.CreatePlaylistDialog;
-import com.framgia.tungvd.soundcloud.custom.PlaylistAdapter;
-import com.framgia.tungvd.soundcloud.custom.PlaylistClickListener;
+import com.framgia.tungvd.soundcloud.custom.adapter.PlaylistAdapter;
+import com.framgia.tungvd.soundcloud.custom.adapter.PlaylistClickListener;
 import com.framgia.tungvd.soundcloud.data.model.DownloadState;
 import com.framgia.tungvd.soundcloud.data.model.Playlist;
 import com.framgia.tungvd.soundcloud.data.model.Track;
@@ -40,13 +39,12 @@ import com.squareup.picasso.Picasso;
 import java.util.List;
 
 public class DetailBottomSheetFragment extends BottomSheetDialogFragment
-        implements DetailContract.View, DownloadObserver, View.OnClickListener,
+        implements DownloadObserver, View.OnClickListener,
         PlaylistClickListener {
 
     public static final String ARGUMENT_TRACK = "ARGUMENT_TRACK";
     private static final int REQUEST_PERMISSION = 1;
 
-    private DetailContract.Presenter mPresenter;
     private Track mTrack;
     private MyDownloadManager mMyDownloadManager;
 
@@ -187,11 +185,6 @@ public class DetailBottomSheetFragment extends BottomSheetDialogFragment
                 mImageDownload.setBackgroundResource(R.drawable.ic_cloud_off);
                 break;
         }
-    }
-
-    @Override
-    public void displayDownloadProgress(int progress) {
-
     }
 
     public void requestPermission() {

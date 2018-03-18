@@ -9,9 +9,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.framgia.tungvd.soundcloud.R;
-import com.framgia.tungvd.soundcloud.custom.CreatePlaylistDialog;
-import com.framgia.tungvd.soundcloud.custom.PlaylistAdapter;
-import com.framgia.tungvd.soundcloud.custom.PlaylistClickListener;
+import com.framgia.tungvd.soundcloud.custom.dialog.CreatePlaylistDialog;
+import com.framgia.tungvd.soundcloud.custom.adapter.PlaylistAdapter;
+import com.framgia.tungvd.soundcloud.custom.adapter.PlaylistClickListener;
 import com.framgia.tungvd.soundcloud.data.model.Playlist;
 import com.framgia.tungvd.soundcloud.data.source.PlaylistDataSource;
 import com.framgia.tungvd.soundcloud.data.source.PlaylistRepository;

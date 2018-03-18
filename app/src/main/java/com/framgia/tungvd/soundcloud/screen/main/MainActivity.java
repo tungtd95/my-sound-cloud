@@ -2,20 +2,17 @@ package com.framgia.tungvd.soundcloud.screen.main;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.BottomSheetBehavior;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 
 import com.framgia.tungvd.soundcloud.R;
-import com.framgia.tungvd.soundcloud.custom.CategoryAdapter;
-import com.framgia.tungvd.soundcloud.custom.EqualSpacingItemDecoration;
-import com.framgia.tungvd.soundcloud.custom.RecyclerItemClickListener;
+import com.framgia.tungvd.soundcloud.custom.adapter.CategoryAdapter;
+import com.framgia.tungvd.soundcloud.custom.adapter.EqualSpacingItemDecoration;
+import com.framgia.tungvd.soundcloud.custom.adapter.RecyclerItemClickListener;
 import com.framgia.tungvd.soundcloud.data.model.Category;
 import com.framgia.tungvd.soundcloud.data.source.TracksRepository;
 import com.framgia.tungvd.soundcloud.data.source.local.MyDBHelper;
