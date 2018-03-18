@@ -8,7 +8,7 @@
         android:id="@+id/text_playlist_name"
         style="@style/DownloadText"
         android:layout_width="0dp"
-        android:layout_height="@dimen/download_item_image_height"
+        android:layout_height="@dimen/playlist_height_normal"
         android:textColor="@color/color_black"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

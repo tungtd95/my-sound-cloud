@@ -12,6 +12,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.SeekBar;
@@ -24,6 +25,8 @@ import com.framgia.tungvd.soundcloud.data.model.PlayState;
 import com.framgia.tungvd.soundcloud.data.model.Track;
 import com.framgia.tungvd.soundcloud.data.source.setting.LoopMode;
 import com.framgia.tungvd.soundcloud.data.source.setting.ShuffleMode;
+import com.framgia.tungvd.soundcloud.screen.download.DownloadActivity;
+import com.framgia.tungvd.soundcloud.screen.playlist.PlaylistActivity;
 import com.framgia.tungvd.soundcloud.screen.recentdetail.RecentDetailFragment;
 import com.framgia.tungvd.soundcloud.screen.recentplaylist.RecentPlaylistFragment;
 import com.framgia.tungvd.soundcloud.screen.recenttrack.RecentTrackFragment;
@@ -126,6 +129,21 @@ public class PlayActivity extends AppCompatActivity
         MenuInflater menuInflater = getMenuInflater();
         menuInflater.inflate(R.menu.menu_main, menu);
         return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.item_download:
+                startActivity(new Intent(this, DownloadActivity.class));
+                break;
+            case R.id.item_play_list:
+                startActivity(new Intent(this, PlaylistActivity.class));
+            default:
+                break;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

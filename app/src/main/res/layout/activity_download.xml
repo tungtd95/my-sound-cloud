@@ -13,7 +13,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <android.support.v7.widget.RecyclerView
-            android:id="@+id/recycler_downloading"
+            android:id="@+id/recycler_playlist"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/dp_8"
@@ -54,7 +54,7 @@
             android:text="@string/title_downloaded"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/recycler_downloading" />
+            app:layout_constraintTop_toBottomOf="@+id/recycler_playlist" />
     </android.support.constraint.ConstraintLayout>
 
     <RelativeLayout

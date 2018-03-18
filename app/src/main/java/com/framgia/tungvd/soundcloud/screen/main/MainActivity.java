@@ -24,6 +24,7 @@ import com.framgia.tungvd.soundcloud.data.source.remote.TracksRemoteDataSource;
 import com.framgia.tungvd.soundcloud.screen.BaseActivity;
 import com.framgia.tungvd.soundcloud.screen.category.CategoryActivity;
 import com.framgia.tungvd.soundcloud.screen.download.DownloadActivity;
+import com.framgia.tungvd.soundcloud.screen.playlist.PlaylistActivity;
 import com.framgia.tungvd.soundcloud.util.AppExecutors;
 
 import java.util.List;
@@ -84,9 +85,10 @@ public class MainActivity extends BaseActivity
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.item_download:
-                Intent intent = new Intent(this, DownloadActivity.class);
-                startActivity(intent);
+                startActivity(new Intent(this, DownloadActivity.class));
                 break;
+            case R.id.item_play_list:
+                startActivity(new Intent(this, PlaylistActivity.class));
             default:
                 break;
         }

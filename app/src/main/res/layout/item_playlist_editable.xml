@@ -9,7 +9,7 @@
         android:id="@+id/text_playlist_name"
         style="@style/PlaylistText"
         android:layout_width="0dp"
-        android:layout_height="@dimen/playlist_height"
+        android:layout_height="@dimen/playlist_height_large"
         android:layout_marginEnd="@dimen/dp_8"
         android:layout_marginStart="@dimen/dp_8"
         app:layout_constraintEnd_toStartOf="@+id/image_delete"

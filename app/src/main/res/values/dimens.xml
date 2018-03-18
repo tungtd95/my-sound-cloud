@@ -7,4 +7,5 @@
     <dimen name="dp_32">32dp</dimen>
     <dimen name="recycler_detail_height">368dp</dimen>
     <dimen name="recycler_detail_padding">50dp</dimen>
+    <dimen name="dp_60">60dp</dimen>
 </resources>

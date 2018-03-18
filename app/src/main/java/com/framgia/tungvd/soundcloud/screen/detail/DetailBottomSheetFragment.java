@@ -13,7 +13,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,6 +35,7 @@ import com.framgia.tungvd.soundcloud.data.source.local.MyDBHelper;
 import com.framgia.tungvd.soundcloud.data.source.local.PlaylistLocalDataSource;
 import com.framgia.tungvd.soundcloud.data.source.remote.PlaylistRemoteDataSource;
 import com.framgia.tungvd.soundcloud.util.AppExecutors;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -57,6 +57,7 @@ public class DetailBottomSheetFragment extends BottomSheetDialogFragment
     private TextView mTextViewDelete;
     private ImageView mImageDownload;
     private ImageView mImageCreatePlayList;
+    private ImageView mImageTrackDetail;
     private RecyclerView mRecyclerPlaylist;
     private PlaylistAdapter mPlaylistAdapter;
     private Handler mHandler;
@@ -79,6 +80,7 @@ public class DetailBottomSheetFragment extends BottomSheetDialogFragment
         mImageDownload = view.findViewById(R.id.image_download);
         mImageCreatePlayList = view.findViewById(R.id.image_create_playlist);
         mRecyclerPlaylist = view.findViewById(R.id.recycler_playlist);
+        mImageTrackDetail = view.findViewById(R.id.image_track_detail);
     }
 
     @Nullable
@@ -114,6 +116,9 @@ public class DetailBottomSheetFragment extends BottomSheetDialogFragment
         mRecyclerPlaylist.setAdapter(mPlaylistAdapter);
         mRecyclerPlaylist.setLayoutManager(layoutManager);
         mRecyclerPlaylist.addItemDecoration(itemDecoration);
+        if (!mTrack.getArtworkUrl().isEmpty()) {
+            Picasso.get().load(mTrack.getArtworkUrl()).fit().centerCrop().into(mImageTrackDetail);
+        }
         updatePlayList();
     }
 
@@ -294,7 +299,7 @@ public class DetailBottomSheetFragment extends BottomSheetDialogFragment
 
     @Override
     public void onItemClicked(int position) {
-
+        // TODO: 03/18/18 add track to playlist
     }
 
     @Override

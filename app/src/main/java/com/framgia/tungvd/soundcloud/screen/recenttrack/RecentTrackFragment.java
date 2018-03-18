@@ -7,9 +7,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -92,7 +90,7 @@ public class RecentTrackFragment extends BaseFragment
 
     void initView(View view) {
         mImageDownload = view.findViewById(R.id.image_download);
-        mImageTrack = view.findViewById(R.id.image_track_sub);
+        mImageTrack = view.findViewById(R.id.image_track_detail);
     }
 
     void updateView() {

@@ -27,7 +27,7 @@
         android:orientation="horizontal">
 
         <ImageView
-            android:id="@+id/image_track_sub"
+            android:id="@+id/image_track_detail"
             android:layout_width="@dimen/sub_controller_height"
             android:layout_height="@dimen/sub_controller_height"
             android:padding="@dimen/controller_padding_bottom"
@@ -54,7 +54,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_toLeftOf="@id/button_play_sub"
-            android:layout_toRightOf="@id/image_track_sub"
+            android:layout_toRightOf="@id/image_track_detail"
             android:gravity="center">
 
             <TextView
