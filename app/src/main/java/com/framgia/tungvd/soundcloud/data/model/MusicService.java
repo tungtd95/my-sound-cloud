@@ -1,20 +1,27 @@
 package com.framgia.tungvd.soundcloud.data.model;
 
 import android.app.Service;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.os.Binder;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 import com.framgia.tungvd.soundcloud.data.model.playobserver.MusicServiceObservable;
 import com.framgia.tungvd.soundcloud.data.model.playobserver.MusicServiceObserver;
 import com.framgia.tungvd.soundcloud.data.source.setting.LoopMode;
 import com.framgia.tungvd.soundcloud.data.source.setting.Setting;
 import com.framgia.tungvd.soundcloud.data.source.setting.ShuffleMode;
+import com.framgia.tungvd.soundcloud.screen.MyNotification;
+import com.framgia.tungvd.soundcloud.util.Constant;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,6 +32,8 @@ public class MusicService extends Service
         implements MusicServiceObservable, MediaPlayer.OnPreparedListener {
 
     private static final int CHECK_MEDIA_DELAY = 100; /* time delay when check media's progress*/
+    private static final int SERVICE_ID = 10;
+    private static final String SEPARATE = "/";
     private static MusicService sInstance;
 
     private ArrayList<Track> mTracks;
@@ -40,6 +49,7 @@ public class MusicService extends Service
     private Track mPlayingTrack;
     private ArrayList<Integer> shuffleList;
     private int mCurrentTrackShuffle;
+    private MyNotification mMyNotification;
 
     /**
      * @return static instance of MusicService class
@@ -76,10 +86,9 @@ public class MusicService extends Service
         mDuration = 0;
         mCurrentTrackIndex = 0;
         mPlayState = PlayState.PAUSED;
-        mSetting = new Setting(LoopMode.OFF, ShuffleMode.OFF);
+        getSetting();
         sInstance = this;
         notifyStateChanged();
-
         final Handler handler = new Handler();
         Runnable runnable = new Runnable() {
             @Override
@@ -96,11 +105,58 @@ public class MusicService extends Service
             }
         };
         handler.post(runnable);
+        mMyNotification = new MyNotification(this);
+        BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (intent.getAction().equals(MyNotification.ACTION_NEXT)) {
+                    handleNext();
+                    return;
+                }
+                if (intent.getAction().equals(MyNotification.ACTION_PLAY)) {
+                    changeMediaState();
+                    return;
+                }
+                if (intent.getAction().equals(MyNotification.ACTION_PREVIOUS)) {
+                    handlePrevious();
+                    return;
+                }
+            }
+        };
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(MyNotification.ACTION_NEXT);
+        intentFilter.addAction(MyNotification.ACTION_PLAY);
+        intentFilter.addAction(MyNotification.ACTION_PREVIOUS);
+        registerReceiver(broadcastReceiver, intentFilter);
     }
 
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        return START_NOT_STICKY;
+    private void saveSetting(Setting setting) {
+        SharedPreferences preferences =
+                getSharedPreferences(Constant.SharedConstant.PREF_FILE, MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putInt(Constant.SharedConstant.PREF_LOOP_MODE, setting.getLoopMode());
+        editor.putInt(Constant.SharedConstant.PREF_SHUFFLE_MODE, setting.getShuffleMode());
+        editor.commit();
+    }
+
+    private void getSetting() {
+        mSetting = new Setting(LoopMode.OFF, ShuffleMode.OFF);
+        SharedPreferences preferences =
+                getSharedPreferences(Constant.SharedConstant.PREF_FILE, MODE_PRIVATE);
+        int loopMode = preferences.getInt(Constant.SharedConstant.PREF_LOOP_MODE, LoopMode.OFF);
+        int shuffleMode = preferences.getInt(Constant.SharedConstant.PREF_SHUFFLE_MODE,
+                ShuffleMode.OFF);
+        if (shuffleMode == ShuffleMode.ON) {
+            handleShuffle();
+        }
+        if (loopMode == LoopMode.ONE) {
+            handleLoop();
+            return;
+        }
+        if (loopMode == LoopMode.ALL) {
+            handleLoop();
+            handleLoop();
+        }
     }
 
     public void changeMediaState() {
@@ -284,15 +340,37 @@ public class MusicService extends Service
         mMediaPlayer.release();
         mMediaPlayer = null;
         mMediaPlayer = new MediaPlayer();
-        try {
-            mPlayingTrack = mTracks.get(mCurrentTrackIndex);
-            mMediaPlayer.setDataSource(mPlayingTrack.getSteamUrl());
-            mPlayState = PlayState.PREPARING;
-            notifyStateChanged();
-            mMediaPlayer.prepareAsync();
-            mMediaPlayer.setOnPreparedListener(MusicService.this);
-        } catch (IOException e) {
-            e.printStackTrace();
+        mPlayingTrack = mTracks.get(mCurrentTrackIndex);
+        if (mPlayingTrack.getLocalPath().isEmpty()) {
+            try {
+                mMediaPlayer.setDataSource(mPlayingTrack.getSteamUrl());
+                mPlayState = PlayState.PREPARING;
+                notifyStateChanged();
+                mMediaPlayer.prepareAsync();
+                mMediaPlayer.setOnPreparedListener(MusicService.this);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            String baseDir = Environment.getExternalStorageDirectory().getAbsolutePath();
+            String path = new StringBuilder(baseDir)
+                    .append(mPlayingTrack.getLocalPath()).append(SEPARATE)
+                    .append(mPlayingTrack.getId()).append(Constant.SoundCloud.EXTENSION).toString();
+            try {
+                mMediaPlayer.setDataSource(path);
+                mMediaPlayer.prepare();
+                mMediaPlayer.start();
+                mPlayState = PlayState.PLAYING;
+                mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                    @Override
+                    public void onCompletion(MediaPlayer mediaPlayer) {
+                        handleNext();
+                    }
+                });
+                notifyStateChanged();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         notifyTrackChanged();
     }
@@ -337,6 +415,11 @@ public class MusicService extends Service
         notifyStateChanged();
     }
 
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        return START_NOT_STICKY;
+    }
+
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
@@ -377,6 +460,7 @@ public class MusicService extends Service
 
     @Override
     public void notifyLoopModeChanged() {
+        saveSetting(mSetting);
         for (MusicServiceObserver observer : mMusicServiceObservers) {
             if (observer != null) {
                 observer.updateLoopMode(mSetting.getLoopMode());
@@ -386,6 +470,7 @@ public class MusicService extends Service
 
     @Override
     public void notifyShuffleModeChanged() {
+        saveSetting(mSetting);
         for (MusicServiceObserver observer : mMusicServiceObservers) {
             if (observer != null) {
                 observer.updateShuffleMode(mSetting.getShuffleMode());
@@ -402,8 +487,19 @@ public class MusicService extends Service
         }
     }
 
+    private void displayNotification() {
+        if (mPlayingTrack == null) {
+            return;
+        }
+        startForeground(SERVICE_ID, mMyNotification.getNotification(mPlayState, mPlayingTrack));
+        if (mPlayState != PlayState.PLAYING) {
+            stopForeground(false);
+        }
+    }
+
     @Override
     public void notifyTrackChanged() {
+        displayNotification();
         for (MusicServiceObserver observer : mMusicServiceObservers) {
             if (observer != null) {
                 observer.updateTrack(mTracks.get(mCurrentTrackIndex));
@@ -413,6 +509,7 @@ public class MusicService extends Service
 
     @Override
     public void notifyStateChanged() {
+        displayNotification();
         for (MusicServiceObserver observer : mMusicServiceObservers) {
             if (observer != null) {
                 observer.updateState(mPlayState);

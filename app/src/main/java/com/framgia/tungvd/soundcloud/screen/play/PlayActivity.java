@@ -102,7 +102,7 @@ public class PlayActivity extends AppCompatActivity
         mSeekBarMain.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                if (mMusicService != null) {
+                if (mMusicService != null && b) {
                     mMusicService.handleSeek(i);
                 }
             }

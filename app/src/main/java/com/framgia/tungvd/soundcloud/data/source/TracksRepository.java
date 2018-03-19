@@ -43,8 +43,8 @@ public class TracksRepository implements TracksDataSource {
     }
 
     @Override
-    public void deleteTrack(@NonNull long trackId) {
-        mTracksLocalDataSource.deleteTrack(trackId);
+    public void deleteTrack(@NonNull long trackId, @NonNull TrackCallback callback) {
+        mTracksLocalDataSource.deleteTrack(trackId, callback);
     }
 
     @Override

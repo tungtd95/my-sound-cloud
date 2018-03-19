@@ -91,4 +91,14 @@ public class Constant {
         public static final String COLUMN_ID_PLAYLIST = "playlist_id";
     }
 
+    public class SharedConstant {
+
+        private SharedConstant() {
+        }
+
+        public static final String PREF_FILE = "PREF_FILE";
+        public static final String PREF_SHUFFLE_MODE = "PREF_SHUFFLE_MODE";
+        public static final String PREF_LOOP_MODE = "PREF_LOOP_MODE";
+    }
+
 }

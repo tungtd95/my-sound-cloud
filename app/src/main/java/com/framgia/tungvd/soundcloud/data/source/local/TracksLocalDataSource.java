@@ -78,11 +78,12 @@ public class TracksLocalDataSource implements TracksDataSource {
     }
 
     @Override
-    public void deleteTrack(@NonNull final long trackId) {
+    public void deleteTrack(@NonNull final long trackId, @NonNull final TrackCallback callback) {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
                 mTracksDao.deleteTrackById(trackId);
+                callback.onSuccess();
             }
         };
         mAppExecutors.diskIO().execute(runnable);
@@ -106,7 +107,7 @@ public class TracksLocalDataSource implements TracksDataSource {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                List<Track> tracks = mTracksDao.getTracks();
+                List<Track> tracks = mTracksDao.getTracks(true);
                 if (tracks.isEmpty()) {
                     callback.onDataNotAvailable();
                 } else {

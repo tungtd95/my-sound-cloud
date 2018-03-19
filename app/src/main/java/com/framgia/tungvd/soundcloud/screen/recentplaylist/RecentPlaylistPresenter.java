@@ -27,6 +27,6 @@ public class RecentPlaylistPresenter implements RecentPlaylistContract.Presenter
 
     @Override
     public void download(Track track) {
-        // TODO: 03/16/18 implement download track
+
     }
 }

@@ -19,6 +19,11 @@ public interface TracksDataSource {
         void onSaveTrackFinished();
     }
 
+    interface TrackCallback {
+        void onSuccess();
+        void onFail();
+    }
+
     void getTracks(@NonNull LoadTracksCallback callback);
 
     void getTracks(@NonNull Playlist playlist, @NonNull LoadTracksCallback callback);
@@ -26,7 +31,7 @@ public interface TracksDataSource {
     void getTracksByGenre(@Genre String genre, int page,
                           @NonNull LoadTracksCallback callback);
 
-    void deleteTrack(@NonNull long trackId);
+    void deleteTrack(@NonNull long trackId, @NonNull TrackCallback callback);
 
     void saveTrack(@NonNull Track track, @NonNull SaveTracksCallback callback);
 

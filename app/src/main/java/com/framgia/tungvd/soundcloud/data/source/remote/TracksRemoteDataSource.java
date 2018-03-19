@@ -41,7 +41,7 @@ public class TracksRemoteDataSource implements TracksDataSource {
     }
 
     @Override
-    public void deleteTrack(@NonNull long trackId) {
+    public void deleteTrack(@NonNull long trackId, @NonNull TrackCallback callback) {
         //not required in remote data source
     }
 

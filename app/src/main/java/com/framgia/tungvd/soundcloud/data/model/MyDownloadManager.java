@@ -2,10 +2,14 @@ package com.framgia.tungvd.soundcloud.data.model;
 
 import android.app.DownloadManager;
 import android.content.BroadcastReceiver;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
+import android.os.Environment;
+import android.provider.MediaStore;
+import android.util.Log;
 
 import com.framgia.tungvd.soundcloud.data.model.downloadobserver.DownloadObservable;
 import com.framgia.tungvd.soundcloud.data.model.downloadobserver.DownloadObserver;
@@ -20,10 +24,10 @@ import com.framgia.tungvd.soundcloud.util.Constant;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Handler;
 
 public class MyDownloadManager implements DownloadObservable {
 
+    private static final String SEPARATE = "/";
     private static MyDownloadManager sInstance;
     private Context mContext;
     private ArrayList<Track> mTracksDownloading;
@@ -57,9 +61,31 @@ public class MyDownloadManager implements DownloadObservable {
 
             @Override
             public void onDataNotAvailable() {
-
+                mTracksDownloaded = new ArrayList<>();
+                notifyDownloadedTracksChanged();
             }
         });
+    }
+
+    public void deleteTrack(Track track) {
+        String baseDir = Environment.getExternalStorageDirectory().getAbsolutePath();
+        File f = new File(new StringBuilder(baseDir)
+                .append(track.getLocalPath()).append(SEPARATE)
+                .append(track.getId()).append(Constant.SoundCloud.EXTENSION).toString());
+        f.delete();
+
+        mTracksRepository.deleteTrack(track.getId(),
+                new TracksDataSource.TrackCallback() {
+                    @Override
+                    public void onSuccess() {
+                        updateDownloadedTrack();
+                    }
+
+                    @Override
+                    public void onFail() {
+
+                    }
+                });
     }
 
     public static MyDownloadManager getInstance(Context context) {

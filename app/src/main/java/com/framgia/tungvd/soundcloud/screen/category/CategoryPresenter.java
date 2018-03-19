@@ -58,6 +58,6 @@ public class CategoryPresenter implements CategoryContract.Presenter{
 
     @Override
     public void download(Track track) {
-        // TODO: 03/16/18 implement download track
+
     }
 }
