@@ -99,6 +99,24 @@ public class PlayActivity extends AppCompatActivity
         names.add(getResources().getString(R.string.title_detail));
         mViewPager.setAdapter(new MyPagerAdapter(getSupportFragmentManager(), fragments, names));
         mViewPager.setCurrentItem(DEFAULT_PAGE);
+        mSeekBarMain.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                if (mMusicService != null) {
+                    mMusicService.handleSeek(i);
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
     }
 
     @Override

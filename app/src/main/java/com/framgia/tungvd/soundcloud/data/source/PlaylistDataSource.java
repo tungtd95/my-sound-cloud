@@ -29,5 +29,6 @@ public interface PlaylistDataSource {
     void addTrackToPlaylist(@NonNull Track track, @NonNull Playlist playlist,
                             @NonNull PlaylistCallback callback);
 
-    void removeTrackFromPlaylist(@NonNull Track track, @NonNull Playlist playlist);
+    void removeTrackFromPlaylist(@NonNull Track track, @NonNull Playlist playlist,
+                                 @NonNull PlaylistCallback callback);
 }

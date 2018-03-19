@@ -91,11 +91,11 @@ public class RecentPlaylistFragment extends BaseFragment
 
     @Override
     public void onItemClicked(int position) {
-        mMusicService.handleNewTrack(position);
+        mMusicService.handleNewTrack(position, false);
     }
 
     @Override
-    public void onItemDetail(Track track) {
+    public void onItemOption(Track track) {
         mPresenter.download(track);
         DetailBottomSheetFragment fragment = DetailBottomSheetFragment.newInstance(track);
         fragment.setDetailBottomSheetListener(this);
@@ -112,7 +112,7 @@ public class RecentPlaylistFragment extends BaseFragment
     @Override
     public void onPlay(Track track) {
         if (mMusicService != null) {
-            mMusicService.playTrack(track);
+            mMusicService.handleNewTrack(track, true);
         }
     }
 }

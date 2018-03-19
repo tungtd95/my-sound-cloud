@@ -170,8 +170,7 @@ public class PlaylistActivity extends BaseActivity
     @Override
     public void onItemClicked(List<Track> tracks, int position) {
         if (mMusicService != null) {
-            mMusicService.setTracks(tracks);
-            mMusicService.handleNewTrack(position);
+            mMusicService.handleNewTrack(tracks, position, false);
         }
     }
 }

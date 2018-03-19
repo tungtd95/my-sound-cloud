@@ -17,6 +17,7 @@ import com.framgia.tungvd.soundcloud.data.source.setting.ShuffleMode;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -37,6 +38,8 @@ public class MusicService extends Service
     int mPlayState;
     private Setting mSetting;
     private Track mPlayingTrack;
+    private ArrayList<Integer> shuffleList;
+    private int mCurrentTrackShuffle;
 
     /**
      * @return static instance of MusicService class
@@ -48,6 +51,17 @@ public class MusicService extends Service
     public void setTracks(List<Track> tracks) {
         mTracks = (ArrayList<Track>) tracks;
         notifyTracksChanged();
+    }
+
+    private void createShuffleList(int size) {
+        shuffleList = new ArrayList<>();
+        for (int i = 0; i < size; i++) {
+            shuffleList.add(i);
+        }
+        Collections.shuffle(shuffleList);
+        shuffleList.remove((Integer) mCurrentTrackIndex);
+        shuffleList.add(0, mCurrentTrackIndex);
+        mCurrentTrackShuffle = 0;
     }
 
     @Override
@@ -111,6 +125,9 @@ public class MusicService extends Service
 
     public void handleShuffle() {
         mSetting.changeShuffleMode();
+        if (mSetting.getShuffleMode() == ShuffleMode.ON) {
+            createShuffleList(mTracks.size());
+        }
         notifyShuffleModeChanged();
     }
 
@@ -126,12 +143,38 @@ public class MusicService extends Service
         if (mTracks == null || mMediaPlayer == null || mTracks.size() == 0) {
             return;
         }
-        if (mCurrentTrackIndex == mTracks.size() - 1) {
-            mCurrentTrackIndex = 0;
+        if (mSetting.getShuffleMode() == ShuffleMode.ON) {
+            if (mCurrentTrackShuffle >= shuffleList.size() - 1) {
+                if (mSetting.getLoopMode() != LoopMode.ALL) {
+                    return;
+                }
+                createShuffleList(mTracks.size());
+            }
+            if (mCurrentTrackShuffle < shuffleList.size() - 1) {
+                mCurrentTrackShuffle++;
+            }
+            playNewTrack(shuffleList.get(mCurrentTrackShuffle));
+            return;
+        }
+        if (mSetting.getLoopMode() == LoopMode.ALL) {
+            if (mCurrentTrackIndex == mTracks.size() - 1) {
+                mCurrentTrackIndex = 0;
+            } else {
+                mCurrentTrackIndex++;
+            }
+            playNewTrack(mCurrentTrackIndex);
+            return;
+        }
+        if (mSetting.getLoopMode() == LoopMode.ONE) {
+            mMediaPlayer.seekTo(0);
+            return;
+        }
+        if (mCurrentTrackIndex >= mTracks.size() - 1) {
+            return;
         } else {
             mCurrentTrackIndex++;
+            playNewTrack(mCurrentTrackIndex);
         }
-        handleNewTrack(mCurrentTrackIndex);
     }
 
     /**
@@ -141,23 +184,101 @@ public class MusicService extends Service
         if (mTracks == null || mMediaPlayer == null || mTracks.size() == 0) {
             return;
         }
-        if (mCurrentTrackIndex == 0) {
-            mCurrentTrackIndex = mTracks.size() - 1;
+        if (mSetting.getShuffleMode() == ShuffleMode.ON) {
+            if (mCurrentTrackShuffle <= 0) {
+                if (mSetting.getLoopMode() != LoopMode.ALL) {
+                    return;
+                }
+                createShuffleList(mTracks.size());
+                mCurrentTrackShuffle = mTracks.size();
+            }
+            if (mCurrentTrackShuffle > 0) {
+                mCurrentTrackShuffle--;
+            }
+            playNewTrack(shuffleList.get(mCurrentTrackShuffle));
+            return;
+        }
+        if (mSetting.getLoopMode() == LoopMode.ALL) {
+            if (mCurrentTrackIndex == 0) {
+                mCurrentTrackIndex = mTracks.size() - 1;
+            } else {
+                mCurrentTrackIndex--;
+            }
+            playNewTrack(mCurrentTrackIndex);
+            return;
+        }
+        if (mSetting.getLoopMode() == LoopMode.ONE) {
+            mMediaPlayer.seekTo(0);
+            return;
+        }
+        if (mCurrentTrackIndex <= 0) {
+            return;
         } else {
             mCurrentTrackIndex--;
+            playNewTrack(mCurrentTrackIndex);
         }
-        handleNewTrack(mCurrentTrackIndex);
     }
 
     /**
-     * invoked then user click any song
+     * play requested track in specific position
+     *
+     * @param position
      */
-    public void handleNewTrack(int position) {
+    public void handleNewTrack(int position, boolean isReplay) {
+        if (mCurrentTrackIndex == position && !isReplay) {
+            return;
+        }
+        if (position < 0 || position >= mTracks.size()) {
+            return;
+        }
+        playNewTrack(position);
+    }
+
+    /**
+     * force replay if the track is playing
+     *
+     * @param tracks
+     * @param position
+     */
+    public void handleNewTrack(List<Track> tracks, int position, boolean isReplay) {
+        setTracks(tracks);
+        if (isReplay) {
+            playNewTrack(position);
+            return;
+        }
+        if (mPlayingTrack == null || tracks.get(position).getId() != mPlayingTrack.getId()) {
+            playNewTrack(position);
+            return;
+        }
+        if (tracks.get(position).getId() == mPlayingTrack.getId()) {
+            mCurrentTrackIndex = position;
+        }
+    }
+
+    /**
+     * force replay if the track is playing
+     *
+     * @param tracks
+     * @param track
+     */
+    public void handleNewTrack(List<Track> tracks, Track track, boolean isReplay) {
+        handleNewTrack(tracks, tracks.indexOf(track), isReplay);
+    }
+
+    /**
+     * play requested track
+     *
+     * @param track
+     */
+    public void handleNewTrack(Track track, boolean isReplay) {
+        handleNewTrack(mTracks.indexOf(track), isReplay);
+    }
+
+    private void playNewTrack(int position) {
         if (mTracks == null || mMediaPlayer == null || mTracks.size() == 0) {
             return;
         }
         mCurrentTrackIndex = position;
-
         mMediaPlayer.pause();
         mMediaPlayer.stop();
         mMediaPlayer.release();
@@ -195,16 +316,12 @@ public class MusicService extends Service
         }
     }
 
-    public void playTrack(Track track) {
-        if (track.getId() == mTracks.get(mCurrentTrackIndex).getId()) {
+    public void handleSeek(int position) {
+        if (mTracks == null || mMediaPlayer == null || mTracks.size() == 0) {
             return;
         }
-        for (int i = 0; i < mTracks.size(); i++) {
-            if (mTracks.get(i).getId() == track.getId()) {
-                handleNewTrack(i);
-                break;
-            }
-        }
+        int seekToValue = (int) (position * mDuration / 100);
+        mMediaPlayer.seekTo(seekToValue);
     }
 
     @Override

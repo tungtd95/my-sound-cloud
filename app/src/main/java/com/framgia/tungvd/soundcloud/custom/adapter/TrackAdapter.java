@@ -100,7 +100,7 @@ public class TrackAdapter
                 @Override
                 public void onClick(View view) {
                     if (mItemClickListener != null) {
-                        mItemClickListener.onItemDetail(track);
+                        mItemClickListener.onItemOption(track);
                     }
                 }
             });
@@ -127,7 +127,7 @@ public class TrackAdapter
             }
 
             if (isSimple) {
-                mImageViewAction.setVisibility(View.GONE);
+                mImageViewAction.setBackgroundResource(R.drawable.ic_delete);
             }
         }
     }

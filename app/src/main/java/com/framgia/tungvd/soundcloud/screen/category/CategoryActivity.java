@@ -8,6 +8,7 @@ import android.support.v7.widget.RecyclerView;
 import com.framgia.tungvd.soundcloud.R;
 import com.framgia.tungvd.soundcloud.custom.adapter.TrackClickListener;
 import com.framgia.tungvd.soundcloud.custom.adapter.TrackAdapter;
+import com.framgia.tungvd.soundcloud.custom.dialog.DetailBottomSheetListener;
 import com.framgia.tungvd.soundcloud.data.model.Category;
 import com.framgia.tungvd.soundcloud.data.model.MusicService;
 import com.framgia.tungvd.soundcloud.data.model.Track;
@@ -22,7 +23,7 @@ import com.framgia.tungvd.soundcloud.util.AppExecutors;
 import java.util.List;
 
 public class CategoryActivity extends BaseActivity
-        implements CategoryContract.View, TrackClickListener {
+        implements CategoryContract.View, TrackClickListener, DetailBottomSheetListener {
 
     public static final String EXTRA_CATEGORY =
             "com.framgia.tungvd.soundcloud.screen.category.extras.EXTRA_CATEGORY";
@@ -98,15 +99,28 @@ public class CategoryActivity extends BaseActivity
     @Override
     public void onItemClicked(int position) {
         if (mMusicService != null) {
-            mMusicService.setTracks(mTrackAdapter.getTracks());
-            mMusicService.handleNewTrack(position);
+            mMusicService.handleNewTrack(mTrackAdapter.getTracks(), position, false);
         }
     }
 
     @Override
-    public void onItemDetail(Track track) {
+    public void onItemOption(Track track) {
         mPresenter.download(track);
-        DetailBottomSheetFragment fragment = DetailBottomSheetFragment.newInstance(track);
+        DetailBottomSheetFragment fragment = DetailBottomSheetFragment.newInstance(track,
+                false, false);
+        fragment.setDetailBottomSheetListener(this);
         fragment.show(getSupportFragmentManager(), fragment.getTag());
+    }
+
+    @Override
+    public void onDelete(Track track) {
+        //no need to implement
+    }
+
+    @Override
+    public void onPlay(Track track) {
+        if (mMusicService != null) {
+            mMusicService.handleNewTrack(mTrackAdapter.getTracks(), track, true);
+        }
     }
 }

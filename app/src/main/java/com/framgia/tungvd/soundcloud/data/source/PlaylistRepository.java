@@ -51,7 +51,8 @@ public class PlaylistRepository implements PlaylistDataSource {
     }
 
     @Override
-    public void removeTrackFromPlaylist(@NonNull Track track, @NonNull Playlist playlist) {
-        mLocalDataSource.removeTrackFromPlaylist(track, playlist);
+    public void removeTrackFromPlaylist(@NonNull Track track, @NonNull Playlist playlist,
+                                        @NonNull PlaylistCallback callback) {
+        mLocalDataSource.removeTrackFromPlaylist(track, playlist, callback);
     }
 }

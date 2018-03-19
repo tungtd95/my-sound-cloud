@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,10 +17,14 @@ import com.framgia.tungvd.soundcloud.custom.adapter.TrackAdapter;
 import com.framgia.tungvd.soundcloud.custom.adapter.TrackClickListener;
 import com.framgia.tungvd.soundcloud.data.model.Playlist;
 import com.framgia.tungvd.soundcloud.data.model.Track;
+import com.framgia.tungvd.soundcloud.data.source.PlaylistDataSource;
+import com.framgia.tungvd.soundcloud.data.source.PlaylistRepository;
 import com.framgia.tungvd.soundcloud.data.source.TracksDataSource;
 import com.framgia.tungvd.soundcloud.data.source.TracksRepository;
 import com.framgia.tungvd.soundcloud.data.source.local.MyDBHelper;
+import com.framgia.tungvd.soundcloud.data.source.local.PlaylistLocalDataSource;
 import com.framgia.tungvd.soundcloud.data.source.local.TracksLocalDataSource;
+import com.framgia.tungvd.soundcloud.data.source.remote.PlaylistRemoteDataSource;
 import com.framgia.tungvd.soundcloud.data.source.remote.TracksRemoteDataSource;
 import com.framgia.tungvd.soundcloud.util.AppExecutors;
 
@@ -31,6 +36,7 @@ public class PlaylistDetailBottomSheet extends BottomSheetDialogFragment
     private static final String ARGUMENT_PLAYLIST = "ARGUMENT_PLAYLIST";
     private Playlist mPlaylist;
     private TracksRepository mTracksRepository;
+    private PlaylistRepository mPlaylistRepository;
     private RecyclerView mRecyclerTracks;
     private TrackAdapter mTrackAdapter;
     private Handler mHandler;
@@ -63,12 +69,20 @@ public class PlaylistDetailBottomSheet extends BottomSheetDialogFragment
         mTracksRepository = TracksRepository.getInstance(TracksRemoteDataSource.getInstance(),
                 TracksLocalDataSource.getInstance(new AppExecutors(),
                         MyDBHelper.getInstance(getContext())));
+        mPlaylistRepository = PlaylistRepository.getInstance(
+                PlaylistLocalDataSource.getInstance(new AppExecutors(),
+                        MyDBHelper.getInstance(getContext())),
+                PlaylistRemoteDataSource.getInstance());
         mRecyclerTracks = view.findViewById(R.id.recycler_playlist_detail);
         mTrackAdapter = new TrackAdapter(false, true);
         mTrackAdapter.setItemClickListener(this);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
         mRecyclerTracks.setLayoutManager(layoutManager);
         mRecyclerTracks.setAdapter(mTrackAdapter);
+        updateView();
+    }
+
+    private void updateView() {
         mTracksRepository.getTracks(mPlaylist, new TracksDataSource.LoadTracksCallback() {
             @Override
             public void onTracksLoaded(final List<Track> tracks) {
@@ -97,7 +111,23 @@ public class PlaylistDetailBottomSheet extends BottomSheetDialogFragment
     }
 
     @Override
-    public void onItemDetail(Track track) {
+    public void onItemOption(Track track) {
+        mPlaylistRepository.removeTrackFromPlaylist(track, mPlaylist,
+                new PlaylistDataSource.PlaylistCallback() {
+            @Override
+            public void onSuccess() {
+                Runnable runnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        updateView();
+                    }
+                };
+                mHandler.post(runnable);
+            }
 
+            @Override
+            public void onFail() {
+            }
+        });
     }
 }

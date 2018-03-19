@@ -44,11 +44,13 @@ public class DetailBottomSheetFragment extends BottomSheetDialogFragment
 
     public static final String ARGUMENT_TRACK = "ARGUMENT_TRACK";
     public static final String ARGUMENT_SIMPLE = "ARGUMENT_SIMPLE";
+    public static final String ARGUMENT_DELETABLE = "ARGUMENT_DELETABLE";
     private static final int REQUEST_PERMISSION = 1;
 
     private Track mTrack;
     private MyDownloadManager mMyDownloadManager;
     private boolean isSimple;
+    private boolean deletable;
 
     private TextView mTextViewTrack;
     private TextView mTextViewUser;
@@ -75,6 +77,7 @@ public class DetailBottomSheetFragment extends BottomSheetDialogFragment
         Bundle bundle = new Bundle();
         bundle.putBoolean(ARGUMENT_SIMPLE, false);
         bundle.putParcelable(DetailBottomSheetFragment.ARGUMENT_TRACK, track);
+        bundle.putBoolean(ARGUMENT_DELETABLE, true);
         fragment.setArguments(bundle);
         return fragment;
     }
@@ -84,6 +87,18 @@ public class DetailBottomSheetFragment extends BottomSheetDialogFragment
         Bundle bundle = new Bundle();
         bundle.putParcelable(DetailBottomSheetFragment.ARGUMENT_TRACK, track);
         bundle.putBoolean(ARGUMENT_SIMPLE, isSimple);
+        bundle.putBoolean(ARGUMENT_DELETABLE, true);
+        fragment.setArguments(bundle);
+        return fragment;
+    }
+
+    public static DetailBottomSheetFragment newInstance(Track track, boolean isSimple,
+                                                        boolean deletable) {
+        DetailBottomSheetFragment fragment = new DetailBottomSheetFragment();
+        Bundle bundle = new Bundle();
+        bundle.putParcelable(DetailBottomSheetFragment.ARGUMENT_TRACK, track);
+        bundle.putBoolean(ARGUMENT_SIMPLE, isSimple);
+        bundle.putBoolean(ARGUMENT_DELETABLE, deletable);
         fragment.setArguments(bundle);
         return fragment;
     }
@@ -122,6 +137,7 @@ public class DetailBottomSheetFragment extends BottomSheetDialogFragment
         mMyDownloadManager.register(this);
         mTrack = getArguments().getParcelable(ARGUMENT_TRACK);
         isSimple = getArguments().getBoolean(ARGUMENT_SIMPLE, false);
+        deletable = getArguments().getBoolean(ARGUMENT_DELETABLE, true);
         mTextViewTrack.setText(mTrack.getTitle());
         mTextViewUser.setText(mTrack.getUserName());
         mTextViewDownload.setOnClickListener(this);
@@ -153,6 +169,10 @@ public class DetailBottomSheetFragment extends BottomSheetDialogFragment
             mImageTrackDetail.setVisibility(View.GONE);
             mImageDelete.setVisibility(View.GONE);
             mImagePlay.setVisibility(View.GONE);
+        }
+        if (!deletable) {
+            mTextViewDelete.setTextColor(getActivity().getResources().getColor(R.color.color_gray));
+            mTextViewDelete.setClickable(false);
         }
     }
 

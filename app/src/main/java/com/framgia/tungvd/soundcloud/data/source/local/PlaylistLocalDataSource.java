@@ -96,7 +96,15 @@ public class PlaylistLocalDataSource implements PlaylistDataSource {
     }
 
     @Override
-    public void removeTrackFromPlaylist(@NonNull Track track, @NonNull Playlist playlist) {
-
+    public void removeTrackFromPlaylist(@NonNull final Track track, @NonNull final Playlist playlist,
+                                        @NonNull final PlaylistCallback callback) {
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                mPlaylistDao.removeTrackFromPlaylist(track, playlist);
+                callback.onSuccess();
+            }
+        };
+        mAppExecutors.diskIO().execute(runnable);
     }
 }
