@@ -126,7 +126,7 @@ public class CategoryActivity extends BaseActivity
     @Override
     public void onPlay(Track track) {
         if (mMusicService != null) {
-            mMusicService.handleNewTrack(mTrackAdapter.getTracks(), track, true);
+            mMusicService.handleNewTrack(mTrackAdapter.getTracks(), track);
         }
     }
 }

@@ -112,12 +112,28 @@ public class RecentPlaylistFragment extends BaseFragment
     @Override
     public void onPlay(Track track) {
         if (mMusicService != null) {
-            mMusicService.handleNewTrack(track, true);
+            mMusicService.handleNewTrack(track);
         }
     }
 
     @Override
     protected void onMusicServiceConnected() {
         mMusicService.register(mAdapterRecentPlay);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (mMusicService != null && mAdapterRecentPlay != null) {
+            mMusicService.register(mAdapterRecentPlay);
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (mMusicService != null && mAdapterRecentPlay != null) {
+            mMusicService.unregister(mAdapterRecentPlay);
+        }
     }
 }
