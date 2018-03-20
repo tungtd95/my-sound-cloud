@@ -71,6 +71,12 @@ public class CategoryActivity extends BaseActivity
     }
 
     @Override
+    protected void onMusicServiceConnected() {
+        super.onMusicServiceConnected();
+        mMusicService.register(mTrackAdapter);
+    }
+
+    @Override
     public boolean onSupportNavigateUp() {
         onBackPressed();
         return super.onSupportNavigateUp();

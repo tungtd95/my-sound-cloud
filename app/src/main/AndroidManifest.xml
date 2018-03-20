@@ -24,19 +24,21 @@
 
         <service android:name=".data.model.MusicService" />
 
-        <activity android:name=".screen.category.CategoryActivity" />
+        <activity
+            android:name=".screen.category.CategoryActivity"
+            android:launchMode="singleTask" />
         <activity
             android:name=".screen.play.PlayActivity"
-            android:launchMode="singleInstance" />
+            android:launchMode="singleTask" />
         <activity
             android:name=".screen.download.DownloadActivity"
-            android:launchMode="singleInstance" />
+            android:launchMode="singleTask" />
         <activity
             android:name=".screen.playlist.PlaylistActivity"
-            android:launchMode="singleInstance" />
+            android:launchMode="singleTask" />
         <activity
             android:name=".screen.search.SearchActivity"
-            android:launchMode="singleInstance" />
+            android:launchMode="singleTask" />
 
         <receiver android:name=".screen.MyBroadcastReceiver">
             <intent-filter>

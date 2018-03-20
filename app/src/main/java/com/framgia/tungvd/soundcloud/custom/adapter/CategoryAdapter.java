@@ -65,9 +65,10 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
                 return;
             }
             mTextViewCategory.setText(category.getName());
-            if (category.getImageUrl() != null && !category.getImageUrl().isEmpty()) {
-                Picasso.get().load(category.getImageUrl()).fit().centerCrop().into(mImageCategory);
-            }
+            Picasso.get().load(category.getImageUrl()).fit().centerCrop()
+                    .error(R.drawable.ic_playlist)
+                    .placeholder(R.drawable.ic_playlist)
+                    .into(mImageCategory);
         }
     }
 }

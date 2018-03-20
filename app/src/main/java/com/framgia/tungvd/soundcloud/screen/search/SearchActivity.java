@@ -94,7 +94,7 @@ public class SearchActivity extends BaseActivity
         if (mMusicService != null) {
             ArrayList<Track> tracks = new ArrayList<>();
             tracks.add(mTrackAdapter.getTracks().get(position));
-            mMusicService.handleNewTrack(tracks, position, true);
+            mMusicService.handleNewTrack(tracks, 0, true);
         }
     }
 
@@ -116,7 +116,7 @@ public class SearchActivity extends BaseActivity
         if (mMusicService != null) {
             ArrayList<Track> tracks = new ArrayList<>();
             tracks.add(track);
-            mMusicService.handleNewTrack(tracks, track, true);
+            mMusicService.handleNewTrack(tracks, 0, true);
         }
     }
 

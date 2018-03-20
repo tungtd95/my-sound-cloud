@@ -63,6 +63,13 @@ public class DownloadActivity extends BaseActivity implements DownloadContract.V
     }
 
     @Override
+    protected void onMusicServiceConnected() {
+        super.onMusicServiceConnected();
+        mMusicService.register(mAdapterDownloaded);
+        mMusicService.register(mAdapterDownloading);
+    }
+
+    @Override
     public boolean onSupportNavigateUp() {
         onBackPressed();
         return super.onSupportNavigateUp();

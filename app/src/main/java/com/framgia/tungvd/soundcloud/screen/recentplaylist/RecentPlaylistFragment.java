@@ -35,9 +35,9 @@ public class RecentPlaylistFragment extends BaseFragment
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        mAdapterRecentPlay = new TrackAdapter();
         super.onViewCreated(view, savedInstanceState);
         mRecyclerViewPlaylist = view.findViewById(R.id.recycler_recent_playlist);
-        mAdapterRecentPlay = new TrackAdapter();
         mAdapterRecentPlay.setItemClickListener(this);
         mRecyclerViewPlaylist.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRecyclerViewPlaylist.setAdapter(mAdapterRecentPlay);
@@ -114,5 +114,10 @@ public class RecentPlaylistFragment extends BaseFragment
         if (mMusicService != null) {
             mMusicService.handleNewTrack(track, true);
         }
+    }
+
+    @Override
+    protected void onMusicServiceConnected() {
+        mMusicService.register(mAdapterRecentPlay);
     }
 }

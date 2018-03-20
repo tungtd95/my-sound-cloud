@@ -97,4 +97,9 @@ public class RecentDetailFragment extends BaseFragment
                                 ArrayList<Track> tracks, int playState) {
         updateTrack(track);
     }
+
+    @Override
+    protected void onMusicServiceConnected() {
+
+    }
 }
