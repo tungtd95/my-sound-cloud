@@ -22,6 +22,7 @@ import com.framgia.tungvd.soundcloud.screen.BaseActivity;
 import com.framgia.tungvd.soundcloud.screen.category.CategoryActivity;
 import com.framgia.tungvd.soundcloud.screen.download.DownloadActivity;
 import com.framgia.tungvd.soundcloud.screen.playlist.PlaylistActivity;
+import com.framgia.tungvd.soundcloud.screen.search.SearchActivity;
 import com.framgia.tungvd.soundcloud.util.AppExecutors;
 
 import java.util.List;
@@ -85,6 +86,10 @@ public class MainActivity extends BaseActivity
                 break;
             case R.id.item_play_list:
                 startActivity(new Intent(this, PlaylistActivity.class));
+                break;
+            case R.id.item_search_main:
+                startActivity(new Intent(this, SearchActivity.class));
+                break;
             default:
                 break;
         }

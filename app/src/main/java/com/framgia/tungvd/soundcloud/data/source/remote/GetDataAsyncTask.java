@@ -17,46 +17,72 @@ import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 
 public class GetDataAsyncTask extends AsyncTask<String, Void, Void> {
 
     private static final int READ_TIMEOUT = 10000; /*millisecond*/
     private static final int CONNECT_TIMEOUT = 15000; /*millisecond*/
-    private static final int LIMIT_DEFAULT = -1;
 
     private LoadTracksCallback mCallback;
     private ArrayList<Track> mTracks;
     private String mGenre;
     private int mPage;
-    private int mLimit = LIMIT_DEFAULT;
+    private String mQuery;
 
     public GetDataAsyncTask(@Genre String genre, int page,
                             @NonNull LoadTracksCallback callback) {
         mCallback = callback;
         mPage = page;
         mGenre = genre;
+        mQuery = "";
+    }
+
+    public GetDataAsyncTask(String query, @NonNull LoadTracksCallback callback) {
+        mQuery = query;
+        mCallback = callback;
     }
 
     @Override
     protected Void doInBackground(@Genre String... strings) {
 
-        String url = String.format(
-                Constant.SoundCloud.SOUND_CLOUD_API,
-                BuildConfig.SOUND_CLOUD_KEY,
-                Constant.SoundCloud.PARAM_DOT,
-                Constant.SoundCloud.PARAM_DOT,
-                mGenre,
-                mPage);
-        try {
-            String data = getJSONStringFromURL(url);
-            mTracks = getTracksFromJson(data);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (JSONException e) {
-            e.printStackTrace();
+        String url;
+        if (!mQuery.isEmpty()) {
+            Log.i("TAG", "querying");
+            try {
+                String query = URLEncoder.encode(mQuery, "utf-8");
+                url = String.format(
+                        Constant.SoundCloud.SOUND_CLOUD_SEARCH,
+                        BuildConfig.SOUND_CLOUD_KEY, query);
+                String data = getJSONStringFromURL(url);
+                mTracks = getTracksFromJson(data);
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            try {
+                url = String.format(
+                        Constant.SoundCloud.SOUND_CLOUD_GENRE,
+                        BuildConfig.SOUND_CLOUD_KEY,
+                        Constant.SoundCloud.DOT_ENCODE,
+                        Constant.SoundCloud.DOT_ENCODE,
+                        mGenre,
+                        mPage);
+                String data = getJSONStringFromURL(url);
+                mTracks = getTracksFromJson(data);
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
         return null;
     }

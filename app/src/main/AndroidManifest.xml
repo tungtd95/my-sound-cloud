@@ -33,6 +33,9 @@
         <activity
             android:name=".screen.playlist.PlaylistActivity"
             android:launchMode="singleInstance" />
+        <activity
+            android:name=".screen.search.SearchActivity"
+            android:launchMode="singleInstance" />
     </application>
 
 </manifest>

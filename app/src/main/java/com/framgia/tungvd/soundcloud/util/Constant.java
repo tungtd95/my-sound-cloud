@@ -10,11 +10,12 @@ public class Constant {
         private SoundCloud() {
         }
 
-        public static final String SOUND_CLOUD_API =
+        public static final String SOUND_CLOUD_GENRE =
                 "https://api.soundcloud.com/tracks?client_id=%s&genre=soundcloud%sgenres%s%s&page=%d";
+        public static final String SOUND_CLOUD_SEARCH =
+                "https://api.soundcloud.com/tracks?client_id=%s&q=%s";
         public static final String PARAM_CLIENT = "?client_id=";
-        public static final String PARAM_LIMIT = "&limit=";
-        public static final String PARAM_DOT = "%3A";
+        public static final String DOT_ENCODE = "%3A";
         public static final String EXTENSION = ".mp4";
         public static final String NULL_VALUE = "null";
     }

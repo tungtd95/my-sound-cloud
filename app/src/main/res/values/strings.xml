@@ -25,4 +25,5 @@
     <string name="mgs_empty_name">Name must not empty!</string>
     <string name="msg_saved">Saved</string>
     <string name="msg_saved_fail">Saving fail</string>
+    <string name="title_search">Search</string>
 </resources>
