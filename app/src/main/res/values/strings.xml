@@ -26,4 +26,9 @@
     <string name="msg_saved">Saved</string>
     <string name="msg_saved_fail">Saving fail</string>
     <string name="title_search">Search</string>
+    <string name="action_phone_state">android.intent.action.PHONE_STATE</string>
+    <string name="extra_state">state</string>
+    <string name="action_offhook">OFFHOOK</string>
+    <string name="action_idle">IDLE</string>
+    <string name="action_ringing">RINGING</string>
 </resources>

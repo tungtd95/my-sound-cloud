@@ -27,6 +27,7 @@ public class GetDataAsyncTask extends AsyncTask<String, Void, Void> {
 
     private static final int READ_TIMEOUT = 10000; /*millisecond*/
     private static final int CONNECT_TIMEOUT = 15000; /*millisecond*/
+    private static final String ENCODE = "utf-8";
 
     private LoadTracksCallback mCallback;
     private ArrayList<Track> mTracks;
@@ -52,9 +53,8 @@ public class GetDataAsyncTask extends AsyncTask<String, Void, Void> {
 
         String url;
         if (!mQuery.isEmpty()) {
-            Log.i("TAG", "querying");
             try {
-                String query = URLEncoder.encode(mQuery, "utf-8");
+                String query = URLEncoder.encode(mQuery, ENCODE);
                 url = String.format(
                         Constant.SoundCloud.SOUND_CLOUD_SEARCH,
                         BuildConfig.SOUND_CLOUD_KEY, query);

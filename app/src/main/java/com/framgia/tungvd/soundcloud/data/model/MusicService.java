@@ -2,22 +2,28 @@ package com.framgia.tungvd.soundcloud.data.model;
 
 import android.app.Service;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Binder;
+import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.util.Log;
+import android.view.KeyEvent;
 
 import com.framgia.tungvd.soundcloud.data.model.playobserver.MusicServiceObservable;
 import com.framgia.tungvd.soundcloud.data.model.playobserver.MusicServiceObserver;
 import com.framgia.tungvd.soundcloud.data.source.setting.LoopMode;
 import com.framgia.tungvd.soundcloud.data.source.setting.Setting;
 import com.framgia.tungvd.soundcloud.data.source.setting.ShuffleMode;
+import com.framgia.tungvd.soundcloud.screen.MyBroadcastReceiver;
 import com.framgia.tungvd.soundcloud.screen.MyNotification;
 import com.framgia.tungvd.soundcloud.util.Constant;
 
@@ -45,6 +51,8 @@ public class MusicService extends Service
     private long mDuration;
     private @PlayState
     int mPlayState;
+    private @PlayState
+    int mLastState;
     private Setting mSetting;
     private Track mPlayingTrack;
     private ArrayList<Integer> shuffleList;
@@ -86,6 +94,7 @@ public class MusicService extends Service
         mDuration = 0;
         mCurrentTrackIndex = 0;
         mPlayState = PlayState.PAUSED;
+        mLastState = PlayState.PAUSED;
         getSetting();
         sInstance = this;
         notifyStateChanged();
@@ -106,28 +115,25 @@ public class MusicService extends Service
         };
         handler.post(runnable);
         mMyNotification = new MyNotification(this);
-        BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                if (intent.getAction().equals(MyNotification.ACTION_NEXT)) {
-                    handleNext();
-                    return;
-                }
-                if (intent.getAction().equals(MyNotification.ACTION_PLAY)) {
-                    changeMediaState();
-                    return;
-                }
-                if (intent.getAction().equals(MyNotification.ACTION_PREVIOUS)) {
-                    handlePrevious();
-                    return;
-                }
-            }
-        };
+        setupBroadcastReceiver();
+    }
+
+    private void setupBroadcastReceiver() {
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(MyNotification.ACTION_NEXT);
         intentFilter.addAction(MyNotification.ACTION_PLAY);
         intentFilter.addAction(MyNotification.ACTION_PREVIOUS);
-        registerReceiver(broadcastReceiver, intentFilter);
+        intentFilter.addAction(Intent.ACTION_HEADSET_PLUG);
+        registerReceiver(new MyBroadcastReceiver(), intentFilter);
+
+        IntentFilter filter = new IntentFilter(Intent.ACTION_HEADSET_PLUG);
+        MyBroadcastReceiver handler = new MyBroadcastReceiver();
+        registerReceiver(handler, filter);
+        AudioManager manager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        if (manager != null) {
+            manager.registerMediaButtonEventReceiver(new ComponentName(this,
+                    MyBroadcastReceiver.class));
+        }
     }
 
     private void saveSetting(Setting setting) {
@@ -163,6 +169,7 @@ public class MusicService extends Service
         if (mMediaPlayer == null) {
             return;
         }
+        mLastState = mPlayState;
         switch (mPlayState) {
             case PlayState.PLAYING:
                 mMediaPlayer.pause();
@@ -176,6 +183,22 @@ public class MusicService extends Service
                 break;
             default:
                 break;
+        }
+    }
+
+    public void changeMediaState(boolean isPlay) {
+        if (mMediaPlayer == null) {
+            return;
+        }
+        mLastState = mPlayState;
+        if (isPlay) {
+            mMediaPlayer.start();
+            mPlayState = PlayState.PLAYING;
+            notifyStateChanged();
+        } else {
+            mMediaPlayer.pause();
+            mPlayState = PlayState.PAUSED;
+            notifyStateChanged();
         }
     }
 
@@ -344,6 +367,7 @@ public class MusicService extends Service
         if (mPlayingTrack.getLocalPath().isEmpty()) {
             try {
                 mMediaPlayer.setDataSource(mPlayingTrack.getSteamUrl());
+                mLastState = mPlayState;
                 mPlayState = PlayState.PREPARING;
                 notifyStateChanged();
                 mMediaPlayer.prepareAsync();
@@ -360,6 +384,7 @@ public class MusicService extends Service
                 mMediaPlayer.setDataSource(path);
                 mMediaPlayer.prepare();
                 mMediaPlayer.start();
+                mLastState = mPlayState;
                 mPlayState = PlayState.PLAYING;
                 mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                     @Override
@@ -405,6 +430,7 @@ public class MusicService extends Service
     @Override
     public void onPrepared(MediaPlayer mediaPlayer) {
         mMediaPlayer.start();
+        mLastState = mPlayState;
         mPlayState = PlayState.PLAYING;
         mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
@@ -418,6 +444,10 @@ public class MusicService extends Service
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         return START_NOT_STICKY;
+    }
+
+    public int getLastState() {
+        return mLastState;
     }
 
     @Nullable
