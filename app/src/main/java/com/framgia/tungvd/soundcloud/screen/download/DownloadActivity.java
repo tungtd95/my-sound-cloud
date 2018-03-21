@@ -9,7 +9,6 @@ import android.support.v7.widget.RecyclerView;
 import com.framgia.tungvd.soundcloud.R;
 import com.framgia.tungvd.soundcloud.custom.adapter.TrackAdapter;
 import com.framgia.tungvd.soundcloud.custom.adapter.TrackClickListener;
-import com.framgia.tungvd.soundcloud.custom.dialog.DeleteDialog;
 import com.framgia.tungvd.soundcloud.custom.dialog.DetailBottomSheetFragment;
 import com.framgia.tungvd.soundcloud.custom.dialog.DetailBottomSheetListener;
 import com.framgia.tungvd.soundcloud.data.model.MyDownloadManager;
@@ -19,7 +18,7 @@ import com.framgia.tungvd.soundcloud.screen.BaseActivity;
 import java.util.List;
 
 public class DownloadActivity extends BaseActivity implements DownloadContract.View,
-        TrackClickListener, DetailBottomSheetListener{
+        TrackClickListener, DetailBottomSheetListener {
 
     private RecyclerView mRecyclerDownloaded;
     private RecyclerView mRecyclerDownloading;
@@ -60,6 +59,33 @@ public class DownloadActivity extends BaseActivity implements DownloadContract.V
         mRecyclerDownloaded.setLayoutManager(layoutManager1);
         mRecyclerDownloaded.setAdapter(mAdapterDownloaded);
         mRecyclerDownloading.setAdapter(mAdapterDownloading);
+    }
+
+    @Override
+    protected void onMusicServiceConnected() {
+        super.onMusicServiceConnected();
+        mMusicService.register(mAdapterDownloaded);
+        mMusicService.register(mAdapterDownloading);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (mMusicService == null) {
+            return;
+        }
+        mMusicService.register(mAdapterDownloaded);
+        mMusicService.register(mAdapterDownloading);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (mMusicService == null) {
+            return;
+        }
+        mMusicService.unregister(mAdapterDownloaded);
+        mMusicService.unregister(mAdapterDownloading);
     }
 
     @Override
@@ -117,7 +143,7 @@ public class DownloadActivity extends BaseActivity implements DownloadContract.V
     @Override
     public void onPlay(Track track) {
         if (mMusicService != null) {
-            mMusicService.handleNewTrack(mAdapterDownloaded.getTracks(), track, true);
+            mMusicService.handleNewTrack(mAdapterDownloaded.getTracks(), track);
         }
     }
 }

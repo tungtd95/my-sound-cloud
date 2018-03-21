@@ -1,11 +1,12 @@
 package com.framgia.tungvd.soundcloud.data.model;
 
 import android.app.Service;
-import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Binder;
 import android.os.Environment;
@@ -18,10 +19,10 @@ import com.framgia.tungvd.soundcloud.data.model.playobserver.MusicServiceObserve
 import com.framgia.tungvd.soundcloud.data.source.setting.LoopMode;
 import com.framgia.tungvd.soundcloud.data.source.setting.Setting;
 import com.framgia.tungvd.soundcloud.data.source.setting.ShuffleMode;
+import com.framgia.tungvd.soundcloud.screen.MyBroadcastReceiver;
 import com.framgia.tungvd.soundcloud.screen.MyNotification;
 import com.framgia.tungvd.soundcloud.util.Constant;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -45,9 +46,11 @@ public class MusicService extends Service
     private long mDuration;
     private @PlayState
     int mPlayState;
+    private @PlayState
+    int mLastState;
     private Setting mSetting;
     private Track mPlayingTrack;
-    private ArrayList<Integer> shuffleList;
+    private ArrayList<Integer> mShuffleList;
     private int mCurrentTrackShuffle;
     private MyNotification mMyNotification;
 
@@ -60,17 +63,18 @@ public class MusicService extends Service
 
     public void setTracks(List<Track> tracks) {
         mTracks = (ArrayList<Track>) tracks;
+        createShuffleList(tracks.size());
         notifyTracksChanged();
     }
 
     private void createShuffleList(int size) {
-        shuffleList = new ArrayList<>();
+        mShuffleList = new ArrayList<>();
         for (int i = 0; i < size; i++) {
-            shuffleList.add(i);
+            mShuffleList.add(i);
         }
-        Collections.shuffle(shuffleList);
-        shuffleList.remove((Integer) mCurrentTrackIndex);
-        shuffleList.add(0, mCurrentTrackIndex);
+        Collections.shuffle(mShuffleList);
+        mShuffleList.remove((Integer) mCurrentTrackIndex);
+        mShuffleList.add(0, mCurrentTrackIndex);
         mCurrentTrackShuffle = 0;
     }
 
@@ -86,6 +90,7 @@ public class MusicService extends Service
         mDuration = 0;
         mCurrentTrackIndex = 0;
         mPlayState = PlayState.PAUSED;
+        mLastState = PlayState.PAUSED;
         getSetting();
         sInstance = this;
         notifyStateChanged();
@@ -106,28 +111,25 @@ public class MusicService extends Service
         };
         handler.post(runnable);
         mMyNotification = new MyNotification(this);
-        BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                if (intent.getAction().equals(MyNotification.ACTION_NEXT)) {
-                    handleNext();
-                    return;
-                }
-                if (intent.getAction().equals(MyNotification.ACTION_PLAY)) {
-                    changeMediaState();
-                    return;
-                }
-                if (intent.getAction().equals(MyNotification.ACTION_PREVIOUS)) {
-                    handlePrevious();
-                    return;
-                }
-            }
-        };
+        setupBroadcastReceiver();
+    }
+
+    private void setupBroadcastReceiver() {
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(MyNotification.ACTION_NEXT);
         intentFilter.addAction(MyNotification.ACTION_PLAY);
         intentFilter.addAction(MyNotification.ACTION_PREVIOUS);
-        registerReceiver(broadcastReceiver, intentFilter);
+        intentFilter.addAction(Intent.ACTION_HEADSET_PLUG);
+        registerReceiver(new MyBroadcastReceiver(), intentFilter);
+
+        IntentFilter filter = new IntentFilter(Intent.ACTION_HEADSET_PLUG);
+        MyBroadcastReceiver handler = new MyBroadcastReceiver();
+        registerReceiver(handler, filter);
+        AudioManager manager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        if (manager != null) {
+            manager.registerMediaButtonEventReceiver(new ComponentName(this,
+                    MyBroadcastReceiver.class));
+        }
     }
 
     private void saveSetting(Setting setting) {
@@ -136,7 +138,7 @@ public class MusicService extends Service
         SharedPreferences.Editor editor = preferences.edit();
         editor.putInt(Constant.SharedConstant.PREF_LOOP_MODE, setting.getLoopMode());
         editor.putInt(Constant.SharedConstant.PREF_SHUFFLE_MODE, setting.getShuffleMode());
-        editor.commit();
+        editor.apply();
     }
 
     private void getSetting() {
@@ -163,6 +165,7 @@ public class MusicService extends Service
         if (mMediaPlayer == null) {
             return;
         }
+        mLastState = mPlayState;
         switch (mPlayState) {
             case PlayState.PLAYING:
                 mMediaPlayer.pause();
@@ -174,8 +177,24 @@ public class MusicService extends Service
                 mPlayState = PlayState.PLAYING;
                 notifyStateChanged();
                 break;
-            default:
+            case PlayState.PREPARING:
                 break;
+        }
+    }
+
+    public void changeMediaState(boolean isPlay) {
+        if (mMediaPlayer == null) {
+            return;
+        }
+        mLastState = mPlayState;
+        if (isPlay) {
+            mMediaPlayer.start();
+            mPlayState = PlayState.PLAYING;
+            notifyStateChanged();
+        } else {
+            mMediaPlayer.pause();
+            mPlayState = PlayState.PAUSED;
+            notifyStateChanged();
         }
     }
 
@@ -199,21 +218,23 @@ public class MusicService extends Service
         if (mTracks == null || mMediaPlayer == null || mTracks.size() == 0) {
             return;
         }
-        if (mSetting.getShuffleMode() == ShuffleMode.ON) {
-            if (mCurrentTrackShuffle >= shuffleList.size() - 1) {
-                if (mSetting.getLoopMode() != LoopMode.ALL) {
-                    return;
-                }
-                createShuffleList(mTracks.size());
-            }
-            if (mCurrentTrackShuffle < shuffleList.size() - 1) {
-                mCurrentTrackShuffle++;
-            }
-            playNewTrack(shuffleList.get(mCurrentTrackShuffle));
+        int shuffle = mSetting.getShuffleMode();
+        int loop = mSetting.getLoopMode();
+        if (loop == LoopMode.ONE) {
+            playNewTrack(mCurrentTrackIndex);
             return;
         }
-        if (mSetting.getLoopMode() == LoopMode.ALL) {
-            if (mCurrentTrackIndex == mTracks.size() - 1) {
+        if (shuffle == ShuffleMode.OFF && loop == LoopMode.OFF) {
+            if (mCurrentTrackIndex < mTracks.size() - 1) {
+                mCurrentTrackIndex++;
+                playNewTrack(mCurrentTrackIndex);
+                return;
+            }
+            finishPlaying();
+            return;
+        }
+        if (shuffle == ShuffleMode.OFF && loop == LoopMode.ALL) {
+            if (mCurrentTrackIndex >= mTracks.size() - 1) {
                 mCurrentTrackIndex = 0;
             } else {
                 mCurrentTrackIndex++;
@@ -221,15 +242,22 @@ public class MusicService extends Service
             playNewTrack(mCurrentTrackIndex);
             return;
         }
-        if (mSetting.getLoopMode() == LoopMode.ONE) {
-            mMediaPlayer.seekTo(0);
+        if (shuffle == ShuffleMode.ON && loop == LoopMode.OFF) {
+            if (mCurrentTrackShuffle < mShuffleList.size() - 1) {
+                mCurrentTrackShuffle++;
+                playNewTrack(mShuffleList.get(mCurrentTrackShuffle));
+                return;
+            }
+            finishPlaying();
             return;
         }
-        if (mCurrentTrackIndex >= mTracks.size() - 1) {
-            return;
-        } else {
-            mCurrentTrackIndex++;
-            playNewTrack(mCurrentTrackIndex);
+        if (shuffle == ShuffleMode.ON && loop == LoopMode.ALL) {
+            if (mCurrentTrackShuffle >= mShuffleList.size() - 1) {
+                mCurrentTrackShuffle = 0;
+            } else {
+                mCurrentTrackShuffle++;
+            }
+            playNewTrack(mShuffleList.get(mCurrentTrackShuffle));
         }
     }
 
@@ -240,22 +268,23 @@ public class MusicService extends Service
         if (mTracks == null || mMediaPlayer == null || mTracks.size() == 0) {
             return;
         }
-        if (mSetting.getShuffleMode() == ShuffleMode.ON) {
-            if (mCurrentTrackShuffle <= 0) {
-                if (mSetting.getLoopMode() != LoopMode.ALL) {
-                    return;
-                }
-                createShuffleList(mTracks.size());
-                mCurrentTrackShuffle = mTracks.size();
-            }
-            if (mCurrentTrackShuffle > 0) {
-                mCurrentTrackShuffle--;
-            }
-            playNewTrack(shuffleList.get(mCurrentTrackShuffle));
+        int shuffle = mSetting.getShuffleMode();
+        int loop = mSetting.getLoopMode();
+        if (loop == LoopMode.ONE) {
+            playNewTrack(mCurrentTrackIndex);
             return;
         }
-        if (mSetting.getLoopMode() == LoopMode.ALL) {
-            if (mCurrentTrackIndex == 0) {
+        if (shuffle == ShuffleMode.OFF && loop == LoopMode.OFF) {
+            if (mCurrentTrackIndex > 0) {
+                mCurrentTrackIndex--;
+                playNewTrack(mCurrentTrackIndex);
+                return;
+            }
+            finishPlaying();
+            return;
+        }
+        if (shuffle == ShuffleMode.OFF && loop == LoopMode.ALL) {
+            if (mCurrentTrackIndex <= 0) {
                 mCurrentTrackIndex = mTracks.size() - 1;
             } else {
                 mCurrentTrackIndex--;
@@ -263,22 +292,29 @@ public class MusicService extends Service
             playNewTrack(mCurrentTrackIndex);
             return;
         }
-        if (mSetting.getLoopMode() == LoopMode.ONE) {
-            mMediaPlayer.seekTo(0);
+        if (shuffle == ShuffleMode.ON && loop == LoopMode.OFF) {
+            if (mCurrentTrackShuffle > 0) {
+                mCurrentTrackShuffle--;
+                playNewTrack(mShuffleList.get(mCurrentTrackShuffle));
+                return;
+            }
+            finishPlaying();
             return;
         }
-        if (mCurrentTrackIndex <= 0) {
-            return;
-        } else {
-            mCurrentTrackIndex--;
-            playNewTrack(mCurrentTrackIndex);
+        if (shuffle == ShuffleMode.ON && loop == LoopMode.ALL) {
+            if (mCurrentTrackShuffle <= 0) {
+                mCurrentTrackShuffle = mTracks.size() - 1;
+            } else {
+                mCurrentTrackShuffle--;
+            }
+            playNewTrack(mShuffleList.get(mCurrentTrackShuffle));
         }
     }
 
     /**
      * play requested track in specific position
      *
-     * @param position
+     * @param position of track to be playing
      */
     public void handleNewTrack(int position, boolean isReplay) {
         if (mCurrentTrackIndex == position && !isReplay) {
@@ -293,8 +329,8 @@ public class MusicService extends Service
     /**
      * force replay if the track is playing
      *
-     * @param tracks
-     * @param position
+     * @param tracks   list new track
+     * @param position of track to be playing
      */
     public void handleNewTrack(List<Track> tracks, int position, boolean isReplay) {
         setTracks(tracks);
@@ -314,20 +350,29 @@ public class MusicService extends Service
     /**
      * force replay if the track is playing
      *
-     * @param tracks
-     * @param track
+     * @param tracks new list of track
+     * @param track  to be playing
      */
-    public void handleNewTrack(List<Track> tracks, Track track, boolean isReplay) {
-        handleNewTrack(tracks, tracks.indexOf(track), isReplay);
+    public void handleNewTrack(List<Track> tracks, Track track) {
+        handleNewTrack(tracks, tracks.indexOf(track), true);
     }
 
     /**
      * play requested track
      *
-     * @param track
+     * @param track to be playing
      */
-    public void handleNewTrack(Track track, boolean isReplay) {
-        handleNewTrack(mTracks.indexOf(track), isReplay);
+    public void handleNewTrack(Track track) {
+        handleNewTrack(mTracks.indexOf(track), true);
+    }
+
+    private void finishPlaying() {
+        if (mTracks == null || mMediaPlayer == null || mTracks.size() == 0) {
+            return;
+        }
+        mMediaPlayer.pause();
+        mPlayState = PlayState.PAUSED;
+        notifyStateChanged();
     }
 
     private void playNewTrack(int position) {
@@ -337,6 +382,8 @@ public class MusicService extends Service
         mCurrentTrackIndex = position;
         mMediaPlayer.pause();
         mMediaPlayer.stop();
+        mPlayState = PlayState.PAUSED;
+        notifyStateChanged();
         mMediaPlayer.release();
         mMediaPlayer = null;
         mMediaPlayer = new MediaPlayer();
@@ -344,6 +391,7 @@ public class MusicService extends Service
         if (mPlayingTrack.getLocalPath().isEmpty()) {
             try {
                 mMediaPlayer.setDataSource(mPlayingTrack.getSteamUrl());
+                mLastState = mPlayState;
                 mPlayState = PlayState.PREPARING;
                 notifyStateChanged();
                 mMediaPlayer.prepareAsync();
@@ -352,14 +400,15 @@ public class MusicService extends Service
                 e.printStackTrace();
             }
         } else {
-            String baseDir = Environment.getExternalStorageDirectory().getAbsolutePath();
-            String path = new StringBuilder(baseDir)
-                    .append(mPlayingTrack.getLocalPath()).append(SEPARATE)
-                    .append(mPlayingTrack.getId()).append(Constant.SoundCloud.EXTENSION).toString();
             try {
+                String baseDir = Environment.getExternalStorageDirectory().getAbsolutePath();
+                String path = baseDir +
+                        mPlayingTrack.getLocalPath() + SEPARATE +
+                        mPlayingTrack.getId() + Constant.SoundCloud.EXTENSION;
                 mMediaPlayer.setDataSource(path);
                 mMediaPlayer.prepare();
                 mMediaPlayer.start();
+                mLastState = mPlayState;
                 mPlayState = PlayState.PLAYING;
                 mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                     @Override
@@ -405,6 +454,7 @@ public class MusicService extends Service
     @Override
     public void onPrepared(MediaPlayer mediaPlayer) {
         mMediaPlayer.start();
+        mLastState = mPlayState;
         mPlayState = PlayState.PLAYING;
         mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
@@ -418,6 +468,10 @@ public class MusicService extends Service
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         return START_NOT_STICKY;
+    }
+
+    public int getLastState() {
+        return mLastState;
     }
 
     @Nullable

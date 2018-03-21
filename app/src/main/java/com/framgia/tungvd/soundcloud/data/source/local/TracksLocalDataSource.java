@@ -72,6 +72,11 @@ public class TracksLocalDataSource implements TracksDataSource {
     }
 
     @Override
+    public void getTracks(String name, @NonNull LoadTracksCallback callback) {
+
+    }
+
+    @Override
     public void getTracksByGenre(String genre, int page,
                                  @NonNull LoadTracksCallback callback) {
         //not required for the local data

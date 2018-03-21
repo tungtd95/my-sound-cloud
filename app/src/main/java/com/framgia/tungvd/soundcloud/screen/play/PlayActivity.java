@@ -30,6 +30,7 @@ import com.framgia.tungvd.soundcloud.screen.playlist.PlaylistActivity;
 import com.framgia.tungvd.soundcloud.screen.recentdetail.RecentDetailFragment;
 import com.framgia.tungvd.soundcloud.screen.recentplaylist.RecentPlaylistFragment;
 import com.framgia.tungvd.soundcloud.screen.recenttrack.RecentTrackFragment;
+import com.framgia.tungvd.soundcloud.screen.search.SearchActivity;
 import com.framgia.tungvd.soundcloud.util.UsefulFunc;
 
 import java.util.ArrayList;
@@ -157,6 +158,10 @@ public class PlayActivity extends AppCompatActivity
                 break;
             case R.id.item_play_list:
                 startActivity(new Intent(this, PlaylistActivity.class));
+                break;
+            case R.id.item_search_main:
+                startActivity(new Intent(this, SearchActivity.class));
+                break;
             default:
                 break;
         }

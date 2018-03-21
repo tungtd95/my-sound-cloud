@@ -34,6 +34,11 @@ public class TracksRemoteDataSource implements TracksDataSource {
     }
 
     @Override
+    public void getTracks(String name, @NonNull LoadTracksCallback callback) {
+        new GetDataAsyncTask(name, callback).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, "");
+    }
+
+    @Override
     public void getTracksByGenre(@Genre String genre, int page,
                                  @NonNull LoadTracksCallback callback) {
         new GetDataAsyncTask(genre, page, callback)

@@ -121,12 +121,10 @@ public abstract class BaseActivity extends AppCompatActivity
         if (track != null) {
             mTextViewTrackName.setText(track.getTitle());
             mTextViewTrackArtist.setText(track.getUserName());
-            if (!track.getArtworkUrl().isEmpty() &&
-                    !track.getArtworkUrl().equals(Constant.SoundCloud.NULL_VALUE)) {
-                Picasso.get().load(track.getArtworkUrl()).into(mImageTrackSub);
-            } else {
-                mImageTrackSub.setImageResource(R.drawable.ic_music);
-            }
+            Picasso.get().load(track.getArtworkUrl())
+                    .placeholder(R.drawable.ic_music)
+                    .error(R.drawable.ic_music)
+                    .into(mImageTrackSub);
         }
     }
 

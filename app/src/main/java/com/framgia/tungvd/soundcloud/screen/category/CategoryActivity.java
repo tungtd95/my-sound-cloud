@@ -71,6 +71,12 @@ public class CategoryActivity extends BaseActivity
     }
 
     @Override
+    protected void onMusicServiceConnected() {
+        super.onMusicServiceConnected();
+        mMusicService.register(mTrackAdapter);
+    }
+
+    @Override
     public boolean onSupportNavigateUp() {
         onBackPressed();
         return super.onSupportNavigateUp();
@@ -120,7 +126,7 @@ public class CategoryActivity extends BaseActivity
     @Override
     public void onPlay(Track track) {
         if (mMusicService != null) {
-            mMusicService.handleNewTrack(mTrackAdapter.getTracks(), track, true);
+            mMusicService.handleNewTrack(mTrackAdapter.getTracks(), track);
         }
     }
 }

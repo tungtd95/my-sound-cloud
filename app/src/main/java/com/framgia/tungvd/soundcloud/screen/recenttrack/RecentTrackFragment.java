@@ -141,17 +141,9 @@ public class RecentTrackFragment extends BaseFragment
                 .build();
         Picasso.get().load(track.getArtworkUrl()).fit()
                 .transform(transformation).centerInside()
-                .into(mImageTrack, new Callback() {
-                    @Override
-                    public void onSuccess() {
-
-                    }
-
-                    @Override
-                    public void onError(Exception e) {
-                        mImageTrack.setImageResource(R.drawable.music_icon_origin);
-                    }
-                });
+                .placeholder(R.drawable.music_icon_origin)
+                .error(R.drawable.music_icon_origin)
+                .into(mImageTrack);
         updateView();
     }
 
@@ -222,5 +214,10 @@ public class RecentTrackFragment extends BaseFragment
             default:
                 break;
         }
+    }
+
+    @Override
+    protected void onMusicServiceConnected() {
+
     }
 }

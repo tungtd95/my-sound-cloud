@@ -11,10 +11,11 @@
 
         <ImageView
             android:id="@+id/image_item_track"
-            android:layout_width="@dimen/item_track_height"
-            android:layout_height="@dimen/item_track_height"
-            android:padding="@dimen/item_track_image_padding"
-            android:src="@drawable/ic_music" />
+            android:layout_width="@dimen/item_track_image_height"
+            android:layout_height="@dimen/item_track_image_height"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/item_track_image_padding"
+            android:layout_marginRight="@dimen/item_track_image_padding"/>
 
         <ImageView
             android:id="@+id/image_item_action"

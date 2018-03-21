@@ -37,6 +37,11 @@ public class TracksRepository implements TracksDataSource {
     }
 
     @Override
+    public void getTracks(String name, @NonNull LoadTracksCallback callback) {
+        mTracksRemoteDataSource.getTracks(name, callback);
+    }
+
+    @Override
     public void getTracksByGenre(String genre, int page,
                                  @NonNull LoadTracksCallback callback) {
         mTracksRemoteDataSource.getTracksByGenre(genre, page, callback);

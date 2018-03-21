@@ -22,6 +22,7 @@ public abstract class BaseFragment extends BottomSheetDialogFragment
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
             mMusicService = ((MusicService.MyBinder) iBinder).getMusicService();
             mMusicService.register(BaseFragment.this);
+            onMusicServiceConnected();
         }
 
         @Override
@@ -47,6 +48,8 @@ public abstract class BaseFragment extends BottomSheetDialogFragment
         }
         mMusicService.unregister(this);
     }
+
+    protected abstract void onMusicServiceConnected();
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {

@@ -1,6 +1,7 @@
 package com.framgia.tungvd.soundcloud.custom.adapter;
 
 import android.graphics.drawable.AnimationDrawable;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,7 +11,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.framgia.tungvd.soundcloud.R;
+import com.framgia.tungvd.soundcloud.data.model.PlayState;
 import com.framgia.tungvd.soundcloud.data.model.Track;
+import com.framgia.tungvd.soundcloud.data.model.playobserver.MusicServiceObserver;
 import com.framgia.tungvd.soundcloud.util.Constant;
 import com.squareup.picasso.Picasso;
 
@@ -18,10 +21,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TrackAdapter
-        extends RecyclerView.Adapter<TrackAdapter.TrackViewHolder> {
+        extends RecyclerView.Adapter<TrackAdapter.TrackViewHolder> implements MusicServiceObserver {
 
     private List<Track> mTracks;
     private Track mTrack;
+    private @PlayState
+    int mPlayState;
     private TrackClickListener mItemClickListener;
     private boolean isDownloading;
     private boolean isSimple;
@@ -32,12 +37,14 @@ public class TrackAdapter
 
     public TrackAdapter() {
         mTracks = new ArrayList<>();
+        mPlayState = PlayState.PAUSED;
     }
 
     public TrackAdapter(boolean isDownloading, boolean isSimple) {
         mTracks = new ArrayList<>();
         this.isDownloading = isDownloading;
         this.isSimple = isSimple;
+        mPlayState = PlayState.PAUSED;
     }
 
     public List<Track> getTracks() {
@@ -71,6 +78,45 @@ public class TrackAdapter
     @Override
     public int getItemCount() {
         return mTracks == null ? 0 : mTracks.size();
+    }
+
+    @Override
+    public void updateLoopMode(int loopMode) {
+        //no need to implement
+    }
+
+    @Override
+    public void updateShuffleMode(int shuffleMode) {
+        //no need to implement
+    }
+
+    @Override
+    public void updateProgress(long progress, long duration) {
+        //no need to implement
+    }
+
+    @Override
+    public void updateTrack(@Nullable Track track) {
+        mTrack = track;
+        notifyDataSetChanged();
+    }
+
+    @Override
+    public void updateTracks(ArrayList<Track> tracks) {
+        //no need to implement
+    }
+
+    @Override
+    public void updateState(int playState) {
+        mPlayState = playState;
+        notifyDataSetChanged();
+    }
+
+    @Override
+    public void updateFirstTime(int loopMode, int shuffleMode, long progress, long duration,
+                                @Nullable Track track, ArrayList<Track> tracks, int playState) {
+        updateTrack(track);
+        updateState(playState);
     }
 
     public class TrackViewHolder extends RecyclerView.ViewHolder {
@@ -112,12 +158,6 @@ public class TrackAdapter
                     }
                 }
             });
-            if (!track.getArtworkUrl().equals(Constant.SoundCloud.NULL_VALUE)) {
-                Picasso.get().load(track.getArtworkUrl())
-                        .fit().centerInside().into(mImageViewTrack);
-            } else {
-                mImageViewTrack.setImageResource(R.drawable.ic_music);
-            }
 
             if (isDownloading) {
                 mImageViewAction.setClickable(false);
@@ -128,6 +168,24 @@ public class TrackAdapter
 
             if (isSimple) {
                 mImageViewAction.setBackgroundResource(R.drawable.ic_delete);
+            }
+
+            mImageViewTrack.setBackgroundResource(android.R.color.transparent);
+            mImageViewTrack.setImageResource(android.R.color.transparent);
+
+            if (mTrack != null && mTrack.getId() == track.getId()) {
+                mImageViewTrack.setBackgroundResource(R.drawable.playing_animation);
+                AnimationDrawable animation = (AnimationDrawable) mImageViewTrack.getBackground();
+                if (mPlayState == PlayState.PLAYING) {
+                    animation.start();
+                } else {
+                    animation.stop();
+                }
+            } else {
+                Picasso.get().load(track.getArtworkUrl())
+                        .error(R.drawable.ic_music)
+                        .placeholder(R.drawable.ic_music)
+                        .into(mImageViewTrack);
             }
         }
     }

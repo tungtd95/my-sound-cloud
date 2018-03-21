@@ -21,12 +21,15 @@ public interface TracksDataSource {
 
     interface TrackCallback {
         void onSuccess();
+
         void onFail();
     }
 
     void getTracks(@NonNull LoadTracksCallback callback);
 
     void getTracks(@NonNull Playlist playlist, @NonNull LoadTracksCallback callback);
+
+    void getTracks(String name, @NonNull LoadTracksCallback callback);
 
     void getTracksByGenre(@Genre String genre, int page,
                           @NonNull LoadTracksCallback callback);

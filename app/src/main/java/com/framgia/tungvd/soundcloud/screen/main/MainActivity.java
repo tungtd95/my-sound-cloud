@@ -1,7 +1,13 @@
 package com.framgia.tungvd.soundcloud.screen.main;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
@@ -22,6 +28,7 @@ import com.framgia.tungvd.soundcloud.screen.BaseActivity;
 import com.framgia.tungvd.soundcloud.screen.category.CategoryActivity;
 import com.framgia.tungvd.soundcloud.screen.download.DownloadActivity;
 import com.framgia.tungvd.soundcloud.screen.playlist.PlaylistActivity;
+import com.framgia.tungvd.soundcloud.screen.search.SearchActivity;
 import com.framgia.tungvd.soundcloud.util.AppExecutors;
 
 import java.util.List;
@@ -31,6 +38,7 @@ public class MainActivity extends BaseActivity
 
     private static final int GRID_COLUMN_NUMB = 2;
     private static final int GRID_SPACE = 20;
+    private static final int REQUEST_PERMISSION = 1;
 
     private RecyclerView mRecyclerViewCategories;
     private CategoryAdapter mCategoryAdapter;
@@ -42,6 +50,11 @@ public class MainActivity extends BaseActivity
         setContentView(R.layout.activity_main);
         initView();
         initMusicService();
+        if (!isPermissionGranted()) {
+            ActivityCompat.requestPermissions(MainActivity.this,
+                    new String[]{Manifest.permission.READ_PHONE_STATE},
+                    REQUEST_PERMISSION);
+        }
     }
 
     private void initView() {
@@ -85,6 +98,10 @@ public class MainActivity extends BaseActivity
                 break;
             case R.id.item_play_list:
                 startActivity(new Intent(this, PlaylistActivity.class));
+                break;
+            case R.id.item_search_main:
+                startActivity(new Intent(this, SearchActivity.class));
+                break;
             default:
                 break;
         }
@@ -114,6 +131,12 @@ public class MainActivity extends BaseActivity
     @Override
     public void onItemLongClick(View view, int position) {
 
+    }
+
+    public boolean isPermissionGranted() {
+        return ContextCompat.checkSelfPermission(this,
+                Manifest.permission.READ_PHONE_STATE)
+                == PackageManager.PERMISSION_GRANTED;
     }
 
 }
